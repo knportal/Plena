@@ -450,7 +450,7 @@ If you need to re-request permissions:
 3. **Check CoreData:**
    - App uses CoreData for local storage
    - Reinstall app if persistent issues
-   - **Note:** This will delete local data (HealthKit data safe)
+   - **Note:** This will delete local app data (HealthKit data remains safe)
 
 ### Missing Historical Data
 

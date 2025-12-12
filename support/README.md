@@ -146,11 +146,13 @@ A: Local app data is stored until you delete the app. HealthKit data follows you
 
 **Q: What sensors does Plena track?**
 A: Plena tracks:
-- Heart Rate (BPM)
-- Heart Rate Variability / SDNN (ms)
-- Respiratory Rate (breaths/min)
-- Body Temperature
-- VO₂ Max
+- Heart Rate (BPM) - Real-time heart rate monitoring
+- Heart Rate Variability / SDNN (ms) - Variation between heartbeats
+- Respiratory Rate (breaths/min) - Breathing rate tracking
+- Body Temperature - Temperature monitoring during sessions
+- VO₂ Max - Maximum oxygen consumption (periodic readings)
+
+All sensors are tracked in real-time during meditation sessions and stored for historical analysis.
 
 **Q: What are stress zones?**
 A: Stress zones classify your physiological state:
@@ -159,10 +161,10 @@ A: Stress zones classify your physiological state:
 - 🟠 Elevated Stress: Higher stress response
 
 **Q: Can I view historical data?**
-A: Yes! The Data tab shows historical visualizations with time range options (Day, Week, Month, Year).
+A: Yes! The Data tab shows historical visualizations with time range options (Day, Week, Month, Year). You can switch between Consistency view (zone distribution) and Trend view (value over time) for each sensor. The view also provides trend statistics and insights.
 
 **Q: What is the Readiness Score?**
-A: The Readiness Score provides a holistic view of your recovery and readiness based on multiple factors including HRV, sleep, and meditation consistency.
+A: The Readiness Score is a daily score (0-100) that provides a holistic view of your recovery and readiness. It's calculated from multiple contributors including Resting Heart Rate, HRV Balance, Body Temperature, Recovery Index, and Sleep metrics (duration, balance, regularity). The score helps you understand when you're ready for optimal performance and when to focus on recovery.
 
 ---
 
@@ -237,7 +239,7 @@ If you've found a bug, please include:
 
 **Current Version:** See App Store listing
 
-**Minimum iOS:** 17.0  
+**Minimum iOS:** 17.0
 **Minimum watchOS:** 10.0
 
 ---

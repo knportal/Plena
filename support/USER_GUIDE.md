@@ -290,15 +290,16 @@ The Dashboard tab shows your meditation statistics and progress.
 
 **Stat Cards:**
 
-- **Sessions** - Total number of meditation sessions
-- **Total Time** - Cumulative meditation time (with average duration)
+- **Sessions** - Total number of meditation sessions (with comparison to previous period)
+- **Total Time** - Cumulative meditation time with average duration
 - **Streak** - Current consecutive days with at least one session
-- **Avg Duration** - Average session length
+- **Avg Duration** - Average session length (with trend indicators)
 
 **Time Range Selector:**
 
 - Tap the segmented control at the top: **Day**, **Week**, **Month**, **Year**
 - Statistics update based on selected time range
+- Comparisons show changes vs. previous period (e.g., this week vs. last week)
 
 ### Understanding Charts
 
@@ -307,21 +308,119 @@ The Dashboard tab shows your meditation statistics and progress.
 - Bar chart showing sessions per day/week/month
 - Helps you see consistency patterns
 - Green bars indicate days with sessions
+- Timeline view for Day range shows sessions throughout the day
 
 **Duration Trend Chart:**
 
 - Line chart showing average session duration over time
 - Trends upward? You're meditating longer
 - Trends downward? Consider re-establishing your routine
+- Interactive - tap points to see exact values
 
-### HRV Insights
+### Insights Section
 
-The Dashboard may show personalized insights such as:
+The Dashboard provides personalized insights:
 
-- **"HRV increased X% this week"** - Your heart rate variability improved
-- **"Your last 3 sessions show improved calm response"** - Positive trend detected
+**HRV Insights:**
+- **Weekly Trends** - Compare current week's HRV to previous week
+- **Recent Sessions** - Analysis of your last few sessions
+- Color-coded indicators (green for positive, orange for areas to improve)
 
-These insights appear when you have sufficient data (typically 3+ sessions with HRV data).
+**Additional Insights:**
+- **Longest Session** - Your personal record with date
+- **Best Time of Day** - When you typically meditate most effectively
+- **Sessions This Week** - Current week's activity
+- **Sessions Per Week** - Average weekly consistency
+
+These insights appear when you have sufficient data (typically 3+ sessions).
+
+---
+
+## Readiness Score
+
+The Readiness tab provides a holistic view of your recovery and readiness based on multiple health factors.
+
+### Understanding Your Readiness Score
+
+**What is the Readiness Score?**
+- A daily score from 0-100 that reflects your overall recovery and readiness
+- Calculated from multiple contributors including meditation data, sleep, and physiological metrics
+- Helps you understand when you're ready for optimal performance
+
+**Viewing Your Score:**
+1. Open the **Readiness** tab (heart icon)
+2. Select **Today** or **Yesterday** using the date selector
+3. View your overall score and contributor breakdown
+
+### Score Contributors
+
+The Readiness Score is calculated from several factors:
+
+**Resting Heart Rate:**
+- Your baseline heart rate during rest
+- Lower resting HR generally indicates better cardiovascular fitness
+- Based on recent meditation sessions
+
+**HRV Balance:**
+- Heart rate variability balance and trends
+- Higher HRV indicates better stress adaptability
+- Analyzes your meditation session HRV data
+
+**Body Temperature:**
+- Body temperature patterns and deviations
+- Monitors for signs of stress or illness
+- Uses HealthKit temperature data when available
+
+**Recovery Index:**
+- Recovery from previous meditation sessions
+- Considers session frequency and intensity
+- Helps prevent overtraining
+
+**Sleep Metrics:**
+- **Sleep Status** - Sleep duration and quality (from HealthKit)
+- **Sleep Balance** - Sleep consistency and patterns
+- **Sleep Regularity** - Sleep schedule consistency
+
+### Understanding Contributor Scores
+
+Each contributor shows:
+- **Score** - Individual score (0-100) for that factor
+- **Status** - Excellent, Good, Fair, or Poor
+- **Impact** - How much this factor affects your overall score
+- **Color Coding** - Visual indicator of status
+
+### Viewing Contributor Details
+
+Tap any contributor to see detailed analysis:
+- **Resting Heart Rate** - Shows calculation method, thresholds, and trends
+- **HRV Balance** - Displays HRV distribution and balance metrics
+- **Body Temperature** - Shows temperature patterns and baseline
+- **Recovery Index** - Explains recovery calculation and recommendations
+- **Sleep Metrics** - Detailed sleep analysis and recommendations
+
+### Using Your Readiness Score
+
+**High Score (80-100):**
+- You're well-recovered and ready for optimal performance
+- Good time for challenging meditation sessions or activities
+- Your body is in balance
+
+**Moderate Score (50-79):**
+- You're in a balanced state
+- Normal recovery level
+- Continue your regular meditation practice
+
+**Lower Score (0-49):**
+- Consider focusing on recovery
+- May benefit from lighter meditation sessions
+- Pay attention to sleep and stress management
+
+### Daily Comparison
+
+Compare today's score to yesterday:
+- See how your readiness changes day-to-day
+- Understand what factors improved or declined
+- Track trends over time
 
 ---
 
@@ -333,22 +432,46 @@ The Data tab lets you explore your historical meditation data in detail.
 
 1. Open the **Data** tab (chart icon)
 2. Select a **time range**: Day, Week, Month, or Year
-3. Scroll to see different sensors
+3. Choose a **metric** using the metric selector (Heart Rate, HRV, Respiratory Rate, Temperature, VO₂ Max)
+4. Select a **view mode**: Consistency or Trend
+
+### Understanding View Modes
+
+**Consistency View:**
+- Shows zone distribution over time
+- Displays percentage of time in each stress zone (Calm, Optimal, Elevated Stress)
+- Zone chips at the bottom show distribution percentages
+- Best for understanding stress patterns
+
+**Trend View:**
+- Shows sensor values over time
+- Line chart with data points
+- Best for seeing value trends and changes
 
 ### Understanding Graphs
 
 **Graph Features:**
 
 - **Interactive Charts** - Tap and drag to see specific values
-- **Time Axis** - Horizontal axis shows time
+- **Time Axis** - Horizontal axis shows time with smart labels
 - **Value Axis** - Vertical axis shows sensor readings
 - **Data Points** - Each point represents a measurement during a session
+- **Trend Statistics** - Shows if trend is improving, declining, or stable
 
-**Sensor Selection:**
+**Metric Selection:**
 
-- Scroll through different sensor graphs
+- Use the metric selector to choose which sensor to view
 - Each sensor has its own chart
 - Graphs are color-coded (Heart Rate = red, HRV = blue, etc.)
+- Some metrics can be enabled/disabled in Settings
+
+**Zone Distribution (Consistency View):**
+
+- Zone chips show percentage breakdown:
+  - 🔵 Calm zone percentage
+  - 🟢 Optimal zone percentage
+  - 🟠 Elevated Stress zone percentage
+- Helps you understand your stress response patterns
 
 ### Time Range Views
 
@@ -372,15 +495,15 @@ The Data tab lets you explore your historical meditation data in detail.
 - Last year of data
 - Long-term progress visualization
 
-### Range Indicators
+### Trend Insights
 
-Some sensors show range indicators:
+The Data tab provides trend insights:
 
-- **Above Normal** - Value is higher than typical
-- **Normal** - Value is within expected range
-- **Below Normal** - Value is lower than typical
+- **Trend Statistics** - Shows if your values are improving, declining, or stable
+- **Trend Cards** - Displays percentage changes and trend direction
+- **Visual Indicators** - Color-coded trend arrows (↑ improving, ↓ declining, → stable)
 
-These help you understand if readings are typical or noteworthy.
+These insights help you understand your progress over time.
 
 ---
 

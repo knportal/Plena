@@ -54,11 +54,14 @@ These zones provide instant visual feedback to help you understand your current 
 
 View your meditation progress at a glance:
 
-- **Session Statistics** - Total sessions, total meditation time, current streak
+- **Session Statistics** - Total sessions, total meditation time, current streak, average duration
 - **Trend Analysis** - See how your meditation practice evolves over time
-- **Session Frequency Charts** - Visualize your consistency
-- **Duration Trends** - Track session length patterns
+- **Session Frequency Charts** - Visualize your consistency with interactive bar charts
+- **Duration Trends** - Track session length patterns with line charts
 - **HRV Insights** - Get personalized insights about your heart rate variability trends
+- **Period Comparisons** - Compare current period to previous (e.g., this week vs last week)
+- **Best Time Analysis** - Discover your optimal meditation times
+- **Longest Session Tracking** - Celebrate your personal records
 
 The dashboard supports multiple time ranges: Day, Week, Month, and Year views.
 
@@ -68,8 +71,11 @@ Explore your historical meditation data with beautiful, interactive graphs:
 
 - **Time-Based Views** - Day, Week, Month, and Year perspectives
 - **Sensor-Specific Charts** - Individual graphs for each biometric measurement
+- **Multiple View Modes** - Switch between Consistency view (zone distribution) and Trend view (value over time)
 - **Range Indicators** - See how your values compare to normal ranges
-- **Trend Analysis** - Identify patterns and improvements over time
+- **Trend Statistics** - Get insights about trends (improving, declining, stable)
+- **Zone Distribution** - See percentage of time spent in each stress zone
+- **Metric Selection** - Choose which sensors to visualize (Heart Rate, HRV, Respiratory Rate, Temperature, VO₂ Max)
 
 ### Apple Watch Integration
 
@@ -88,6 +94,24 @@ Start and track meditation sessions directly from your Apple Watch:
 - **Automatic Saving** - All sessions are automatically saved to your device
 - **Historical Import** - Import existing HealthKit data from past sessions
 
+### Readiness Score
+
+Get a holistic view of your recovery and readiness with Plena's comprehensive Readiness Score:
+
+- **Daily Score Calculation** - Receive a readiness score (0-100) for each day
+- **Multiple Contributors** - Score based on:
+  - **Resting Heart Rate** - Your baseline heart rate during rest
+  - **HRV Balance** - Heart rate variability balance and trends
+  - **Body Temperature** - Temperature patterns and deviations
+  - **Recovery Index** - Recovery from previous sessions
+  - **Sleep Status** - Sleep duration and quality (from HealthKit)
+  - **Sleep Balance** - Sleep consistency and patterns
+  - **Sleep Regularity** - Sleep schedule consistency
+- **Detailed Breakdowns** - Tap any contributor to see detailed analysis
+- **Historical Comparison** - Compare today's score to yesterday
+- **Visual Indicators** - Color-coded scores (Excellent, Good, Fair, Poor)
+- **Actionable Insights** - Understand what factors are affecting your readiness
+
 ### Smart Insights
 
 Plena analyzes your data to provide meaningful insights:
@@ -95,6 +119,7 @@ Plena analyzes your data to provide meaningful insights:
 - **Weekly HRV Trends** - Compare current week to previous week
 - **Improvement Tracking** - Identify positive trends in your meditation practice
 - **Pattern Recognition** - Discover what times or durations work best for you
+- **Readiness Insights** - Understand how meditation affects your overall readiness
 
 ---
 
@@ -180,9 +205,10 @@ All permissions are requested when you first use the app, and you can change the
 
 - All health data is stored locally on your device using CoreData
 - Optional CloudKit sync keeps data synchronized between your iPhone and Apple Watch (your iCloud account)
+- HealthKit data remains in Apple's secure HealthKit framework
 - Plena respects your privacy - no data is shared with third parties
 - You control all HealthKit permissions
-- See our Privacy Policy for complete details
+- See our [Privacy Policy](PRIVACY_POLICY.md) for complete details
 
 ---
 
