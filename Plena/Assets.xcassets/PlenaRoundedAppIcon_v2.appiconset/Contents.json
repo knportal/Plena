@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "icon_1024x1024_ios-marketing_app_1x.png",
+      "idiom" : "ios-marketing",
+      "scale" : "1x",
+      "size" : "1024x1024"
+    },
+    {
+      "filename" : "icon_1024x1024_watch-marketing_app_1x.png",
+      "idiom" : "watch-marketing",
+      "scale" : "1x",
+      "size" : "1024x1024"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
+
