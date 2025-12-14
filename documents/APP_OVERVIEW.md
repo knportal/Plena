@@ -207,3 +207,9 @@ The triangle in our icon isn't just a design choice — it represents the interc
 
 _For troubleshooting help, see [Troubleshooting Guide](TROUBLESHOOTING.md)._
 _For setup instructions, see [User Guide](USER_GUIDE.md)._
+
+---
+
+**Last Updated:** December 12, 2025
+
+

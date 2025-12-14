@@ -60,7 +60,7 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
     /// Creates session metric summary from a meditation session
     /// - Parameters:
     ///   - session: Meditation session to analyze
-    ///   - metric: Sensor type to analyze (HRV, Heart Rate, or Respiration)
+    ///   - metric: Sensor type to analyze (HRV, Heart Rate, Respiration, or VO2 Max)
     ///   - hrvBaseline: Optional HRV baseline for personalized classification
     ///   - restingHR: Optional resting heart rate for personalized classification
     ///   - zoneClassifier: Zone classifier instance
@@ -72,7 +72,44 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
         restingHR: Double?,
         zoneClassifier: ZoneClassifierProtocol
     ) -> SessionMetricSummary? {
-        // Get samples for the metric
+        // Handle VO2 Max separately - use latest value per session (doesn't change during session)
+        if metric == .vo2Max {
+            // Check if we have any VO2 Max samples
+            guard !session.vo2MaxSamples.isEmpty else {
+                print("⚠️ VO2 Max createSessionMetricSummary: Session \(session.id.uuidString.prefix(8)) has no VO2 Max samples")
+                return nil
+            }
+
+            // Get VO2 Max value - since it doesn't change during a session, we can use any sample
+            // For consistency, use the average of all samples in the session
+            let vo2MaxValue = session.vo2MaxSamples.map { $0.value }.reduce(0.0, +) / Double(session.vo2MaxSamples.count)
+
+            print("✅ VO2 Max createSessionMetricSummary: Session \(session.id.uuidString.prefix(8)) - \(session.vo2MaxSamples.count) samples, avg value: \(String(format: "%.1f", vo2MaxValue))")
+
+            let zone = zoneClassifier.classifyVO2Max(vo2MaxValue)
+
+            print("   Zone classification: \(zone) for VO2 Max \(String(format: "%.1f", vo2MaxValue))")
+
+            // For VO2 Max, assign 100% to the zone of the latest value
+            let zoneFractions: [StressZone: Double] = [
+                .calm: zone == .calm ? 1.0 : 0.0,
+                .optimal: zone == .optimal ? 1.0 : 0.0,
+                .elevatedStress: zone == .elevatedStress ? 1.0 : 0.0
+            ]
+
+            print("   Zone fractions: calm=\(zoneFractions[.calm] ?? 0), optimal=\(zoneFractions[.optimal] ?? 0), stress=\(zoneFractions[.elevatedStress] ?? 0)")
+
+            return SessionMetricSummary(
+                sessionID: session.id,
+                date: session.startDate,
+                metric: metric,
+                avgValue: vo2MaxValue,
+                zoneFractions: zoneFractions,
+                dominantZone: zone
+            )
+        }
+
+        // Get samples for the metric (HRV, Heart Rate, Respiratory Rate)
         let samples: [(timestamp: Date, value: Double)]
         switch metric {
         case .hrv:
@@ -82,7 +119,7 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
         case .respiratoryRate:
             samples = session.respiratoryRateSamples.map { ($0.timestamp, $0.value) }
         default:
-            return nil // VO2Max and Temperature not supported in Stage 2
+            return nil // Temperature not supported
         }
 
         guard !samples.isEmpty else { return nil }
@@ -233,7 +270,13 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             )
         }
 
-        guard !sessionSummaries.isEmpty else { return nil }
+        guard !sessionSummaries.isEmpty else {
+            if metric == .vo2Max {
+                let sessionsWithVO2Max = sessions.filter { !$0.vo2MaxSamples.isEmpty }
+                print("⚠️ VO2 Max createPeriodScore: \(label) - \(sessions.count) sessions, \(sessionsWithVO2Max.count) with VO2 Max samples, 0 session summaries created")
+            }
+            return nil
+        }
 
         // Calculate weighted calm fraction across all sessions
         var totalCalm: Double = 0
@@ -247,19 +290,65 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
         }
 
         let total = max(totalCalm + totalNeutral + totalStress, 0.0001)
-        let calmFraction = totalCalm / total
 
-        // Calm score 0-100
-        let calmScore = calmFraction * 100.0
-
-        // Determine dominant zone for bar color
+        // For VO2 Max, calculate score based on actual values within zones
+        // For other metrics, use calm fraction
+        let calmFraction: Double
+        let calmScore: Double
         let zone: StressZone
-        if calmFraction >= 0.6 {
-            zone = .calm
-        } else if calmFraction >= 0.3 {
-            zone = .optimal
+
+        if metric == .vo2Max {
+            // VO2 Max: Calculate score based on actual values, not just zone membership
+            // Higher VO2 Max = better, so we want to show the actual value range
+            // Score should reflect: < 35 = 0-33, 35-55 = 34-84, > 55 = 85-100
+            var totalScore: Double = 0
+            var count: Double = 0
+
+            for summary in sessionSummaries {
+                let vo2Value = summary.avgValue
+                let sessionScore: Double
+
+                if vo2Value < 35 {
+                    // Elevated stress: 0-33% (poor fitness)
+                    sessionScore = (vo2Value / 35.0) * 33.0
+                } else if vo2Value <= 55 {
+                    // Optimal: 34-84% (map 35-55 to 34-84)
+                    let normalized = (vo2Value - 35.0) / (55.0 - 35.0) // 0.0 to 1.0
+                    sessionScore = 34.0 + (normalized * 50.0) // 34 to 84
+                } else {
+                    // Calm: 85-100% (excellent fitness, map 55+ to 85-100)
+                    let normalized = min((vo2Value - 55.0) / 20.0, 1.0) // Cap at 75 (55+20)
+                    sessionScore = 85.0 + (normalized * 15.0) // 85 to 100
+                }
+
+                totalScore += sessionScore
+                count += 1
+            }
+
+            calmScore = count > 0 ? totalScore / count : 0.0
+            calmFraction = calmScore / 100.0 // For compatibility
+
+            // Determine zone based on average VO2 Max value
+            let avgVO2Max = sessionSummaries.map { $0.avgValue }.reduce(0.0, +) / Double(sessionSummaries.count)
+            zone = zoneClassifier.classifyVO2Max(avgVO2Max)
         } else {
-            zone = .elevatedStress
+            // HRV/Heart Rate: only calm is good
+            calmFraction = totalCalm / total
+            calmScore = calmFraction * 100.0
+
+            // Determine dominant zone for bar color
+            if calmFraction >= 0.6 {
+                zone = .calm
+            } else if calmFraction >= 0.3 {
+                zone = .optimal
+            } else {
+                zone = .elevatedStress
+            }
+        }
+
+        if metric == .vo2Max {
+            let goodFraction = (totalCalm + totalNeutral) / total
+            print("✅ VO2 Max createPeriodScore: \(label) - \(sessionSummaries.count) summaries, goodFraction: \(String(format: "%.2f", goodFraction)) (calm=\(String(format: "%.2f", totalCalm)), optimal=\(String(format: "%.2f", totalNeutral)), stress=\(String(format: "%.2f", totalStress))), score: \(String(format: "%.1f", calmScore)), zone: \(zone)")
         }
 
         return PeriodScore(
@@ -360,8 +449,8 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
         // Determine if higher is better based on metric
         let preferredDirectionUp: Bool
         switch metric {
-        case .hrv:
-            preferredDirectionUp = true // Higher HRV is better
+        case .hrv, .vo2Max:
+            preferredDirectionUp = true // Higher HRV and VO2 Max are better
         case .heartRate, .respiratoryRate:
             preferredDirectionUp = false // Lower is better (within healthy range)
         default:
@@ -380,6 +469,11 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             let absChange = abs(currAvg - prevAvg)
             let direction = currAvg < prevAvg ? "-" : "+"
             deltaText = "\(direction)\(Int(absChange)) \(unitForMetric(metric)) vs last period"
+        } else if metric == .vo2Max {
+            // For VO2 Max, show absolute change with one decimal
+            let absChange = abs(currAvg - prevAvg)
+            let direction = currAvg > prevAvg ? "+" : "-"
+            deltaText = "\(direction)\(String(format: "%.1f", absChange)) \(unitForMetric(metric)) vs last period"
         } else {
             // For HRV, show percentage
             deltaText = String(format: "%+.0f%% vs last period", rawDelta)
@@ -408,6 +502,7 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
     // MARK: - Helper Methods
 
     /// Calculates average value for sessions for a given metric
+    /// For VO2 Max, uses latest value per session (since it doesn't change during session)
     private func calculateAverageValue(sessions: [MeditationSession], metric: SensorType) -> Double? {
         guard !sessions.isEmpty else { return nil }
 
@@ -419,6 +514,11 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             allValues = sessions.flatMap { $0.heartRateSamples.map { $0.value } }
         case .respiratoryRate:
             allValues = sessions.flatMap { $0.respiratoryRateSamples.map { $0.value } }
+        case .vo2Max:
+            // For VO2 Max, use latest value per session
+            allValues = sessions.compactMap { session in
+                session.vo2MaxSamples.sorted(by: { $0.timestamp > $1.timestamp }).first?.value
+            }
         default:
             return nil
         }
@@ -436,6 +536,8 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             return "bpm"
         case .respiratoryRate:
             return "/min"
+        case .vo2Max:
+            return "mL/kg/min"
         default:
             return ""
         }
@@ -450,6 +552,8 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             return "Your heart is spending more time in a calm range."
         case .respiratoryRate:
             return "Your breathing is slower and more consistent during sessions."
+        case .vo2Max:
+            return "Your cardiovascular fitness is improving."
         default:
             return "Your metrics are improving."
         }
@@ -464,6 +568,8 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             return "Heart rate was elevated more often — stress or busy days may be affecting you."
         case .respiratoryRate:
             return "Breathing was less steady this period — shorter or more distracted sessions."
+        case .vo2Max:
+            return "Cardiovascular fitness was lower this period — consider adding more aerobic activity."
         default:
             return "Metrics were lower this period."
         }
@@ -478,8 +584,12 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             return "Your session heart rate stayed in a similar range."
         case .respiratoryRate:
             return "Your breathing patterns remained consistent."
+        case .vo2Max:
+            return "Your cardiovascular fitness is maintaining its current level."
         default:
             return "Your metrics are stable."
         }
     }
 }
+
+

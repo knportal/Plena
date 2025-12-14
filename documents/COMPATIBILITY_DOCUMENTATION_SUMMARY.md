@@ -228,4 +228,6 @@ All updated documents now link to the compatibility guide:
 
 ---
 
-_Last Updated: December 2025_
+_Last Updated: December 12, 2025_
+
+

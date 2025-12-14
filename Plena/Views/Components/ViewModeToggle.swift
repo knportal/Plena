@@ -24,3 +24,5 @@ struct ViewModeToggle: View {
     ViewModeToggle(viewMode: .constant(.consistency))
         .padding()
 }
+
+

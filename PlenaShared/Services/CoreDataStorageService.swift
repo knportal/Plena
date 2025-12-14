@@ -18,6 +18,11 @@ class CoreDataStorageService: SessionStorageServiceProtocol {
     func saveSession(_ session: MeditationSession) throws {
         let context = coreDataStack.mainContext
 
+        print("💾 Saving session \(session.id) to Core Data (App Group shared container)")
+        print("   Start: \(session.startDate)")
+        print("   End: \(session.endDate?.description ?? "nil")")
+        print("   Samples: HR=\(session.heartRateSamples.count), HRV=\(session.hrvSamples.count), Resp=\(session.respiratoryRateSamples.count)")
+
         // Check if session already exists
         let fetchRequest: NSFetchRequest<MeditationSessionEntity> = MeditationSessionEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", session.id as CVarArg)
@@ -169,6 +174,11 @@ class CoreDataStorageService: SessionStorageServiceProtocol {
         }
 
         try context.save()
+
+        // Post notification to trigger refresh on other app (Watch/iPhone)
+        NotificationCenter.default.post(name: .NSPersistentStoreRemoteChange, object: nil)
+
+        print("✅ Session saved successfully to shared container")
     }
 
     func loadAllSessions() throws -> [MeditationSession] {
@@ -194,6 +204,25 @@ class CoreDataStorageService: SessionStorageServiceProtocol {
 
         let entities = try context.fetch(fetchRequest)
         return entities.map { $0.toMeditationSession() }
+    }
+
+    func loadSessionsWithoutSamples(startDate: Date, endDate: Date) throws -> [MeditationSession] {
+        let context = coreDataStack.mainContext
+        let fetchRequest: NSFetchRequest<MeditationSessionEntity> = MeditationSessionEntity.fetchRequest()
+
+        // Filter by date range
+        fetchRequest.predicate = NSPredicate(
+            format: "startDate >= %@ AND startDate <= %@",
+            startDate as NSDate,
+            endDate as NSDate
+        )
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: false)]
+
+        // Don't fetch relationships to avoid loading sample entities
+        fetchRequest.relationshipKeyPathsForPrefetching = []
+
+        let entities = try context.fetch(fetchRequest)
+        return entities.map { $0.toMeditationSessionWithoutSamples() }
     }
 
     func deleteSession(_ session: MeditationSession) throws {
@@ -245,6 +274,14 @@ extension MeditationSessionEntity {
                 .map { StateOfMindLog(id: $0.id ?? UUID(), timestamp: $0.timestamp ?? Date(), rating: Int($0.rating), notes: $0.notes) }
         }
 
+        return session
+    }
+
+    /// Creates a MeditationSession without loading sample data to save memory
+    func toMeditationSessionWithoutSamples() -> MeditationSession {
+        var session = MeditationSession(id: id ?? UUID(), startDate: startDate ?? Date())
+        session.endDate = endDate
+        // Intentionally leave all sample arrays empty to save memory
         return session
     }
 }

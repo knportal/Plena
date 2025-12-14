@@ -8,10 +8,28 @@
 import SwiftUI
 
 struct WatchContentView: View {
+    @State private var selectedTab = 0
+
     var body: some View {
-        NavigationStack {
-            MeditationWatchView(healthKitService: HealthKitService())
-                .navigationTitle("Plena")
+        TabView(selection: $selectedTab) {
+            // Meditation Session Tab
+            NavigationStack {
+                MeditationWatchView(healthKitService: HealthKitService())
+                    .navigationTitle("Session")
+            }
+            .tag(0)
+
+            // Dashboard Tab
+            NavigationStack {
+                DashboardWatchView(healthKitService: HealthKitService())
+            }
+            .tag(1)
+
+            // Readiness Tab
+            NavigationStack {
+                ReadinessWatchView(healthKitService: HealthKitService())
+            }
+            .tag(2)
         }
     }
 }

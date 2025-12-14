@@ -111,7 +111,7 @@ struct MeditationSessionView: View {
                         .font(.system(size: 60))
                         .foregroundColor(Color("HeartRateColor"))
 
-                    Text("Tracking Meditation")
+                    Text("Live Tracking")
                         .font(.largeTitle)
                         .fontWeight(.semibold)
 
@@ -204,7 +204,7 @@ struct MeditationSessionView: View {
                                         icon: "figure.run",
                                         iconColor: Color.gray.opacity(0.5),
                                         value: "—",
-                                        unit: "N/A",
+                                        unit: "Not available",
                                         label: "VO₂ Max",
                                         size: SensorValueCard.CardSize.large,
                                         isUnavailable: true
@@ -229,7 +229,7 @@ struct MeditationSessionView: View {
                                         icon: "thermometer",
                                         iconColor: Color.gray.opacity(0.5),
                                         value: "—",
-                                        unit: "N/A",
+                                        unit: "Not available",
                                         label: "Temperature",
                                         size: SensorValueCard.CardSize.large,
                                         isUnavailable: true
@@ -279,6 +279,34 @@ struct MeditationSessionView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
+        .alert("Health Permissions", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("Open Settings") {
+                HealthKitService.openHealthSettings()
+                viewModel.errorMessage = nil
+            }
+            Button("Cancel", role: .cancel) {
+                viewModel.errorMessage = nil
+            }
+        } message: {
+            Text("""
+            To enable HealthKit permissions:
+
+            1. Tap "Open Settings" below
+            2. Tap the back arrow (←) to go to main Settings
+            3. Tap "Privacy & Security"
+            4. Tap "Health"
+            5. Find and tap "Plena"
+            6. Enable toggles for:
+               • Heart Rate
+               • HRV (SDNN)
+               • Respiratory Rate
+
+            Then return to Plena to use these features.
+            """)
+        }
         .sheet(isPresented: Binding(
             get: { viewModel.sessionSummary != nil },
             set: { if !$0 { viewModel.dismissSummary() } }

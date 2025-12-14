@@ -6,9 +6,14 @@
 //
 
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
+    @State private var showHealthInstructions = false
+    private let healthKitService = HealthKitService()
 
     var body: some View {
         NavigationStack {
@@ -77,6 +82,139 @@ struct SettingsView: View {
                 } footer: {
                     Text("Choose your preferred temperature unit. Temperature data is stored in Celsius and converted for display.")
                 }
+
+                // Health Permissions Section
+                Section {
+                    Button(action: {
+                        showHealthInstructions = true
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "heart.text.square.fill")
+                                .font(.title3)
+                                .foregroundColor(Color("PlenaPrimary"))
+                                .frame(width: 30)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Health Permissions")
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                                Text("Manage HealthKit data access")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    Button(action: {
+                        healthKitService.checkAuthorizationStatus()
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.title3)
+                                .foregroundColor(Color("PlenaPrimary"))
+                                .frame(width: 30)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Refresh Status")
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                                Text("Check current authorization status")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+                        }
+                    }
+
+                    Button(action: {
+                        Task {
+                            do {
+                                try await healthKitService.requestAuthorization()
+                                // Check status after requesting
+                                healthKitService.checkAuthorizationStatus()
+                            } catch {
+                                print("❌ Failed to request authorization: \(error)")
+                            }
+                        }
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "key.fill")
+                                .font(.title3)
+                                .foregroundColor(Color("PlenaPrimary"))
+                                .frame(width: 30)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Re-request Authorization")
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                                Text("Request permissions again")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+                        }
+                    }
+                } header: {
+                    Text("Privacy")
+                } footer: {
+                    Text("If you previously denied access to certain health data types (like VO₂ Max, Temperature, or Sleep Analysis), tap above to see instructions for enabling them. After enabling in Settings, tap 'Refresh Status' to check the updated permissions.")
+                }
+                .alert("Health Permissions", isPresented: $showHealthInstructions) {
+                    Button("Open Settings") {
+                        HealthKitService.openHealthSettings()
+                    }
+                    Button("Cancel", role: .cancel) { }
+                } message: {
+                    Text("""
+                    To enable HealthKit permissions:
+
+                    1. Tap "Open Settings" below
+                    2. Tap the back arrow (←) to go to main Settings
+                    3. Tap "Privacy & Security"
+                    4. Tap "Health"
+                    5. Find and tap "Plena"
+                    6. Enable toggles for:
+                       • VO₂ Max
+                       • Body Temperature
+                       • Sleep Analysis
+
+                    Then return to Plena to use these features.
+                    """)
+                }
+
+                // Test Data Section (iOS only)
+                #if os(iOS)
+                Section {
+                    NavigationLink(destination: TestDataView()) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "flask.fill")
+                                .font(.title3)
+                                .foregroundColor(Color("PlenaPrimary"))
+                                .frame(width: 30)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Test Data")
+                                    .font(.body)
+                                Text("Generate test meditation sessions")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Testing")
+                } footer: {
+                    Text("Generate test data with realistic sensor readings to preview features and test the app.")
+                }
+                #endif
 
                 // About Section
                 Section {

@@ -1,5 +1,9 @@
 # Plena Support
 
+**Purpose:** This folder contains support website content - user-facing documentation designed for a support website or help center.
+
+**Note:** This is separate from the `documents/` folder, which contains project documentation for developers and App Store submission.
+
 Welcome to the Plena support page. Here you'll find help, documentation, and resources for the Plena meditation tracking app.
 
 ---
@@ -250,7 +254,7 @@ For the latest updates and version history, see the [main repository releases](h
 
 ---
 
-**Last Updated:** December 2024
+**Last Updated:** December 12, 2025
 
 ---
 

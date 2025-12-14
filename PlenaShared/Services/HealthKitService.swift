@@ -7,6 +7,9 @@
 
 import Foundation
 import HealthKit
+#if os(iOS)
+import UIKit
+#endif
 
 // Callback types for real-time data
 typealias HeartRateHandler = (Double) -> Void
@@ -154,46 +157,70 @@ class HealthKitService: HealthKitServiceProtocol {
             throw HealthKitError.notAvailable
         }
 
+        // Check current status before requesting
+        let vo2MaxStatus = healthStore.authorizationStatus(for: vo2MaxType)
+        let temperatureStatus = healthStore.authorizationStatus(for: bodyTemperatureType)
+        let sleepStatus = healthStore.authorizationStatus(for: sleepAnalysisType)
+
         print("📋 Requesting HealthKit authorization...")
+        print("   Current status before request:")
+        print("   VO2 Max: \(authorizationStatusString(vo2MaxStatus))")
+        print("   Temperature: \(authorizationStatusString(temperatureStatus))")
+        print("   Sleep Analysis: \(authorizationStatusString(sleepStatus))")
+
         try await healthStore.requestAuthorization(toShare: writeTypes, read: readTypes)
         print("✅ HealthKit authorization request completed")
+
+        // Small delay to allow iOS to update authorization status
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
 
         // Check if we have read authorization for sensor data
         let heartRateStatus = healthStore.authorizationStatus(for: heartRateType)
         let hrvStatus = healthStore.authorizationStatus(for: hrvType)
         let respiratoryStatus = healthStore.authorizationStatus(for: respiratoryRateType)
-        let vo2MaxStatus = healthStore.authorizationStatus(for: vo2MaxType)
-        let temperatureStatus = healthStore.authorizationStatus(for: bodyTemperatureType)
-        let sleepStatus = healthStore.authorizationStatus(for: sleepAnalysisType)
+        // Re-check optional metrics after authorization request
+        let vo2MaxStatusAfter = healthStore.authorizationStatus(for: vo2MaxType)
+        let temperatureStatusAfter = healthStore.authorizationStatus(for: bodyTemperatureType)
+        let sleepStatusAfter = healthStore.authorizationStatus(for: sleepAnalysisType)
 
         // Log all authorization statuses for debugging
         print("📊 Authorization Statuses:")
         print("   Heart Rate: \(heartRateStatus.rawValue) (\(authorizationStatusString(heartRateStatus)))")
         print("   HRV: \(hrvStatus.rawValue) (\(authorizationStatusString(hrvStatus)))")
         print("   Respiratory Rate: \(respiratoryStatus.rawValue) (\(authorizationStatusString(respiratoryStatus)))")
-        print("   VO2 Max: \(vo2MaxStatus.rawValue) (\(authorizationStatusString(vo2MaxStatus)))")
-        print("   Temperature: \(temperatureStatus.rawValue) (\(authorizationStatusString(temperatureStatus)))")
-        print("   Sleep Analysis: \(sleepStatus.rawValue) (\(authorizationStatusString(sleepStatus)))")
 
-        // Note: VO2 Max and Temperature may not be available on all devices
-        // We don't fail if they're not authorized, but we'll log it
-        if heartRateStatus == .notDetermined || hrvStatus == .notDetermined || respiratoryStatus == .notDetermined {
+        // Check required permissions first
+        // If any required permission is not determined or denied, throw error
+        let requiredPermissionsDenied = heartRateStatus == .sharingDenied ||
+                                       hrvStatus == .sharingDenied ||
+                                       respiratoryStatus == .sharingDenied
+
+        let requiredPermissionsNotDetermined = heartRateStatus == .notDetermined ||
+                                              hrvStatus == .notDetermined ||
+                                              respiratoryStatus == .notDetermined
+
+        if requiredPermissionsDenied || requiredPermissionsNotDetermined {
             print("❌ Required sensor permissions not authorized")
             print("   Heart Rate: \(authorizationStatusString(heartRateStatus))")
             print("   HRV: \(authorizationStatusString(hrvStatus))")
             print("   Respiratory Rate: \(authorizationStatusString(respiratoryStatus))")
+
+            if requiredPermissionsDenied {
+                print("⚠️  Permissions were denied. Please enable in Settings → Privacy & Security → Health → Plena")
+            }
+
             throw HealthKitError.notAuthorized
         }
 
-        // Log status for optional metrics
-        if vo2MaxStatus == .notDetermined {
-            print("⚠️ VO2 Max authorization not determined - may not be available")
+        // Log optional permissions (only if authorized, to reduce noise)
+        if vo2MaxStatusAfter == .sharingAuthorized {
+            print("   VO2 Max: \(vo2MaxStatusAfter.rawValue) (\(authorizationStatusString(vo2MaxStatusAfter)))")
         }
-        if temperatureStatus == .notDetermined {
-            print("⚠️ Body temperature authorization not determined - may not be available")
+        if temperatureStatusAfter == .sharingAuthorized {
+            print("   Temperature: \(temperatureStatusAfter.rawValue) (\(authorizationStatusString(temperatureStatusAfter)))")
         }
-        if sleepStatus == .notDetermined {
-            print("⚠️ Sleep analysis authorization not determined - may not be available")
+        if sleepStatusAfter == .sharingAuthorized {
+            print("   Sleep Analysis: \(sleepStatusAfter.rawValue) (\(authorizationStatusString(sleepStatusAfter)))")
         }
 
         print("✅ HealthKit authorization successful")
@@ -211,6 +238,59 @@ class HealthKitService: HealthKitServiceProtocol {
             return "Sharing Authorized"
         @unknown default:
             return "Unknown (\(status.rawValue))"
+        }
+    }
+
+    /// Opens the Settings app
+    /// This allows users to manually enable permissions that were previously denied
+    static func openHealthSettings() {
+        #if os(iOS)
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+        #endif
+    }
+
+    /// Checks and logs current authorization status without requesting authorization
+    /// Useful for checking status after user enables permissions in Settings
+    func checkAuthorizationStatus() {
+        print("🔍 Checking HealthKit authorization status...")
+        print("   HealthKit available: \(HKHealthStore.isHealthDataAvailable())")
+
+        let heartRateStatus = healthStore.authorizationStatus(for: heartRateType)
+        let hrvStatus = healthStore.authorizationStatus(for: hrvType)
+        let respiratoryStatus = healthStore.authorizationStatus(for: respiratoryRateType)
+        let vo2MaxStatus = healthStore.authorizationStatus(for: vo2MaxType)
+        let temperatureStatus = healthStore.authorizationStatus(for: bodyTemperatureType)
+        let sleepStatus = healthStore.authorizationStatus(for: sleepAnalysisType)
+
+        // Log required permissions (always show)
+        print("📊 Current Authorization Statuses:")
+        print("   Heart Rate: \(heartRateStatus.rawValue) (\(authorizationStatusString(heartRateStatus)))")
+        print("   HRV: \(hrvStatus.rawValue) (\(authorizationStatusString(hrvStatus)))")
+        print("   Respiratory Rate: \(respiratoryStatus.rawValue) (\(authorizationStatusString(respiratoryStatus)))")
+
+        // Only log optional permissions if they're authorized (to reduce noise)
+        let optionalPermissions: [(String, HKAuthorizationStatus)] = [
+            ("VO2 Max", vo2MaxStatus),
+            ("Temperature", temperatureStatus),
+            ("Sleep Analysis", sleepStatus)
+        ]
+
+        let authorizedOptional = optionalPermissions.filter { $0.1 == .sharingAuthorized }
+        if !authorizedOptional.isEmpty {
+            print("   Optional permissions (authorized):")
+            for (name, status) in authorizedOptional {
+                print("   \(name): \(status.rawValue) (\(authorizationStatusString(status)))")
+            }
+        }
+
+        // Only show warning if required permissions are denied
+        if heartRateStatus == .sharingDenied || hrvStatus == .sharingDenied || respiratoryStatus == .sharingDenied {
+            print("⚠️ Required permissions are denied. App functionality will be limited.")
+            print("   Please enable Heart Rate, HRV, and Respiratory Rate in Settings → Privacy & Security → Health → Plena")
+        } else {
+            print("✅ All required permissions authorized")
         }
     }
 

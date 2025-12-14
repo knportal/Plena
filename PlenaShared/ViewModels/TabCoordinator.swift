@@ -23,3 +23,5 @@ class TabCoordinator: ObservableObject {
         }
     }
 }
+
+

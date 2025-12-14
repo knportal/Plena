@@ -842,3 +842,7 @@ Before contacting support, try these in order:
 
 _For setup help, see [User Guide](USER_GUIDE.md)._
 _For app overview, see [App Overview](APP_OVERVIEW.md)._
+
+---
+
+**Last Updated:** December 12, 2025

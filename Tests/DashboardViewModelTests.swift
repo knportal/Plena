@@ -289,3 +289,5 @@ final class DashboardViewModelTests: XCTestCase {
         XCTAssertNotNil(viewModel, "ViewModel should exist")
     }
 }
+
+

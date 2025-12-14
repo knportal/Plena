@@ -29,7 +29,8 @@ struct MeditationWatchView: View {
 
                     Text("Get ready")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
                 }
             } else if let summary = viewModel.sessionSummary {
                 // Summary view
@@ -38,6 +39,7 @@ struct MeditationWatchView: View {
                         Text("Session Complete")
                             .font(.headline)
                             .fontWeight(.bold)
+                            .foregroundColor(Color("TextPrimaryColor"))
                             .padding(.bottom, 4)
 
                         // Average Heart Rate
@@ -49,9 +51,11 @@ struct MeditationWatchView: View {
                                 Text("\(Int(avgHR))")
                                     .font(.title3)
                                     .fontWeight(.bold)
+                                    .foregroundColor(Color("TextPrimaryColor"))
                                 Text("Avg BPM")
                                     .font(.caption2)
-                                    .foregroundColor(.secondary)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
                             }
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity)
@@ -72,14 +76,19 @@ struct MeditationWatchView: View {
                                 HStack(spacing: 4) {
                                     Text("\(Int(hrvStart))")
                                         .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(Color("TextPrimaryColor"))
                                     Image(systemName: "arrow.right")
                                         .font(.caption2)
+                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.8))
                                     Text("\(Int(hrvEnd))")
                                         .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(Color("TextPrimaryColor"))
                                 }
-                                .fontWeight(.semibold)
                                 Text(hrvChange >= 0 ? "+\(Int(hrvChange)) ms" : "\(Int(hrvChange)) ms")
                                     .font(.caption2)
+                                    .fontWeight(.semibold)
                                     .foregroundColor(hrvChange >= 0 ? Color("SuccessColor") : Color("WarningColor"))
                             }
                             .padding(.vertical, 8)
@@ -99,9 +108,11 @@ struct MeditationWatchView: View {
                                 Text("\(Int(avgRespRate))")
                                     .font(.title3)
                                     .fontWeight(.bold)
+                                    .foregroundColor(Color("TextPrimaryColor"))
                                 Text("Breaths/min")
                                     .font(.caption2)
-                                    .foregroundColor(.secondary)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
                             }
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity)
@@ -131,9 +142,11 @@ struct MeditationWatchView: View {
                                 Text("\(Int(heartRate))")
                                     .font(.title)
                                     .fontWeight(.bold)
+                                    .foregroundColor(Color("TextPrimaryColor"))
                                 Text("BPM")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
 
                                 // Zone indicator
                                 if let zone = viewModel.currentHeartRateZone {
@@ -168,9 +181,11 @@ struct MeditationWatchView: View {
                                 Text("\(Int(hrv))")
                                     .font(.title)
                                     .fontWeight(.bold)
+                                    .foregroundColor(Color("TextPrimaryColor"))
                                 Text("ms SDNN")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
 
                                 // Zone indicator
                                 if let zone = viewModel.currentHRVZone {
@@ -205,9 +220,11 @@ struct MeditationWatchView: View {
                                 Text("\(Int(respiratoryRate))")
                                     .font(.title)
                                     .fontWeight(.bold)
+                                    .foregroundColor(Color("TextPrimaryColor"))
                                 Text("/min")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
                             }
                             .padding()
                         }
@@ -222,9 +239,11 @@ struct MeditationWatchView: View {
                                     Text(String(format: "%.1f", vo2Max))
                                         .font(.title3)
                                         .fontWeight(.bold)
+                                        .foregroundColor(Color("TextPrimaryColor"))
                                     Text("VO₂ Max")
                                         .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
                                 }
                                 .padding()
                             } else if viewModel.vo2MaxAvailable == false {
@@ -236,7 +255,7 @@ struct MeditationWatchView: View {
                                         .font(.title3)
                                         .fontWeight(.bold)
                                         .foregroundColor(.secondary)
-                                    Text("VO₂ Max N/A")
+                                    Text("Not available")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -255,9 +274,11 @@ struct MeditationWatchView: View {
                                     Text(String(format: "%.1f", convertedTemp))
                                         .font(.title3)
                                         .fontWeight(.bold)
+                                        .foregroundColor(Color("TextPrimaryColor"))
                                     Text(settingsViewModel.temperatureUnitSymbol)
                                         .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
                                 }
                                 .padding()
                             } else if viewModel.temperatureAvailable == false {
@@ -268,10 +289,11 @@ struct MeditationWatchView: View {
                                     Text("—")
                                         .font(.title3)
                                         .fontWeight(.bold)
-                                        .foregroundColor(.secondary)
-                                    Text("Temp N/A")
+                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.7))
+                                    Text("Not available")
                                         .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.7))
                                 }
                                 .padding()
                             }
@@ -287,7 +309,8 @@ struct MeditationWatchView: View {
                                 .foregroundColor(Color("HeartRateColor"))
                             Text("Waiting for data...")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .fontWeight(.medium)
+                                .foregroundColor(Color("TextSecondaryColor").opacity(0.8))
                         }
 
                         Button("Stop") {

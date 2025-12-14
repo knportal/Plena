@@ -149,9 +149,21 @@ struct DashboardView: View {
             }
             .navigationTitle("Dashboard")
             .navigationBarTitleDisplayMode(.inline)
+            .refreshable {
+                // Pull-to-refresh support
+                await viewModel.loadSessions()
+            }
             .task {
                 await viewModel.loadSessions()
             }
+            #if os(iOS)
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                // Refresh when app comes to foreground (user switches from Watch app)
+                Task {
+                    await viewModel.loadSessions()
+                }
+            }
+            #endif
         }
     }
 

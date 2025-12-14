@@ -89,6 +89,10 @@ class MeditationSessionViewModel: ObservableObject {
         watchConnectivityService.isWatchReachablePublisher
             .receive(on: DispatchQueue.main)
             .assign(to: &$isWatchReachable)
+        #elseif os(watchOS)
+        // On watchOS, we need access to WatchConnectivityService to send sessions
+        // Create a dummy protocol conformance for watchOS
+        // The actual service will be accessed via WatchConnectivityService.shared
         #endif
     }
 
@@ -122,9 +126,9 @@ class MeditationSessionViewModel: ObservableObject {
             if let healthKitError = error as? HealthKitError {
                 switch healthKitError {
                 case .notAvailable:
-                    errorMessage = "HealthKit not available on this device"
+                    errorMessage = "HealthKit is not available on this device. HealthKit requires a physical iPhone with iOS 8.0 or later."
                 case .notAuthorized:
-                    errorMessage = "HealthKit permission denied. Please enable in Settings > Health > Data Access & Devices > Plena"
+                    errorMessage = "HealthKit permissions are required to track your biometrics. Please enable Heart Rate, HRV (SDNN), and Respiratory Rate in Settings → Privacy & Security → Health → Plena"
                 case .notImplemented:
                     errorMessage = "Feature not implemented"
                 }
@@ -349,9 +353,23 @@ class MeditationSessionViewModel: ObservableObject {
         // Save session to local storage
         do {
             try storageService.saveSession(session)
+            print("✅ Session saved to local storage")
         } catch {
             print("Error saving session to local storage: \(error)")
         }
+
+        // Send session to iPhone via WatchConnectivity (watchOS only)
+        #if os(watchOS)
+        Task {
+            do {
+                let watchConnectivity = WatchConnectivityService.shared
+                try await watchConnectivity.sendSession(session)
+            } catch {
+                print("⚠️ Failed to send session to iPhone via WatchConnectivity: \(error)")
+                // Don't fail - local storage is primary, sync is secondary
+            }
+        }
+        #endif
 
         // Save mindful session to HealthKit for trend tracking
         // This runs asynchronously and doesn't block UI

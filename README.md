@@ -57,10 +57,28 @@ Plena/
 │   ├── Views/                     # Watch-specific views
 │   └── Info.plist                 # Watch app configuration
 │
-└── PlenaShared/                   # Shared code
-    ├── Models/                    # Data models
-    ├── Services/                  # Business logic (HealthKit, etc.)
-    └── ViewModels/                # MVVM view models
+├── PlenaShared/                   # Shared code
+│   ├── Models/                    # Data models
+│   ├── Services/                  # Business logic (HealthKit, etc.)
+│   └── ViewModels/                # MVVM view models
+│
+├── documents/                     # Project documentation
+│   ├── README.md                  # Documentation index
+│   ├── APP_OVERVIEW.md           # App overview
+│   ├── USER_GUIDE.md             # User guide
+│   ├── TROUBLESHOOTING.md        # Troubleshooting
+│   └── [App Store docs]          # App Store submission docs
+│
+├── support/                       # Support website content
+│   └── [User-facing support docs]
+│
+├── docs/                          # Development documentation
+│   ├── development/              # Implementation docs
+│   ├── setup/                     # Setup guides
+│   ├── troubleshooting/           # Dev troubleshooting
+│   └── guides/                    # Development guides
+│
+└── archive/                       # Historical backups
 ```
 
 ## Architecture
@@ -101,7 +119,14 @@ Plena/
 - **CoreData**: Data persistence framework for local storage
 - **CloudKit Sync**: Optional iCloud sync between iPhone and Watch (when enabled)
 - **HealthKit Integration**: Reads and writes health data through Apple's HealthKit framework
-- **Historical Import**: Import existing HealthKit data (see `HEALTHKIT_IMPORT_USAGE.md`)
+- **Historical Import**: Import existing HealthKit data (see `docs/guides/HEALTHKIT_IMPORT_USAGE.md`)
+
+## Documentation
+
+- **User Documentation**: See `documents/` folder for user guides and App Store documentation
+- **Support Content**: See `support/` folder for support website content
+- **Development Docs**: See `docs/` folder for implementation and setup guides
+- **Archive**: See `archive/` folder for historical backups
 
 ## HealthKit Permissions
 
@@ -113,6 +138,8 @@ The app requires HealthKit permissions for:
 ## Development Status
 
 ✅ **Production Ready** - Core features complete and tested.
+
+**Last Updated:** December 12, 2025
 
 ## License
 

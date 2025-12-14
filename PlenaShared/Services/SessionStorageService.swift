@@ -12,6 +12,8 @@ protocol SessionStorageServiceProtocol {
     func loadAllSessions() throws -> [MeditationSession]
     func deleteSession(_ session: MeditationSession) throws
     func loadSessions(startDate: Date, endDate: Date) throws -> [MeditationSession]
+    /// Loads sessions without sample data to reduce memory usage. Use for statistics/aggregation views.
+    func loadSessionsWithoutSamples(startDate: Date, endDate: Date) throws -> [MeditationSession]
 }
 
 class SessionStorageService: SessionStorageServiceProtocol {
@@ -67,6 +69,24 @@ class SessionStorageService: SessionStorageServiceProtocol {
         let allSessions = try loadAllSessions()
         return allSessions.filter { session in
             session.startDate >= startDate && session.startDate <= endDate
+        }
+    }
+
+    func loadSessionsWithoutSamples(startDate: Date, endDate: Date) throws -> [MeditationSession] {
+        // Load all sessions and filter by date range, then clear sample arrays
+        let allSessions = try loadAllSessions()
+        return allSessions.filter { session in
+            session.startDate >= startDate && session.startDate <= endDate
+        }.map { session in
+            var lightweight = session
+            // Clear all sample arrays to save memory
+            lightweight.heartRateSamples = []
+            lightweight.hrvSamples = []
+            lightweight.respiratoryRateSamples = []
+            lightweight.vo2MaxSamples = []
+            lightweight.temperatureSamples = []
+            lightweight.stateOfMindLogs = []
+            return lightweight
         }
     }
 }

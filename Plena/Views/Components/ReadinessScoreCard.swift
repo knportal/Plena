@@ -89,3 +89,5 @@ struct ReadinessScoreCard: View {
     .background(Color(.systemGroupedBackground))
 }
 
+
+

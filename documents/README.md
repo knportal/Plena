@@ -114,4 +114,6 @@ Before App Store submission:
 
 ---
 
-_Last Updated: December 2025_
+_Last Updated: December 12, 2025_
+
+

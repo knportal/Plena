@@ -503,3 +503,9 @@ All marketing materials emphasize:
 
 _For App Store metadata, see [APP_STORE_METADATA.md](APP_STORE_METADATA.md)._
 _For user documentation, see [USER_GUIDE.md](USER_GUIDE.md)._
+
+---
+
+**Last Updated:** December 12, 2025
+
+

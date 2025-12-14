@@ -248,3 +248,5 @@ final class DataVisualizationViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.totalMinutes, 35.0, accuracy: 0.1, "Should calculate total minutes correctly")
     }
 }
+
+

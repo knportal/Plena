@@ -460,3 +460,9 @@ For the best Plena experience, we recommend Apple Watch Series 6 or later for co
 
 _For troubleshooting sensor issues, see [Troubleshooting Guide](TROUBLESHOOTING.md)._
 _For setup instructions, see [User Guide](USER_GUIDE.md)._
+
+---
+
+**Last Updated:** December 12, 2025
+
+

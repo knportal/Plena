@@ -77,3 +77,5 @@ struct TrendInsightCard: View {
     }
     .padding()
 }
+
+

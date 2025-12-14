@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CoreData
 
 // Represents a time period comparison
 struct PeriodComparison {
@@ -78,6 +79,7 @@ class DashboardViewModel: ObservableObject {
 
     private let storageService: SessionStorageServiceProtocol
     private let healthKitService: HealthKitServiceProtocol?
+    private var remoteChangeObserver: NSObjectProtocol?
 
     init(
         storageService: SessionStorageServiceProtocol = CoreDataStorageService(),
@@ -85,6 +87,53 @@ class DashboardViewModel: ObservableObject {
     ) {
         self.storageService = storageService
         self.healthKitService = healthKitService
+
+        // Listen for remote Core Data changes (CloudKit sync)
+        setupRemoteChangeObserver()
+    }
+
+    deinit {
+        if let observer = remoteChangeObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+
+    private func setupRemoteChangeObserver() {
+        // Listen for Core Data store changes (from Watch or iPhone)
+        // This works for both App Group shared container and CloudKit sync
+        remoteChangeObserver = NotificationCenter.default.addObserver(
+            forName: .NSPersistentStoreRemoteChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            print("🔄 Dashboard: Detected Core Data store change, refreshing sessions...")
+            // Refresh the context to see changes from Watch
+            CoreDataStack.shared.mainContext.refreshAllObjects()
+
+            // Reload sessions when changes are detected from the shared container
+            Task { @MainActor [weak self] in
+                await self?.loadSessions()
+            }
+        }
+
+        // Listen for ANY context saves (not just main context) to catch Watch saves
+        NotificationCenter.default.addObserver(
+            forName: .NSManagedObjectContextDidSave,
+            object: nil, // nil = listen to ALL contexts
+            queue: .main
+        ) { [weak self] notification in
+            // Only refresh if it's not from our own main context to avoid double refresh
+            if let savedContext = notification.object as? NSManagedObjectContext,
+               savedContext !== CoreDataStack.shared.mainContext {
+                print("🔄 Dashboard: Detected save from other context (Watch?), refreshing...")
+                // Refresh to see changes from Watch
+                CoreDataStack.shared.mainContext.refreshAllObjects()
+
+                Task { @MainActor [weak self] in
+                    await self?.loadSessions()
+                }
+            }
+        }
     }
 
     // MARK: - Data Loading
@@ -95,9 +144,12 @@ class DashboardViewModel: ObservableObject {
 
         do {
             let (startDate, endDate) = selectedTimeRange.dateRange
-            sessions = try storageService.loadSessions(startDate: startDate, endDate: endDate)
+            // Use lightweight loading without samples to save memory - dashboard only needs dates and durations
+            sessions = try storageService.loadSessionsWithoutSamples(startDate: startDate, endDate: endDate)
+            print("📊 Dashboard: Loaded \(sessions.count) sessions for time range \(selectedTimeRange)")
         } catch {
             errorMessage = "Failed to load sessions: \(error.localizedDescription)"
+            print("❌ Dashboard: Error loading sessions: \(error)")
         }
 
         isLoading = false
@@ -207,8 +259,8 @@ class DashboardViewModel: ObservableObject {
         let previousEnd = currentStart
         let previousStart = previousEnd.addingTimeInterval(-duration)
 
-        // Load previous period sessions
-        let previousSessions = (try? storageService.loadSessions(startDate: previousStart, endDate: previousEnd)) ?? []
+        // Load previous period sessions (without samples - only need counts and durations)
+        let previousSessions = (try? storageService.loadSessionsWithoutSamples(startDate: previousStart, endDate: previousEnd)) ?? []
 
         let currentCount = Double(sessionCount)
         let previousCount = Double(previousSessions.count)
@@ -226,7 +278,8 @@ class DashboardViewModel: ObservableObject {
         let previousEnd = currentStart
         let previousStart = previousEnd.addingTimeInterval(-duration)
 
-        let previousSessions = (try? storageService.loadSessions(startDate: previousStart, endDate: previousEnd)) ?? []
+        // Load previous period sessions (without samples - only need durations)
+        let previousSessions = (try? storageService.loadSessionsWithoutSamples(startDate: previousStart, endDate: previousEnd)) ?? []
         let previousMinutes = previousSessions.reduce(0.0) { $0 + $1.duration / 60.0 }
 
         return PeriodComparison(current: totalMinutes, previous: previousMinutes)
@@ -565,7 +618,7 @@ class DashboardViewModel: ObservableObject {
             return nil
         }
 
-        // Load all sessions for both weeks
+        // Load all sessions for both weeks (need full sessions with samples for HRV analysis)
         let currentWeekSessions = (try? storageService.loadSessions(startDate: currentWeekStart, endDate: now)) ?? []
         let previousWeekSessions = (try? storageService.loadSessions(startDate: previousWeekStart, endDate: previousWeekEnd)) ?? []
 
@@ -608,8 +661,10 @@ class DashboardViewModel: ObservableObject {
     /// Calculate recent sessions improvement insight
     /// Analyzes last 3-5 sessions for HRV improvement trend
     func recentSessionsHRVImprovement() -> HRVInsight? {
-        // Get all sessions sorted by date (newest first)
-        let allSessions = (try? storageService.loadSessions(startDate: Date.distantPast, endDate: Date())) ?? []
+        // Get recent sessions sorted by date (newest first) - need full sessions with samples for HRV analysis
+        // Limit to last 30 days to avoid loading too much data
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date.distantPast
+        let allSessions = (try? storageService.loadSessions(startDate: thirtyDaysAgo, endDate: Date())) ?? []
         let sortedSessions = allSessions.sorted { $0.startDate > $1.startDate }
 
         // Filter to sessions with valid HRV data (at least 3 samples)

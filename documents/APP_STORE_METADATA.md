@@ -361,3 +361,7 @@ Before submitting to App Store Connect:
 
 _For screenshot requirements, see [APP_STORE_SCREENSHOTS.md](APP_STORE_SCREENSHOTS.md)._
 _For privacy policy, see [PRIVACY_POLICY.md](PRIVACY_POLICY.md)._
+
+---
+
+**Last Updated:** December 12, 2025

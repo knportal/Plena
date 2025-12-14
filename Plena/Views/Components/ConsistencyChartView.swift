@@ -77,3 +77,5 @@ struct ConsistencyChartView: View {
     )
     .padding()
 }
+
+

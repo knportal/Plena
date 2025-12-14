@@ -109,38 +109,24 @@ struct SleepStatusDetailView: View {
 
     private var calculationSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Sleep Details")
+            Text("Calculation Breakdown")
                 .font(.title2)
                 .fontWeight(.bold)
 
             VStack(spacing: 12) {
-                if let sleepHours = viewModel.currentSleepHours {
+                if let current = viewModel.currentSleepHours {
                     CalculationRow(
-                        label: "Total Sleep",
-                        value: String(format: "%.1f hours", sleepHours),
-                        description: "Last night's sleep duration"
+                        label: "Last Night",
+                        value: String(format: "%.1f hours", current),
+                        description: "Sleep duration for selected date"
                     )
                 }
 
-                if let bedtime = viewModel.lastNightBedtime {
-                    let formatter = DateFormatter()
-                    formatter.timeStyle = .short
-
+                if let average = viewModel.averageSleepHours {
                     CalculationRow(
-                        label: "Bedtime",
-                        value: formatter.string(from: bedtime),
-                        description: "Sleep start time"
-                    )
-                }
-
-                if let wakeTime = viewModel.lastNightWakeTime {
-                    let formatter = DateFormatter()
-                    formatter.timeStyle = .short
-
-                    CalculationRow(
-                        label: "Wake Time",
-                        value: formatter.string(from: wakeTime),
-                        description: "Sleep end time"
+                        label: "7-Day Average",
+                        value: String(format: "%.1f hours", average),
+                        description: "Average sleep over last week"
                     )
                 }
             }
@@ -161,49 +147,50 @@ struct SleepStatusDetailView: View {
                 .font(.title2)
                 .fontWeight(.bold)
 
-            Chart {
-                // Optimal range reference (7-9 hours)
-                RuleMark(yStart: .value("Optimal Start", 7.0), yEnd: .value("Optimal End", 9.0))
-                    .foregroundStyle(.green.opacity(0.2))
-                    .annotation(position: .top, alignment: .trailing) {
-                        Text("Optimal: 7-9h")
-                            .font(.caption2)
-                            .foregroundColor(.green)
-                            .padding(4)
-                            .background(Color(.systemBackground))
-                            .cornerRadius(4)
+            if viewModel.trendData.isEmpty {
+                Text("No trend data available")
+                    .foregroundColor(.secondary)
+                    .frame(height: 200)
+            } else {
+                Chart {
+                    // Optimal range reference (7-9 hours)
+                    RuleMark(yStart: .value("Optimal Start", 7.0), yEnd: .value("Optimal End", 9.0))
+                        .foregroundStyle(.green.opacity(0.2))
+                        .annotation(position: .top, alignment: .trailing) {
+                            Text("Optimal: 7-9h")
+                                .font(.caption2)
+                                .foregroundColor(.green)
+                                .padding(4)
+                                .background(Color(.systemBackground))
+                                .cornerRadius(4)
+                        }
+
+                    // Trend line
+                    ForEach(Array(viewModel.trendData.enumerated()), id: \.offset) { index, point in
+                        BarMark(
+                            x: .value("Day", point.date, unit: .day),
+                            y: .value("Hours", point.value)
+                        )
+                        .foregroundStyle(.blue)
+                        .cornerRadius(4)
                     }
-
-                // Trend line
-                ForEach(Array(viewModel.trendData.enumerated()), id: \.offset) { index, point in
-                    LineMark(
-                        x: .value("Day", point.date, unit: .day),
-                        y: .value("Hours", point.value)
-                    )
-                    .foregroundStyle(.blue)
-                    .lineStyle(StrokeStyle(lineWidth: 2.5))
-                    .interpolationMethod(.catmullRom)
-
-                    // Data points
-                    PointMark(
-                        x: .value("Day", point.date, unit: .day),
-                        y: .value("Hours", point.value)
-                    )
-                    .foregroundStyle(.blue)
-                    .symbolSize(60)
                 }
-            }
-            .frame(height: 220)
-            .chartYAxis {
-                AxisMarks(position: .leading) { value in
-                    AxisGridLine()
-                    AxisValueLabel(format: .number.precision(.fractionLength(1)).suffix("h"))
+                .frame(height: 220)
+                .chartYAxis {
+                    AxisMarks(position: .leading) { value in
+                        AxisGridLine()
+                        AxisValueLabel {
+                            if let doubleValue = value.as(Double.self) {
+                                Text(String(format: "%.1f", doubleValue))
+                            }
+                        }
+                    }
                 }
-            }
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .day)) { value in
-                    AxisGridLine()
-                    AxisValueLabel(format: .dateTime.weekday(.abbreviated))
+                .chartXAxis {
+                    AxisMarks(values: .stride(by: .day)) { value in
+                        AxisGridLine()
+                        AxisValueLabel(format: .dateTime.weekday(.abbreviated))
+                    }
                 }
             }
         }
@@ -223,14 +210,14 @@ struct SleepStatusDetailView: View {
                 .font(.title2)
                 .fontWeight(.bold)
 
-            Text("Sleep is fundamental to recovery and readiness. Quality sleep duration (7-9 hours for most adults) supports physical recovery, cognitive function, and overall readiness. Too little or too much sleep can negatively impact your readiness for meditation and daily activities.")
+            Text("Sleep is fundamental to recovery and readiness. Adequate sleep (7-9 hours) supports physical and mental recovery, while insufficient or excessive sleep can negatively impact your readiness for meditation and daily activities.")
                 .font(.body)
                 .foregroundColor(.secondary)
 
             VStack(alignment: .leading, spacing: 8) {
-                BulletPoint(text: "7-9 hours = optimal recovery and readiness")
-                BulletPoint(text: "Consistent sleep duration supports better outcomes")
-                BulletPoint(text: "Too little sleep may reduce recovery benefits")
+                BulletPoint(text: "7-9 hours = optimal recovery")
+                BulletPoint(text: "Consistent sleep supports better readiness")
+                BulletPoint(text: "Too little sleep impairs recovery")
                 BulletPoint(text: "Too much sleep may indicate underlying issues")
             }
             .padding(.top, 8)
@@ -255,7 +242,7 @@ struct SleepStatusDetailView: View {
                 ThresholdRow(
                     status: .optimal,
                     range: "7-9 hours",
-                    description: "Optimal recovery and readiness"
+                    description: "Ideal sleep duration for recovery"
                 )
 
                 ThresholdRow(
@@ -273,7 +260,7 @@ struct SleepStatusDetailView: View {
                 ThresholdRow(
                     status: .poor,
                     range: "<5 or >11 hours",
-                    description: "Consider improving sleep habits"
+                    description: "May indicate sleep issues"
                 )
             }
         }
@@ -291,7 +278,7 @@ struct SleepStatusDetailView: View {
         SleepStatusDetailView(
             contributor: ReadinessContributor(
                 name: "Sleep",
-                value: "8.5 hours",
+                value: "7.5 hours",
                 status: .optimal,
                 score: 1.0
             ),
@@ -300,4 +287,3 @@ struct SleepStatusDetailView: View {
         .environmentObject(TabCoordinator())
     }
 }
-

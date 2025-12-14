@@ -24,3 +24,5 @@ struct ZoneSummary: Identifiable {
         self.percentage = percentage
     }
 }
+
+

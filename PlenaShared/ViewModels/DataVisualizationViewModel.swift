@@ -95,8 +95,11 @@ class DataVisualizationViewModel: ObservableObject {
     }
 
     /// Recalculates baselines from all available sessions (not just current time range)
+    /// Uses limited session loading (last 30 days) to prevent excessive memory usage
     private func recalculateBaselines() async {
-        // Load more sessions for baseline calculation (last 30 days)
+        // Load sessions for baseline calculation (last 30 days)
+        // Note: This loads full sessions with samples which is needed for baseline calculation
+        // but is limited to 30 days to manage memory usage
         let calendar = Calendar.current
         let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: Date()) ?? Date()
 
@@ -376,6 +379,12 @@ class DataVisualizationViewModel: ObservableObject {
             timeRange: selectedTimeRange
         )
 
+        if selectedSensor == .vo2Max {
+            let totalSessions = filteredSessions.count
+            let sessionsWithVO2Max = filteredSessions.filter { !$0.vo2MaxSamples.isEmpty }
+            print("📊 VO2 Max periodScores calculation: \(totalSessions) total sessions, \(sessionsWithVO2Max.count) with VO2 Max data, \(grouped.count) periods")
+        }
+
         // Create period scores
         var scores: [PeriodScore] = []
         let calendar = Calendar.current
@@ -411,6 +420,10 @@ class DataVisualizationViewModel: ObservableObject {
                 zoneClassifier: zoneClassifier
             ) {
                 scores.append(score)
+            } else if selectedSensor == .vo2Max {
+                // Debug: Check why VO2 Max period score is nil
+                let sessionsWithVO2Max = periodSessions.filter { !$0.vo2MaxSamples.isEmpty }
+                print("⚠️ VO2 Max Period Score: \(label) - \(periodSessions.count) sessions, \(sessionsWithVO2Max.count) with VO2 Max data")
             }
         }
 
@@ -476,12 +489,14 @@ class DataVisualizationViewModel: ObservableObject {
         return stats
     }
 
-    /// Checks if metric is supported in enhanced visualization (Stage 2)
+    /// Checks if metric is supported in enhanced visualization
+    /// VO2 Max is supported for trend tracking and zone summaries
+    /// (uses latest value per session since it doesn't change during sessions)
     private func isSupportedMetric(_ metric: SensorType) -> Bool {
         switch metric {
-        case .hrv, .heartRate, .respiratoryRate:
+        case .hrv, .heartRate, .respiratoryRate, .vo2Max:
             return true
-        case .vo2Max, .temperature:
+        case .temperature:
             return false // Not yet supported
         }
     }

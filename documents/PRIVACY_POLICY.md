@@ -1,8 +1,8 @@
 # Plena Privacy Policy
 
-**Last Updated:** [Date]
+**Last Updated:** December 12, 2025
 
-**Effective Date:** [Date]
+**Effective Date:** December 12, 2025
 
 ---
 
@@ -399,7 +399,7 @@ We built Plena with privacy in mind. Your health data is yours, and we're just h
 
 ---
 
-**Last Updated:** [Date]
+**Last Updated:** December 12, 2025
 **Version:** 1.0
 
 _For support, see [USER_GUIDE.md](USER_GUIDE.md) or [TROUBLESHOOTING.md](TROUBLESHOOTING.md)._

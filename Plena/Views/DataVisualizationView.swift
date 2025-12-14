@@ -116,11 +116,13 @@ struct DataVisualizationView: View {
     }
 
     /// Checks if metric is supported in enhanced visualization
+    /// VO2 Max is supported for trend tracking and zone summaries
+    /// (uses latest value per session since it doesn't change during sessions)
     private func isSupportedMetric(_ metric: SensorType) -> Bool {
         switch metric {
-        case .hrv, .heartRate, .respiratoryRate:
+        case .hrv, .heartRate, .respiratoryRate, .vo2Max:
             return true
-        case .vo2Max, .temperature:
+        case .temperature:
             return false // Not yet supported
         }
     }
@@ -257,6 +259,11 @@ struct DataVisualizationView: View {
             return "Bar height shows % of time in calm zone. Higher = more time with calm, deep breathing."
         case (.respiratoryRate, .trend):
             return "Line shows breathing rate over time. Slower, steadier breathing indicates deeper calm."
+
+        case (.vo2Max, .consistency):
+            return "Bar shows VO2 Max zone for each period. Higher fitness (green) = better cardiovascular health."
+        case (.vo2Max, .trend):
+            return "Line shows VO2 Max over time. Higher values indicate improving cardiovascular fitness."
 
         default:
             return ""

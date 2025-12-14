@@ -89,13 +89,6 @@ struct GraphView: View {
                             .foregroundStyle(.blue.opacity(0.12))
                         }
 
-                        // Vertical grid lines aligned with x-axis labels
-                        ForEach(xAxisGridLineDates(), id: \.self) { date in
-                            RuleMark(x: .value("Grid", date))
-                                .foregroundStyle(.gray.opacity(0.3))
-                                .lineStyle(StrokeStyle(lineWidth: 0.75))
-                        }
-
                         // Range reference lines (boundaries)
                         RuleMark(y: .value("Above", sensorRange.above.lowerBound))
                             .foregroundStyle(.orange.opacity(0.4))
@@ -122,6 +115,14 @@ struct GraphView: View {
                             .foregroundStyle(.blue)
                             .lineStyle(StrokeStyle(lineWidth: 2.5))
                             .interpolationMethod(.catmullRom)
+                        }
+
+                        // Vertical grid lines aligned with x-axis labels
+                        // Drawn after data line to ensure they appear on top of zone shades
+                        ForEach(xAxisGridLineDates(), id: \.self) { date in
+                            RuleMark(x: .value("Grid", date))
+                                .foregroundStyle(.gray.opacity(0.3))
+                                .lineStyle(StrokeStyle(lineWidth: 0.75))
                         }
                     }
                     .frame(height: 220)

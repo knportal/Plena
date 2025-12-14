@@ -89,3 +89,5 @@ struct BaselineCalculationService: BaselineCalculationServiceProtocol {
         return min(restingHR, minHR)
     }
 }
+
+

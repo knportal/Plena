@@ -12,6 +12,7 @@ protocol ZoneClassifierProtocol {
     func classifyHeartRate(_ bpm: Double, baseline: Double?) -> StressZone
     func classifyHRV(_ sdnn: Double, age: Int?, baseline: Double?) -> StressZone
     func classifyRespiratoryRate(_ breathsPerMin: Double) -> StressZone
+    func classifyVO2Max(_ vo2Max: Double) -> StressZone
 }
 
 /// Service for classifying biometric readings into stress zones
@@ -102,6 +103,25 @@ struct ZoneClassifier: ZoneClassifierProtocol {
         if breathsPerMin > 16 {
             return .elevatedStress
         } else if breathsPerMin >= 12 {
+            return .optimal
+        } else {
+            return .calm
+        }
+    }
+
+    // MARK: - VO2 Max Classification
+
+    /// Classifies VO2 Max into stress zones
+    /// - Parameter vo2Max: VO2 Max value in mL/kg/min
+    /// - Returns: Classified stress zone
+    /// Note: Higher VO2 Max indicates better cardiovascular fitness, which correlates with better recovery
+    /// - < 35: Poor fitness (Elevated Stress)
+    /// - 35-55: Average to good fitness (Optimal)
+    /// - > 55: Excellent fitness (Calm)
+    func classifyVO2Max(_ vo2Max: Double) -> StressZone {
+        if vo2Max < 35 {
+            return .elevatedStress
+        } else if vo2Max <= 55 {
             return .optimal
         } else {
             return .calm

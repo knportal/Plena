@@ -199,6 +199,20 @@ struct ReadinessView: View {
                 storageService: viewModel.storageService,
                 healthKitService: viewModel.healthKitService
             )
+        case "Sleep balance":
+            SleepBalanceDetailView(
+                contributor: contributor,
+                date: viewModel.selectedDate,
+                storageService: viewModel.storageService,
+                healthKitService: viewModel.healthKitService
+            )
+        case "Sleep regularity":
+            SleepRegularityDetailView(
+                contributor: contributor,
+                date: viewModel.selectedDate,
+                storageService: viewModel.storageService,
+                healthKitService: viewModel.healthKitService
+            )
         default:
             // Placeholder for other contributors - will implement later
             VStack {

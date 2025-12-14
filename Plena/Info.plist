@@ -49,10 +49,12 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Plena needs access to your health data to track meditation metrics including heart rate, HRV, and respiratory rate.</string>
+	<string>Plena needs access to your health data to track session metrics including heart rate, HRV, and respiratory rate.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Plena needs permission to save meditation session data to HealthKit.</string>
+	<string>Plena needs permission to save session data to HealthKit.</string>
 </dict>
 </plist>
+
+
 
 

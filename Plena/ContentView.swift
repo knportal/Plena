@@ -30,7 +30,7 @@ struct ContentView: View {
                 }
             }
             .tabItem {
-                Label("Meditate", systemImage: "leaf.fill")
+                Label("Session", systemImage: "leaf.fill")
             }
             .tag(0)
 
@@ -57,21 +57,12 @@ struct ContentView: View {
                 }
                 .tag(3)
 
-            // Test Data Tab (Development/Debug only)
-            #if DEBUG
-            TestDataView()
-                .tabItem {
-                    Label("Test Data", systemImage: "wrench.and.screwdriver")
-                }
-                .tag(4)
-            #endif
-
             // Settings Tab
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
-                .tag(5)
+                .tag(4)
         }
     }
 }

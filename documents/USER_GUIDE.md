@@ -538,3 +538,9 @@ For technical support, see the [App Overview](APP_OVERVIEW.md) for contact infor
 ---
 
 _Happy meditating! 🧘‍♀️✨_
+
+---
+
+**Last Updated:** December 12, 2025
+
+

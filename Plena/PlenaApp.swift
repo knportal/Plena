@@ -13,10 +13,35 @@ struct PlenaApp: App {
     @AppStorage("hasAcceptedDisclaimer") private var hasAcceptedDisclaimer = false
 
     init() {
+        // Set up WatchConnectivity to receive sessions from Watch
+        setupWatchConnectivity()
+
         // Perform one-time migration from JSON on first launch
         Task { @MainActor in
             await Self.performMigrationIfNeeded()
         }
+    }
+
+    private func setupWatchConnectivity() {
+        #if os(iOS)
+        let watchConnectivity = WatchConnectivityService.shared
+        let storageService = CoreDataStorageService()
+
+        // Handle sessions received from Watch
+        watchConnectivity.onSessionReceived { session in
+            Task {
+                do {
+                    try storageService.saveSession(session)
+                    print("✅ Saved session \(session.id) received from Watch")
+
+                    // Post notification to refresh dashboard
+                    NotificationCenter.default.post(name: .NSPersistentStoreRemoteChange, object: nil)
+                } catch {
+                    print("❌ Error saving session from Watch: \(error)")
+                }
+            }
+        }
+        #endif
     }
 
     var body: some Scene {

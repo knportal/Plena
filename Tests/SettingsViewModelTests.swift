@@ -189,3 +189,5 @@ final class SettingsViewModelTests: XCTestCase {
         XCTAssertEqual(celsiusResult, 37.0, accuracy: 0.1, "Should return same value for Celsius")
     }
 }
+
+

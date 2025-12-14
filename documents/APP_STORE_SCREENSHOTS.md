@@ -417,3 +417,9 @@ Before submitting screenshots, verify:
 ---
 
 _For App Store metadata, see [APP_STORE_METADATA.md](APP_STORE_METADATA.md)._
+
+---
+
+**Last Updated:** December 12, 2025
+
+

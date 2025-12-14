@@ -12,11 +12,19 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
 
     // Shared instance for access from views
     static var shared: ExtensionDelegate? {
-        guard let delegate = WKExtension.shared().delegate as? ExtensionDelegate else {
-            print("Warning: ExtensionDelegate not available yet")
-            return nil
+        // Try to get from WKExtension delegate first
+        if let delegate = WKExtension.shared().delegate as? ExtensionDelegate {
+            return delegate
         }
-        return delegate
+        // Fallback to singleton if delegate isn't set
+        return _sharedInstance
+    }
+
+    // Singleton fallback instance
+    private static let _sharedInstance = ExtensionDelegate()
+
+    override init() {
+        super.init()
     }
 
     // Track if a session is active
@@ -111,3 +119,5 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
         }
     }
 }
+
+

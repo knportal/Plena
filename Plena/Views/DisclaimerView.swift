@@ -144,3 +144,5 @@ struct DisclaimerSection: View {
 #Preview {
     DisclaimerView(hasAcceptedDisclaimer: .constant(false))
 }
+
+
