@@ -104,3 +104,10 @@ Use Settings → Privacy → "Refresh Status" button, or check console output:
 ---
 
 For detailed testing, see `HEALTHKIT_PERMISSIONS_TESTING.md`
+
+
+
+
+
+
+

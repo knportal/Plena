@@ -1,6 +1,6 @@
 # Apple Watch Model Compatibility & Sensor Capabilities
 
-This document outlines which Plena features are available on different Apple Watch models. Understanding your watch's capabilities helps you know what data you can collect and display during meditation sessions.
+This document outlines which Plena features are available on different Apple Watch models. Understanding your watch's capabilities helps you know what data you can collect and display during mindfulness sessions.
 
 ---
 
@@ -31,7 +31,7 @@ This document outlines which Plena features are available on different Apple Wat
 **What it measures:**
 
 - Beats per minute (BPM)
-- Real-time heart rate during meditation
+- Real-time heart rate during mindfulness sessions
 - Resting heart rate trends
 
 **How it works:**
@@ -42,7 +42,7 @@ This document outlines which Plena features are available on different Apple Wat
 
 **Plena Usage:**
 
-- Displays real-time BPM during meditation sessions
+- Displays real-time BPM during mindfulness sessions
 - Tracks average heart rate per session
 - Shows heart rate zones (Calm, Optimal, Elevated Stress)
 
@@ -69,7 +69,7 @@ This document outlines which Plena features are available on different Apple Wat
 - Displays HRV in milliseconds (ms)
 - Shows HRV zones (Elevated Stress, Optimal, Calm)
 - Tracks HRV trends over time
-- Provides insights about meditation effectiveness
+- Provides insights about mindfulness effectiveness
 
 **Why Series 4+?**
 
@@ -77,7 +77,7 @@ This document outlines which Plena features are available on different Apple Wat
 - More accurate R-R interval detection required for HRV calculation
 - Earlier models don't have sufficient sensor precision
 
-**Note:** HRV readings require at least 3 samples per session. Longer meditation sessions (10+ minutes) provide more reliable HRV data.
+**Note:** HRV readings require at least 3 samples per session. Longer mindfulness sessions (10+ minutes) provide more reliable HRV data.
 
 ---
 
@@ -88,7 +88,7 @@ This document outlines which Plena features are available on different Apple Wat
 **What it measures:**
 
 - Number of breaths per minute
-- Breathing patterns during meditation
+- Breathing patterns during mindfulness sessions
 - Changes in breathing rate as you relax
 
 **How it works:**
@@ -100,7 +100,7 @@ This document outlines which Plena features are available on different Apple Wat
 **Plena Usage:**
 
 - Displays breathing rate in breaths per minute (/min)
-- Tracks respiratory rate during meditation
+- Tracks respiratory rate during mindfulness sessions
 - Shows how breathing slows as you relax
 
 **Why Series 6+?**
@@ -127,7 +127,7 @@ This document outlines which Plena features are available on different Apple Wat
 
 - Calculated from heart rate data during outdoor walks/runs
 - Uses algorithms based on age, gender, and activity level
-- Not measured in real-time during meditation
+- Not measured in real-time during mindfulness sessions
 
 **Plena Usage:**
 
@@ -141,7 +141,7 @@ This document outlines which Plena features are available on different Apple Wat
 - **Series 6+:** Improved accuracy with better sensors
 - **Series 8+:** Most accurate with enhanced heart rate sensors
 
-**Note:** VO₂ Max is typically measured during workouts, not meditation. Plena displays your most recent VO₂ Max reading from HealthKit.
+**Note:** VO₂ Max is typically measured during workouts, not mindfulness. Plena displays your most recent VO₂ Max reading from HealthKit.
 
 ---
 
@@ -153,7 +153,7 @@ This document outlines which Plena features are available on different Apple Wat
 
 - Wrist temperature (Series 8/Ultra)
 - Body temperature trends
-- Temperature changes during meditation
+- Temperature changes during mindfulness sessions
 
 **How it works:**
 
@@ -164,7 +164,7 @@ This document outlines which Plena features are available on different Apple Wat
 **Plena Usage:**
 
 - Displays temperature in Celsius or Fahrenheit
-- Shows temperature changes during meditation
+- Shows temperature changes during mindfulness sessions
 - Tracks temperature trends over sessions
 
 **Model Differences:**
@@ -175,7 +175,7 @@ This document outlines which Plena features are available on different Apple Wat
 - **Series 4-5:** No temperature sensor
 - **Series 1-3:** No temperature sensor
 
-**Note:** Temperature readings are most accurate when taken during sleep. During meditation, temperature changes may be subtle.
+**Note:** Temperature readings are most accurate when taken during sleep. during mindfulness sessions, temperature changes may be subtle.
 
 ---
 
@@ -190,14 +190,14 @@ This document outlines which Plena features are available on different Apple Wat
 
 **Recommendations:**
 
-- Focus on heart rate tracking during meditation
+- Focus on heart rate tracking during mindfulness sessions
 - Heart rate zones will still provide valuable feedback
 - Consider upgrading to Series 4+ for HRV tracking
 
 **What You'll See in Plena:**
 
 - Heart rate readings and zones
-- Basic meditation session tracking
+- Basic mindfulness session tracking
 - Limited insights (no HRV, respiratory rate, or temperature)
 
 ---
@@ -212,7 +212,7 @@ This document outlines which Plena features are available on different Apple Wat
 
 **Recommendations:**
 
-- Excellent for meditation tracking with HRV
+- Excellent for mindfulness tracking with HRV
 - HRV provides deeper insights into stress response
 - Respiratory rate not available (requires Series 6+)
 
@@ -237,7 +237,7 @@ This document outlines which Plena features are available on different Apple Wat
 
 **Recommendations:**
 
-- Comprehensive meditation tracking
+- Comprehensive mindfulness tracking
 - All core sensors available (except temperature)
 - Best balance of features and affordability
 
@@ -245,7 +245,7 @@ This document outlines which Plena features are available on different Apple Wat
 
 - Heart rate, HRV, and respiratory rate tracking
 - Complete stress zone analysis
-- Comprehensive meditation insights
+- Comprehensive mindfulness insights
 - No temperature data
 
 ---
@@ -262,7 +262,7 @@ This document outlines which Plena features are available on different Apple Wat
 
 **Recommendations:**
 
-- Full sensor suite for complete meditation tracking
+- Full sensor suite for complete mindfulness tracking
 - Temperature adds another dimension to stress tracking
 - Best overall experience
 
@@ -270,7 +270,7 @@ This document outlines which Plena features are available on different Apple Wat
 
 - All sensors available
 - Complete biometric tracking
-- Temperature trends during meditation
+- Temperature trends during mindfulness sessions
 - Most comprehensive insights
 
 ---
@@ -290,7 +290,7 @@ This document outlines which Plena features are available on different Apple Wat
 - Latest sensor technology
 - Most accurate readings
 - Enhanced temperature sensing
-- Best possible meditation tracking experience
+- Best possible mindfulness tracking experience
 
 **What You'll See in Plena:**
 
@@ -317,7 +317,7 @@ If you see "Sensor Unavailable" in Plena, it could mean:
 3. **Insufficient Data:**
 
    - Some sensors (like HRV) need multiple samples
-   - Try a longer meditation session (10+ minutes)
+   - Try a longer mindfulness session (10+ minutes)
 
 4. **Watch Not Worn Properly:**
 
@@ -354,14 +354,14 @@ If you see "Sensor Unavailable" in Plena, it could mean:
 
 ### For HRV Tracking (Series 4+):
 
-- Meditate for at least 10 minutes
+- Practice mindfulness for at least 10 minutes
 - Keep your arm relatively still
 - Allow time for multiple HRV samples
 - HRV readings appear less frequently than heart rate
 
 ### For Respiratory Rate (Series 6+):
 
-- Stay still during meditation
+- Stay still during mindfulness sessions
 - Allow natural breathing (don't force it)
 - Respiratory rate may take longer to appear
 - Works best when you're relaxed and breathing naturally
@@ -369,7 +369,7 @@ If you see "Sensor Unavailable" in Plena, it could mean:
 ### For Temperature (Series 8+):
 
 - Most accurate readings occur during sleep
-- During meditation, changes may be subtle
+- during mindfulness sessions, changes may be subtle
 - Temperature trends are more meaningful than single readings
 - Ensure watch is in contact with your wrist
 
@@ -409,7 +409,7 @@ If you're considering upgrading your Apple Watch for better Plena features:
 
 **Best Value:**
 
-- **Series 6 or 7** - All core meditation sensors
+- **Series 6 or 7** - All core mindfulness sensors
 - **Series 8/Ultra** - Complete sensor suite including temperature
 
 **Latest Technology:**
@@ -429,7 +429,7 @@ A: Yes. Newer watches support more sensors, which means more data and insights i
 **Q: Can I see which sensors my watch supports in the app?**
 A: Currently, Plena will show "Sensor Unavailable" if your watch doesn't support a sensor. We're working on adding model detection to show available sensors.
 
-**Q: Do I need the latest watch for basic meditation tracking?**
+**Q: Do I need the latest watch for basic mindfulness tracking?**
 A: No! Heart rate tracking works on all Apple Watch models. HRV requires Series 4+, and respiratory rate requires Series 6+.
 
 **Q: Will Plena work if I don't have an Apple Watch?**
@@ -454,7 +454,7 @@ Understanding your Apple Watch model's capabilities helps you:
 - **Temperature:** Requires Series 8/Ultra+
 - **VO₂ Max:** Available on Series 3+ (accuracy varies)
 
-For the best Plena experience, we recommend Apple Watch Series 6 or later for comprehensive meditation tracking.
+For the best Plena experience, we recommend Apple Watch Series 6 or later for comprehensive mindfulness tracking.
 
 ---
 

@@ -7,17 +7,27 @@
 
 import SwiftUI
 import Charts
+import Combine
 
 struct DashboardView: View {
     @StateObject private var viewModel: DashboardViewModel
+
+    @State private var showPaywall = false
+    private let subscriptionService: SubscriptionService
 
     init(
         storageService: SessionStorageServiceProtocol = CoreDataStorageService(),
         healthKitService: HealthKitServiceProtocol? = nil
     ) {
+        // Initialize subscription services
+        let subscriptionService = SubscriptionService()
+        let featureGateService = FeatureGateService(subscriptionService: subscriptionService)
+
+        self.subscriptionService = subscriptionService
         _viewModel = StateObject(wrappedValue: DashboardViewModel(
             storageService: storageService,
-            healthKitService: healthKitService
+            healthKitService: healthKitService,
+            featureGateService: featureGateService
         ))
     }
 
@@ -27,17 +37,43 @@ struct DashboardView: View {
                 VStack(spacing: 24) {
                     // Time Range Selector
                     Picker("Time Range", selection: $viewModel.selectedTimeRange) {
-                        ForEach(TimeRange.allCases, id: \.self) { range in
+                        ForEach(viewModel.availableTimeRanges, id: \.self) { range in
                             Text(range.rawValue).tag(range)
                         }
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
-                    .onChange(of: viewModel.selectedTimeRange) {
-                        Task {
-                            await viewModel.reloadForTimeRange()
+            .onChange(of: viewModel.selectedTimeRange) {
+                Task {
+                    // Refresh subscription status first to ensure it's up to date
+                    await subscriptionService.checkSubscriptionStatus()
+
+                    // Check access after refresh
+                    let status = subscriptionService.currentSubscriptionStatus()
+                    let isPremium = status.isPremium
+
+                    // Don't show paywall if user already has premium
+                    if isPremium {
+                        // User has premium - just reload
+                        await viewModel.reloadForTimeRange()
+                        // Ensure paywall is dismissed if it was showing
+                        if showPaywall {
+                            showPaywall = false
+                        }
+                    } else if (viewModel.selectedTimeRange == .month || viewModel.selectedTimeRange == .year) {
+                        // Trying to select premium range without access - show paywall and reset
+                        showPaywall = true
+                        // Reset to week to prevent getting stuck
+                        viewModel.selectedTimeRange = .week
+                    } else {
+                        // Selecting free tier - reload
+                        await viewModel.reloadForTimeRange()
+                        if viewModel.showPaywall {
+                            showPaywall = true
                         }
                     }
+                }
+            }
 
                     if viewModel.isLoading {
                         ProgressView("Loading statistics...")
@@ -76,14 +112,16 @@ struct DashboardView: View {
                                 icon: "clock"
                             )
 
-                            // Current Streak Card
-                            StatCard(
-                                value: "\(viewModel.currentStreak) days",
-                                label: "Streak",
-                                subtitle: viewModel.currentStreak > 0 ? "Keep it up! 🔥" : "Start your streak",
-                                icon: "flame.fill",
-                                trend: viewModel.currentStreak > 0 ? .improving : nil
-                            )
+                            // Current Streak Card (hidden in day view - not relevant for single day)
+                            if viewModel.selectedTimeRange != .day {
+                                StatCard(
+                                    value: "\(viewModel.currentStreak) days",
+                                    label: "Streak",
+                                    subtitle: viewModel.currentStreak > 0 ? "Keep it up! 🔥" : "Start your streak",
+                                    icon: "flame.fill",
+                                    trend: viewModel.currentStreak > 0 ? .improving : nil
+                                )
+                            }
 
                             // Average Duration Card
                             StatCard(
@@ -125,8 +163,8 @@ struct DashboardView: View {
                                 .padding(.horizontal)
                             }
 
-                            // Duration Trend Chart
-                            if !viewModel.durationTrendDataPoints().isEmpty {
+                            // Duration Trend Chart (hidden in day view - hourly averages not meaningful for single day)
+                            if viewModel.selectedTimeRange != .day && !viewModel.durationTrendDataPoints().isEmpty {
                                 DurationTrendChart(
                                     dataPoints: viewModel.durationTrendDataPoints(),
                                     timeRange: viewModel.selectedTimeRange
@@ -149,11 +187,63 @@ struct DashboardView: View {
             }
             .navigationTitle("Dashboard")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showPaywall) {
+                SubscriptionPaywallView(
+                    feature: .extendedTimeRanges,
+                    isPresented: $showPaywall
+                )
+            }
+            .onReceive(
+                subscriptionService.subscriptionStatus
+                    .map { $0.isPremium }
+                    .removeDuplicates()
+                    .eraseToAnyPublisher()
+            ) { isPremium in
+                // Auto-dismiss paywall if user gains premium access
+                if isPremium && showPaywall {
+                    showPaywall = false
+                }
+            }
+            .onChange(of: viewModel.showPaywall) { oldValue, newValue in
+                if newValue {
+                    showPaywall = true
+                    viewModel.showPaywall = false
+                }
+            }
+            .onChange(of: showPaywall) { oldValue, newValue in
+                // When paywall is dismissed, check if user now has access
+                if oldValue == true && newValue == false {
+                    Task {
+                        await subscriptionService.checkSubscriptionStatus()
+
+                        // Get current subscription status
+                        let status = subscriptionService.currentSubscriptionStatus()
+
+                        if status.isPremium {
+                            // User purchased - reload with current time range
+                            await viewModel.reloadForTimeRange()
+                        } else {
+                            // User didn't purchase - reset to free tier to prevent infinite loop
+                            if viewModel.selectedTimeRange == .month || viewModel.selectedTimeRange == .year {
+                                viewModel.selectedTimeRange = .week
+                            }
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                // Refresh subscription status when view appears
+                Task {
+                    await subscriptionService.checkSubscriptionStatus()
+                }
+            }
             .refreshable {
                 // Pull-to-refresh support
+                await subscriptionService.checkSubscriptionStatus()
                 await viewModel.loadSessions()
             }
             .task {
+                await subscriptionService.checkSubscriptionStatus()
                 await viewModel.loadSessions()
             }
             #if os(iOS)

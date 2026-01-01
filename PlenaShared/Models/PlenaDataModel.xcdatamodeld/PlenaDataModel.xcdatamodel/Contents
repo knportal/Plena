@@ -13,15 +13,20 @@
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MeditationSessionEntity" inverseName="hrvSamples" inverseEntity="MeditationSessionEntity"/>
     </entity>
     <entity name="MeditationSessionEntity" representedClassName="MeditationSessionEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="deviceType" optional="YES" attributeType="String"/>
+        <attribute name="durationSeconds" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hrvDataAvailable" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="hrvSampleCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="startDate" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="watchModel" optional="YES" attributeType="String"/>
         <relationship name="heartRateSamples" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="HeartRateSampleEntity" inverseName="session" inverseEntity="HeartRateSampleEntity"/>
         <relationship name="hrvSamples" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="HRVSampleEntity" inverseName="session" inverseEntity="HRVSampleEntity"/>
         <relationship name="respiratoryRateSamples" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RespiratoryRateSampleEntity" inverseName="session" inverseEntity="RespiratoryRateSampleEntity"/>
-        <relationship name="vo2MaxSamples" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VO2MaxSampleEntity" inverseName="session" inverseEntity="VO2MaxSampleEntity"/>
-        <relationship name="temperatureSamples" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TemperatureSampleEntity" inverseName="session" inverseEntity="TemperatureSampleEntity"/>
         <relationship name="stateOfMindLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="StateOfMindLogEntity" inverseName="session" inverseEntity="StateOfMindLogEntity"/>
+        <relationship name="temperatureSamples" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TemperatureSampleEntity" inverseName="session" inverseEntity="TemperatureSampleEntity"/>
+        <relationship name="vo2MaxSamples" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VO2MaxSampleEntity" inverseName="session" inverseEntity="VO2MaxSampleEntity"/>
     </entity>
     <entity name="RespiratoryRateSampleEntity" representedClassName="RespiratoryRateSampleEntity" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>

@@ -1,6 +1,6 @@
 # App Store Metadata
 
-All metadata required for App Store Connect submission for Plena meditation tracking app.
+All metadata required for App Store Connect submission for Plena mindfulness tracking app.
 
 ---
 
@@ -12,12 +12,12 @@ All metadata required for App Store Connect submission for Plena meditation trac
 
 ### Subtitle (30 characters max)
 
-**"Meditation meets biometrics"** (29 characters)
+**"mindfulness meets biometrics"** (29 characters)
 
 Alternative options:
 
 - "Track your inner calm" (22)
-- "Meditation with heart data" (27)
+- "mindfulness with heart data" (27)
 - "Mind, breath, body tracking" (27)
 
 ### Category Selection
@@ -38,23 +38,122 @@ Lifestyle
 ## Description (Short) - 170 characters max
 
 **Version 1 (170 characters):**
-"Track your meditation with real-time heart rate, HRV, and breathing data. Understand your body's response to meditation with stress zone indicators and detailed analytics. iPhone + Apple Watch."
+"Track your mindfulness with real-time heart rate, HRV, and breathing data. Understand your body's response to mindfulness with stress zone indicators and detailed analytics. iPhone + Apple Watch."
 
 **Version 2 (169 characters):**
-"Meditation tracking with real-time biometrics. Monitor heart rate, HRV, and breath during sessions. See your stress zones, track progress, and build consistency. Works with Apple Watch."
+"mindfulness tracking with real-time biometrics. Monitor heart rate, HRV, and breath during sessions. See your stress zones, track progress, and build consistency. Works with Apple Watch."
 
 **Version 3 (165 characters):**
-"Real-time meditation tracking with heart rate, HRV, and breathing data. Stress zone classification, progress insights, and Apple Watch integration. Transform meditation into data."
+"Real-time mindfulness tracking with heart rate, HRV, and breathing data. Stress zone classification, progress insights, and Apple Watch integration. Transform mindfulness into data."
 
 ---
 
 ## Description (Full) - 4000 characters max
 
-### Recommended Full Description:
+### Copy-Paste Ready Description (App Store Compatible - No Emojis):
 
-**Plena: Meditation Tracking with Real-Time Biometrics**
+```
+Plena: mindfulness tracking with Real-Time Biometrics
 
-Transform your meditation practice with real-time biometric data. Plena tracks your heart rate, heart rate variability (HRV), respiratory rate, and more during meditation sessions, giving you objective insights into how meditation affects your body and mind.
+Transform your mindfulness practice with real-time biometric data. Plena tracks your heart rate, heart rate variability (HRV), respiratory rate, and more during mindfulness sessions, giving you objective insights into how mindfulness affects your body and mind.
+
+The Triangle: Mind, Breath, Body
+
+The triangle in our icon represents the three core rhythms of human calm:
+
+- Heart Rate reflects moment-to-moment activity
+- HRV shows adaptability and stress balance
+- Breath regulates the entire system
+
+When these three systems work in harmony, they create balance - stable, coherent, and calm. That's exactly what Plena measures in real time.
+
+Real-Time Stress Zone Classification
+
+See instant feedback during your sessions with color-coded stress zones:
+
+- Calm Zone - Relaxed, low-stress state
+- Optimal Zone - Balanced, functioning well
+- Elevated Stress Zone - Higher stress response
+
+These zones help you understand your current state and track improvements over time.
+
+Key Features:
+
+Comprehensive Tracking
+
+- Heart Rate (BPM) monitoring
+- Heart Rate Variability (HRV/SDNN) measurement
+- Respiratory Rate tracking
+- Body Temperature monitoring
+- VO2 Max tracking
+
+Progress Dashboard
+
+- Session statistics and trends
+- Streak tracking to build consistency
+- HRV insights and pattern recognition
+- Visual charts showing your mindfulness journey
+
+Apple Watch Integration
+
+- Start sessions directly from your Watch
+- Real-time sensor readings on your wrist with live sync to iPhone
+- Zone indicators for instant feedback
+- Independent operation from iPhone
+- Seamless data streaming between devices
+
+Data Visualization
+
+- Interactive graphs for all sensors
+- Day, Week, Month, and Year views
+- Historical trend analysis
+- Range indicators for context
+
+Session Management
+
+- Automatic session saving
+- Detailed post-session summaries
+- State of mind logging
+- Historical data import from HealthKit
+
+Readiness Score
+
+Get a holistic view of recovery with a daily score (0-100) combining Resting Heart Rate, HRV Balance, Body Temperature, Recovery Index, and Sleep metrics. View detailed breakdowns and compare today to yesterday to track recovery trends.
+
+Why Plena?
+
+Move beyond subjective feelings and gain objective insights. Plena combines mindfulness with biometric tracking to help you:
+
+- Understand how mindfulness affects your body
+- Track progress with real data
+- Identify patterns and optimal practice times
+- Build consistent mindfulness habits
+- See the interconnected balance of mind, body, and breath
+
+Privacy & Security
+
+Your health data is stored locally on your device and never shared with third parties. Plena uses Apple's secure HealthKit framework for all health data, ensuring your information stays private and protected.
+
+Requirements
+
+- iOS 17.0 or later
+- Apple Watch Series 4 or later (optional but recommended)
+- HealthKit permissions (required for tracking)
+
+Start Your Journey
+
+Download Plena and discover the data behind your mindfulness practice. See how your body responds, track your progress, and develop a deeper understanding of the mind-body connection.
+
+Important Medical Disclaimer
+
+Plena is not a medical device and does not provide medical advice, diagnosis, or treatment. The information provided by Plena, including biometric readings, stress zone classifications, and data visualizations, is for wellness and self-improvement purposes only. Do not use Plena data to diagnose, treat, or prevent any disease. Consult healthcare professionals for medical advice. Plena data is not a substitute for professional medical care. Sensor readings may vary and are estimates, not clinical measurements.
+```
+
+### Recommended Full Description (with markdown formatting):
+
+**Plena: mindfulness tracking with Real-Time Biometrics**
+
+Transform your mindfulness practice with real-time biometric data. Plena tracks your heart rate, heart rate variability (HRV), respiratory rate, and more during mindfulness sessions, giving you objective insights into how mindfulness affects your body and mind.
 
 **🔺 The Triangle: Mind, Breath, Body**
 
@@ -91,7 +190,7 @@ These zones help you understand your current state and track improvements over t
 - Session statistics and trends
 - Streak tracking to build consistency
 - HRV insights and pattern recognition
-- Visual charts showing your meditation journey
+- Visual charts showing your mindfulness journey
 
 📱 **Apple Watch Integration**
 
@@ -114,14 +213,18 @@ These zones help you understand your current state and track improvements over t
 - State of mind logging
 - Historical data import from HealthKit
 
+⭐ **Readiness Score**
+
+Get a holistic view of recovery with a daily score (0-100) combining Resting Heart Rate, HRV Balance, Body Temperature, Recovery Index, and Sleep metrics. View detailed breakdowns and compare today to yesterday to track recovery trends.
+
 **Why Plena?**
 
-Move beyond subjective feelings and gain objective insights. Plena combines meditation with biometric tracking to help you:
+Move beyond subjective feelings and gain objective insights. Plena combines mindfulness with biometric tracking to help you:
 
-- Understand how meditation affects your body
+- Understand how mindfulness affects your body
 - Track progress with real data
 - Identify patterns and optimal practice times
-- Build consistent meditation habits
+- Build consistent mindfulness habits
 - See the interconnected balance of mind, body, and breath
 
 **Privacy & Security**
@@ -136,7 +239,7 @@ Your health data is stored locally on your device and never shared with third pa
 
 **Start Your Journey**
 
-Download Plena and discover the data behind your meditation practice. See how your body responds, track your progress, and develop a deeper understanding of the mind-body connection.
+Download Plena and discover the data behind your mindfulness practice. See how your body responds, track your progress, and develop a deeper understanding of the mind-body connection.
 
 **Important Medical Disclaimer**
 
@@ -146,34 +249,64 @@ Plena is not a medical device and does not provide medical advice, diagnosis, or
 
 ## Keywords (100 characters max)
 
-**Recommended Keywords (99 characters):**
-"meditation,mindfulness,HRV,heart rate,breathing,biofeedback,stress,calm,wellness,Apple Watch"
+### Copy-Paste Ready Keywords:
 
-**Alternative Set 1 (98 characters):**
-"meditation,HRV,heart rate variability,breathwork,stress tracking,calm,biofeedback,wellness,fitness"
+**Recommended (81 characters):**
 
-**Alternative Set 2 (96 characters):**
-"meditation,mindfulness,HRV,heart rate,breathing,stress relief,calm,biofeedback,wellness,health"
+```
+mindfulness,HRV,heart rate,breathing,biofeedback,stress,calm,wellness,Apple Watch
+```
+
+**Alternative Set 1 (91 characters):**
+
+```
+mindfulness,HRV,heart rate variability,breathwork,stress tracking,calm,biofeedback,wellness
+```
+
+**Alternative Set 2 (83 characters):**
+
+```
+mindfulness,HRV,heart rate,breathing,stress relief,calm,biofeedback,wellness,health
+```
+
+**Alternative Set 3 (89 characters):**
+
+```
+mindfulness,HRV,heart rate,breathing,biofeedback,stress,calm,wellness,meditation,recovery
+```
 
 **Keyword Strategy:**
 
-- Include primary features: meditation, HRV, heart rate
-- Add related terms: mindfulness, breathing, stress
-- Include platform: Apple Watch
-- Health/wellness terms: biofeedback, wellness, calm
+- Include primary features: mindfulness, HRV, heart rate
+- Add related terms: breathing, stress, calm
+- Include platform: Apple Watch (if space allows)
+- Health/wellness terms: biofeedback, wellness, meditation, recovery
+- Remove duplicates to maximize keyword variety
 
 ---
 
 ## Promotional Text (170 characters max)
 
-**Version 1 (169 characters):**
-"New in v1.0: Stress zone classification with real-time feedback, enhanced HRV insights, and improved Apple Watch experience. Track your meditation journey with data-driven insights."
+**Recommended - Version 1 (169 characters):**
+"See your stress in real time. Track heart rate, HRV, and breathing during mindfulness sessions. Color-coded stress zones show your body's response instantly. iPhone + Apple Watch."
 
 **Version 2 (168 characters):**
-"Transform meditation with real-time biometrics. Track heart rate, HRV, and breathing. See stress zones, progress trends, and build consistency. iPhone + Apple Watch integration."
+"Transform mindfulness with real-time biometrics. Track heart rate, HRV, and breathing. See stress zones, progress trends, and build consistency. iPhone + Apple Watch integration."
 
-**Version 3 (150 characters):**
-"See how meditation affects your body. Real-time heart rate, HRV, and breathing tracking with stress zone indicators and progress analytics. Start your journey today."
+**Version 3 (165 characters):**
+"Mindfulness meets data. Real-time heart rate, HRV, and breathing tracking with instant stress zone feedback. See how your practice affects your body. Works with Apple Watch."
+
+**Version 4 (162 characters):**
+"Track the mind-body connection. Real-time heart rate, HRV, and breathing data during mindfulness. See stress zones change as you practice. Progress insights included."
+
+**Version 5 (159 characters):**
+"Know your calm. Real-time biometric tracking during mindfulness sessions. Heart rate, HRV, breathing, and stress zones show your body's response. Apple Watch ready."
+
+**Version 6 (170 characters):**
+"New in v1.0: Stress zone classification with real-time feedback, enhanced HRV insights, and improved Apple Watch experience. Track your mindfulness journey with data-driven insights."
+
+**Version 7 (150 characters):**
+"See how mindfulness affects your body. Real-time heart rate, HRV, and breathing tracking with stress zone indicators and progress analytics. Start your journey today."
 
 ---
 
@@ -183,11 +316,13 @@ Plena is not a medical device and does not provide medical advice, diagnosis, or
 
 [Add your marketing website URL here if available]
 
-Example format: `https://www.plena.app` or `https://plena-meditation.com`
+Example format: `https://www.plena.app` or `https://plena-mindfulness.com`
 
 ### Support URL (Required)
 
-[Add your support URL here]
+**https://plenitudo.ai/app/plena/support**
+
+This URL is live and accessible on the plenitudo.ai website.
 
 Options:
 
@@ -199,11 +334,11 @@ Example: `https://www.plena.app/support` or `https://github.com/yourusername/ple
 
 ### Privacy Policy URL (Required)
 
-[Add your privacy policy URL here]
+**https://plenitudo.ai/privacy-policy**
 
 **Required for HealthKit apps.** Must be a publicly accessible URL.
 
-Example: `https://www.plena.app/privacy` or hosted on your website
+This URL is live and accessible on the plenitudo.ai website.
 
 ### Support Email
 
@@ -243,11 +378,11 @@ See [APP_STORE_SCREENSHOTS.md](APP_STORE_SCREENSHOTS.md) for detailed screenshot
 1. **Opening (0-3s):**
 
    - Show Plena app icon/logo
-   - Tagline: "Meditation meets biometrics"
+   - Tagline: "mindfulness meets biometrics"
 
 2. **Feature Demo (3-15s):**
 
-   - Start meditation session
+   - Start mindfulness session
    - Show real-time heart rate, HRV, breathing
    - Display stress zones changing (Calm → Optimal)
    - Show Apple Watch integration
@@ -277,7 +412,7 @@ See [APP_STORE_SCREENSHOTS.md](APP_STORE_SCREENSHOTS.md) for detailed screenshot
 ### Title Optimization
 
 - Keep app name short and memorable: "Plena"
-- Subtitle should include key search terms: "meditation" and "biometrics"
+- Subtitle should include key search terms: "mindfulness" and "biometrics"
 
 ### Description Optimization
 
@@ -288,7 +423,7 @@ See [APP_STORE_SCREENSHOTS.md](APP_STORE_SCREENSHOTS.md) for detailed screenshot
 
 ### Screenshot Strategy
 
-1. **Screenshot 1:** Main meditation screen with real-time data
+1. **Screenshot 1:** Main mindfulness screen with real-time data
 2. **Screenshot 2:** Stress zone indicators (unique feature)
 3. **Screenshot 3:** Dashboard with statistics
 4. **Screenshot 4:** Data visualization charts
@@ -323,7 +458,7 @@ When localizing:
 - Translate description naturally (don't just translate keywords)
 - Use local app store conventions
 - Test with native speakers
-- Consider cultural differences in meditation practices
+- Consider cultural differences in mindfulness practices
 
 ---
 
@@ -364,4 +499,4 @@ _For privacy policy, see [PRIVACY_POLICY.md](PRIVACY_POLICY.md)._
 
 ---
 
-**Last Updated:** December 12, 2025
+**Last Updated:** January 1, 2026

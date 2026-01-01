@@ -79,3 +79,10 @@ struct TrendInsightCard: View {
 }
 
 
+
+
+
+
+
+
+

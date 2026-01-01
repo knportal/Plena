@@ -36,6 +36,13 @@ struct PlenaApp: App {
 
                     // Post notification to refresh dashboard
                     NotificationCenter.default.post(name: .NSPersistentStoreRemoteChange, object: nil)
+
+                    // Post notification that watch session ended (so iPhone can stop its display session)
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("WatchSessionEnded"),
+                        object: nil,
+                        userInfo: ["sessionId": session.id]
+                    )
                 } catch {
                     print("❌ Error saving session from Watch: \(error)")
                 }

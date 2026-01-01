@@ -1,6 +1,6 @@
 # Plena User Guide
 
-Complete setup and usage instructions for the Plena meditation tracking app.
+Complete setup and usage instructions for the Plena mindfulness tracking app.
 
 ---
 
@@ -33,7 +33,7 @@ Complete setup and usage instructions for the Plena meditation tracking app.
 
 ### First Launch Walkthrough
 
-When you first open Plena, you'll see the main meditation screen with a "Start Session" button. Before you begin, you'll need to set up HealthKit permissions.
+When you first open Plena, you'll see the main mindfulness screen with a "Start Session" button. Before you begin, you'll need to set up HealthKit permissions.
 
 ---
 
@@ -48,7 +48,7 @@ Plena uses Apple's HealthKit framework to read and write health data. HealthKit 
 Plena needs permission to:
 
 - **Read** your heart rate, HRV, respiratory rate, temperature, and VO₂ Max data
-- **Write** meditation session data back to HealthKit
+- **Write** mindfulness session data back to HealthKit
 
 #### Step-by-Step Permission Grant
 
@@ -99,7 +99,7 @@ For more help, see the [Troubleshooting Guide](TROUBLESHOOTING.md).
 
 1. On your Watch, look for the Plena app icon (triangle with connected points)
 2. Tap to open it
-3. You should see the meditation interface
+3. You should see the mindfulness interface
 
 #### Watch App Permissions
 
@@ -131,7 +131,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 ### From iPhone
 
 1. Open the **Plena** app on your iPhone
-2. You'll see the main meditation screen with a "Start Session" button
+2. You'll see the main mindfulness screen with a "Start Session" button
 3. Tap **"Start Session"**
 4. A **3-2-1 countdown** will appear — take this time to get comfortable
 5. After the countdown, tracking begins automatically
@@ -176,7 +176,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 
 **Normal range:** 60-100 BPM (resting)
 
-**During meditation:** Heart rate typically decreases as you relax
+**during mindfulness sessions:** Heart rate typically decreases as you relax
 
 **Zone Classification:**
 
@@ -192,7 +192,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 
 **Normal range:** 50-100 ms (varies by age and fitness)
 
-**During meditation:** HRV typically increases as you relax
+**during mindfulness sessions:** HRV typically increases as you relax
 
 **Zone Classification:**
 
@@ -204,7 +204,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 
 - Higher is generally better (shows adaptability)
 - HRV naturally decreases with age
-- Regular meditation can improve HRV over time
+- Regular mindfulness can improve HRV over time
 
 ### Respiratory Rate
 
@@ -212,7 +212,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 
 **Normal range:** 12-20 breaths per minute
 
-**During meditation:** Breathing typically slows and becomes more regular
+**during mindfulness sessions:** Breathing typically slows and becomes more regular
 
 **Why it matters:** Slower, deeper breathing activates the parasympathetic nervous system (rest and digest)
 
@@ -284,14 +284,14 @@ Zones are calculated automatically based on:
 
 ## Using the Dashboard
 
-The Dashboard tab shows your meditation statistics and progress.
+The Dashboard tab shows your mindfulness statistics and progress.
 
 ### Viewing Statistics
 
 **Stat Cards:**
 
-- **Sessions** - Total number of meditation sessions (with comparison to previous period)
-- **Total Time** - Cumulative meditation time with average duration
+- **Sessions** - Total number of mindfulness sessions (with comparison to previous period)
+- **Total Time** - Cumulative session time with average duration
 - **Streak** - Current consecutive days with at least one session
 - **Avg Duration** - Average session length (with trend indicators)
 
@@ -313,7 +313,7 @@ The Dashboard tab shows your meditation statistics and progress.
 **Duration Trend Chart:**
 
 - Line chart showing average session duration over time
-- Trends upward? You're meditating longer
+- Trends upward? Your sessions are getting longer
 - Trends downward? Consider re-establishing your routine
 - Interactive - tap points to see exact values
 
@@ -328,7 +328,7 @@ The Dashboard provides personalized insights:
 
 **Additional Insights:**
 - **Longest Session** - Your personal record with date
-- **Best Time of Day** - When you typically meditate most effectively
+- **Best Time of Day** - When you typically practice mindfulness most effectively
 - **Sessions This Week** - Current week's activity
 - **Sessions Per Week** - Average weekly consistency
 
@@ -344,7 +344,7 @@ The Readiness tab provides a holistic view of your recovery and readiness based 
 
 **What is the Readiness Score?**
 - A daily score from 0-100 that reflects your overall recovery and readiness
-- Calculated from multiple contributors including meditation data, sleep, and physiological metrics
+- Calculated from multiple contributors including session data, sleep, and physiological metrics
 - Helps you understand when you're ready for optimal performance
 
 **Viewing Your Score:**
@@ -359,12 +359,12 @@ The Readiness Score is calculated from several factors:
 **Resting Heart Rate:**
 - Your baseline heart rate during rest
 - Lower resting HR generally indicates better cardiovascular fitness
-- Based on recent meditation sessions
+- Based on recent mindfulness sessions
 
 **HRV Balance:**
 - Heart rate variability balance and trends
 - Higher HRV indicates better stress adaptability
-- Analyzes your meditation session HRV data
+- Analyzes your mindfulness session HRV data
 
 **Body Temperature:**
 - Body temperature patterns and deviations
@@ -372,7 +372,7 @@ The Readiness Score is calculated from several factors:
 - Uses HealthKit temperature data when available
 
 **Recovery Index:**
-- Recovery from previous meditation sessions
+- Recovery from previous mindfulness sessions
 - Considers session frequency and intensity
 - Helps prevent overtraining
 
@@ -402,17 +402,17 @@ Tap any contributor to see detailed analysis:
 
 **High Score (80-100):**
 - You're well-recovered and ready for optimal performance
-- Good time for challenging meditation sessions or activities
+- Good time for challenging mindfulness sessions or activities
 - Your body is in balance
 
 **Moderate Score (50-79):**
 - You're in a balanced state
 - Normal recovery level
-- Continue your regular meditation practice
+- Continue your regular mindfulness practice
 
 **Lower Score (0-49):**
 - Consider focusing on recovery
-- May benefit from lighter meditation sessions
+- May benefit from lighter mindfulness sessions
 - Pay attention to sleep and stress management
 
 ### Daily Comparison
@@ -426,7 +426,7 @@ Compare today's score to yesterday:
 
 ## Data Visualization
 
-The Data tab lets you explore your historical meditation data in detail.
+The Data tab lets you explore your historical session data in detail.
 
 ### Viewing Historical Data
 
@@ -509,13 +509,13 @@ These insights help you understand your progress over time.
 
 ## Session Summary
 
-After you stop a meditation session, you'll see a summary screen.
+After you stop a mindfulness session, you'll see a summary screen.
 
 ### Reviewing Session Data
 
 **Summary Information:**
 
-- **Duration** - How long you meditated
+- **Duration** - How long your session lasted
 - **Average Heart Rate** - Mean heart rate during session
 - **Average HRV** - Mean HRV during session
 - **Average Respiratory Rate** - Mean breathing rate
@@ -572,23 +572,23 @@ After reviewing your session, you can optionally log your state of mind:
 
 **Use Apple Watch when:**
 
-- You want to meditate without your phone nearby
+- You want to practice mindfulness without your phone nearby
 - You prefer minimal distractions
 - You want haptic feedback (future feature)
-- You're doing active meditation (walking, etc.)
+- You're doing active breathing session (walking, etc.)
 
 **Use iPhone when:**
 
 - You want to see multiple sensors at once
 - You prefer larger displays
-- You're doing guided meditation with audio
+- You're doing guided focus session with audio
 - You want to review data immediately after
 
 **Pro Tip:** Start sessions on either device — data syncs automatically between iPhone and Watch.
 
 ### Building Consistency
 
-- **Set a Schedule** - Meditate at the same time each day
+- **Set a Schedule** - Practice mindfulness at the same time each day
 - **Track Your Streak** - Watch your Dashboard streak grow
 - **Review Weekly** - Check your Week view to see progress
 - **Be Patient** - HRV improvements take time (weeks to months)
@@ -622,7 +622,7 @@ After reviewing your session, you can optionally log your state of mind:
 1. Open Plena app
 2. Tap "Start Session"
 3. Wait for 3-2-1 countdown
-4. Meditate and monitor readings
+4. Practice mindfulness and monitor readings
 5. Tap "Stop Session" when done
 
 ### Checking Permissions
@@ -660,4 +660,4 @@ For technical support, see the [App Overview](APP_OVERVIEW.md) for contact infor
 
 ---
 
-_Happy meditating! 🧘‍♀️✨_
+_Happy practicing! 🧘‍♀️✨_

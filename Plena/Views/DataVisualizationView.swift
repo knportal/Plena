@@ -6,15 +6,27 @@
 //
 
 import SwiftUI
+import Combine
 
 struct DataVisualizationView: View {
     @StateObject private var viewModel: DataVisualizationViewModel
-    @StateObject private var settingsViewModel = SettingsViewModel()
+    @StateObject private var settingsViewModel: SettingsViewModel
     @State private var showSwipeHint = true
+    @State private var showPaywall = false
     @EnvironmentObject var tabCoordinator: TabCoordinator
+    private let subscriptionService: SubscriptionService
 
     init(storageService: SessionStorageServiceProtocol = CoreDataStorageService()) {
-        _viewModel = StateObject(wrappedValue: DataVisualizationViewModel(storageService: storageService))
+        // Initialize subscription services
+        let subscriptionService = SubscriptionService()
+        let featureGateService = FeatureGateService(subscriptionService: subscriptionService)
+
+        self.subscriptionService = subscriptionService
+        _settingsViewModel = StateObject(wrappedValue: SettingsViewModel(featureGateService: featureGateService))
+        _viewModel = StateObject(wrappedValue: DataVisualizationViewModel(
+            storageService: storageService,
+            featureGateService: featureGateService
+        ))
     }
 
     var body: some View {
@@ -57,6 +69,18 @@ struct DataVisualizationView: View {
                             .padding(.horizontal)
                     }
 
+                    // Temperature info banner
+                    if viewModel.selectedSensor == .temperature {
+                        temperatureInfoBanner
+                            .padding(.horizontal)
+                    }
+
+                    // VO₂ Max info banner
+                    if viewModel.selectedSensor == .vo2Max {
+                        vo2MaxInfoBanner
+                            .padding(.horizontal)
+                    }
+
                     // Chart content
                     graphContent
                         .padding(.horizontal)
@@ -71,6 +95,29 @@ struct DataVisualizationView: View {
             }
             .navigationTitle("Data Visualization")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showPaywall) {
+                SubscriptionPaywallView(
+                    feature: .extendedTimeRanges,
+                    isPresented: $showPaywall
+                )
+            }
+            .onReceive(
+                subscriptionService.subscriptionStatus
+                    .map { $0.isPremium }
+                    .removeDuplicates()
+                    .eraseToAnyPublisher()
+            ) { isPremium in
+                // Auto-dismiss paywall if user gains premium access
+                if isPremium && showPaywall {
+                    showPaywall = false
+                }
+            }
+            .onChange(of: viewModel.showPaywall) { oldValue, newValue in
+                if newValue {
+                    showPaywall = true
+                    viewModel.showPaywall = false
+                }
+            }
             .task {
                 await viewModel.loadSessions()
                 // Sync temperature unit from settings
@@ -104,11 +151,44 @@ struct DataVisualizationView: View {
                 }
             }
             .onAppear {
+                // Refresh subscription status when view appears
+                Task {
+                    await subscriptionService.checkSubscriptionStatus()
+                }
                 // Check for pending sensor selection when view appears
                 if let sensor = tabCoordinator.selectedSensor {
                     viewModel.selectedSensor = sensor
                     Task {
                         await viewModel.reloadForTimeRange()
+                    }
+                }
+            }
+            .onChange(of: tabCoordinator.selectedTab) { oldValue, newValue in
+                // Refresh subscription status when switching to this tab
+                if newValue == 3 { // Data Visualization tab
+                    Task {
+                        await subscriptionService.checkSubscriptionStatus()
+                    }
+                }
+            }
+            .onChange(of: showPaywall) { oldValue, newValue in
+                // When paywall is dismissed, check if user now has access
+                if oldValue == true && newValue == false {
+                    Task {
+                        await subscriptionService.checkSubscriptionStatus()
+
+                        // Get current subscription status
+                        let status = subscriptionService.currentSubscriptionStatus()
+
+                        if status.isPremium {
+                            // User purchased - reload with current time range
+                            await viewModel.reloadForTimeRange()
+                        } else {
+                            // User didn't purchase - reset to free tier to prevent infinite loop
+                            if viewModel.selectedTimeRange == .month || viewModel.selectedTimeRange == .year {
+                                viewModel.selectedTimeRange = .week
+                            }
+                        }
                     }
                 }
             }
@@ -131,7 +211,8 @@ struct DataVisualizationView: View {
 
     private var timeRangeSelector: some View {
         Picker("Time Range", selection: $viewModel.selectedTimeRange) {
-            ForEach(TimeRange.allCases, id: \.self) { range in
+            // Show all time ranges - access will be checked when loading
+            ForEach([TimeRange.day, TimeRange.week, TimeRange.month, TimeRange.year], id: \.self) { range in
                 Text(range.rawValue).tag(range)
             }
         }
@@ -141,7 +222,33 @@ struct DataVisualizationView: View {
         .padding(.bottom, 4)
         .onChange(of: viewModel.selectedTimeRange) {
             Task {
-                await viewModel.reloadForTimeRange()
+                // Refresh subscription status first to ensure it's up to date
+                await subscriptionService.checkSubscriptionStatus()
+
+                // Check access after refresh
+                let status = subscriptionService.currentSubscriptionStatus()
+                let isPremium = status.isPremium
+
+                // Don't show paywall if user already has premium
+                if isPremium {
+                    // User has premium - just reload
+                    await viewModel.reloadForTimeRange()
+                    // Ensure paywall is dismissed if it was showing
+                    if showPaywall {
+                        showPaywall = false
+                    }
+                } else if (viewModel.selectedTimeRange == .month || viewModel.selectedTimeRange == .year) {
+                    // Trying to select premium range without access - show paywall and reset
+                    showPaywall = true
+                    // Reset to week to prevent getting stuck
+                    viewModel.selectedTimeRange = .week
+                } else {
+                    // Selecting free tier - reload
+                    await viewModel.reloadForTimeRange()
+                    if viewModel.showPaywall {
+                        showPaywall = true
+                    }
+                }
             }
         }
     }
@@ -246,17 +353,17 @@ struct DataVisualizationView: View {
     private func explanationText(for sensor: SensorType, mode: ViewMode) -> String {
         switch (sensor, mode) {
         case (.hrv, .consistency):
-            return "Bar height shows % of time in calm zone. Higher = more recovery time."
+            return "Bar height shows % of time in calm zone. Bar color shows the dominant zone (the zone with most time) for that period."
         case (.hrv, .trend):
             return "Line shows HRV values over time. Higher values indicate better recovery capacity."
 
         case (.heartRate, .consistency):
-            return "Bar height shows % of time in calm zone. Higher = more time at calm heart rate."
+            return "Bar height shows % of time in calm zone. Bar color shows the dominant zone (the zone with most time) for that period."
         case (.heartRate, .trend):
             return "Line shows heart rate over time. Lower values during sessions indicate calmer state."
 
         case (.respiratoryRate, .consistency):
-            return "Bar height shows % of time in calm zone. Higher = more time with calm, deep breathing."
+            return "Bar height shows % of time in calm zone. Bar color shows the dominant zone (the zone with most time) for that period."
         case (.respiratoryRate, .trend):
             return "Line shows breathing rate over time. Slower, steadier breathing indicates deeper calm."
 
@@ -273,6 +380,66 @@ struct DataVisualizationView: View {
     /// Legacy graph view for unsupported metrics
     private var legacyGraphView: some View {
         graphViewWithSwipe
+    }
+
+    /// Temperature info banner explaining sleep measurement
+    private var temperatureInfoBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "moon.zzz.fill")
+                .font(.title3)
+                .foregroundColor(.blue)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Temperature Data")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+
+                Text("Body temperature is typically measured during sleep on Apple Watch. Data shown here reflects readings from your sleep periods.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.blue.opacity(0.1))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+        )
+    }
+
+    /// VO₂ Max info banner explaining workout measurement
+    private var vo2MaxInfoBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "figure.run")
+                .font(.title3)
+                .foregroundColor(.orange)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("VO₂ Max Data")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+
+                Text("VO₂ Max is calculated from your workout and exercise sessions. Data shown here reflects your cardiovascular fitness measurements from activities like running, cycling, and other intense exercises.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.orange.opacity(0.1))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+        )
     }
 
     /// Stats row showing min/max/avg

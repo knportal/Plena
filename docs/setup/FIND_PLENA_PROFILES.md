@@ -104,3 +104,10 @@ If you're using **Manual Signing**:
 
 - You must manually update and download profiles
 - Then install them in Xcode: Xcode → Preferences → Accounts → Download Manual Profiles
+
+
+
+
+
+
+

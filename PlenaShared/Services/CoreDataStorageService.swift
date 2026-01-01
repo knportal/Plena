@@ -34,6 +34,15 @@ class CoreDataStorageService: SessionStorageServiceProtocol {
             existing.startDate = session.startDate
             existing.endDate = session.endDate
 
+            // Update metadata
+            if let metadata = session.metadata {
+                existing.hrvSampleCount = Int32(metadata.hrvSampleCount)
+                existing.hrvDataAvailable = metadata.hrvDataAvailable
+                existing.durationSeconds = Int32(metadata.durationSeconds)
+                existing.watchModel = metadata.watchModel
+                existing.deviceType = metadata.deviceType
+            }
+
             // Clear existing samples
             if let heartRateSamples = existing.heartRateSamples as? Set<HeartRateSampleEntity> {
                 heartRateSamples.forEach { context.delete($0) }
@@ -115,6 +124,15 @@ class CoreDataStorageService: SessionStorageServiceProtocol {
             sessionEntity.id = session.id
             sessionEntity.startDate = session.startDate
             sessionEntity.endDate = session.endDate
+
+            // Store metadata
+            if let metadata = session.metadata {
+                sessionEntity.hrvSampleCount = Int32(metadata.hrvSampleCount)
+                sessionEntity.hrvDataAvailable = metadata.hrvDataAvailable
+                sessionEntity.durationSeconds = Int32(metadata.durationSeconds)
+                sessionEntity.watchModel = metadata.watchModel
+                sessionEntity.deviceType = metadata.deviceType
+            }
 
             // Add samples
             sessionEntity.heartRateSamples = NSSet(array: session.heartRateSamples.map { sample in

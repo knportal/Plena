@@ -1,0 +1,68 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "display-p3:0.21368,0.52623,0.96611,1.00000",
+      "display-p3:0.29831,0.79234,0.79208,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 0
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0.7
+      }
+    }
+  },
+  "groups" : [
+    {
+      "blend-mode" : "normal",
+      "layers" : [
+        {
+          "fill" : "automatic",
+          "glass" : false,
+          "image-name" : "Triangle1.svg",
+          "name" : "Triangle1",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -26.647236976749355,
+              -133.9436995603237
+            ]
+          }
+        },
+        {
+          "fill" : "automatic",
+          "glass" : true,
+          "hidden" : false,
+          "image-name" : "VectorHead_2.svg",
+          "name" : "VectorHead_2",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0.24714560394789942,
+              83.671875
+            ]
+          }
+        }
+      ],
+      "lighting" : "combined",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

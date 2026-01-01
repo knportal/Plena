@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		11D4E5A675244F5D8CD72C69 /* SubscriptionPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE96469D379F44B99D88A853 /* SubscriptionPaywallView.swift */; };
+		1F97B2BEA5F14AF29A0C80AC /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E54D9DC962146EEAF49CE72 /* SubscriptionService.swift */; };
+		2BA04EB28A54410B85305913 /* SubscriptionProduct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5323504B5C9D4077B79F7AE7 /* SubscriptionProduct.swift */; };
+		41413234CE70413EA46CFF5D /* SubscriptionTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE985F70C6649FDBE67F2B2 /* SubscriptionTier.swift */; };
+		4D3BDA414B5E49D7A5E6FA10 /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E54D9DC962146EEAF49CE72 /* SubscriptionService.swift */; };
+		67C5123D418A45A79D9270D8 /* SubscriptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D064CD9FAFE047D0849429BC /* SubscriptionViewModel.swift */; };
+		70146A27A1D04A58A82F4525 /* FeatureGateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B7B7D463A24145A528CE48 /* FeatureGateService.swift */; };
+		765B99A872A94531AEF7FAB9 /* SubscriptionProduct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5323504B5C9D4077B79F7AE7 /* SubscriptionProduct.swift */; };
+		913C7F6075884579984B01FA /* FeatureGateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B7B7D463A24145A528CE48 /* FeatureGateService.swift */; };
 		A10000010000000000000001 /* PlenaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000002 /* PlenaApp.swift */; };
 		A10000010000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000004 /* ContentView.swift */; };
 		A10000010000000000000005 /* MeditationSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000006 /* MeditationSessionView.swift */; };
@@ -26,12 +35,15 @@
 		A10000010000000000000021 /* MeditationSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000022 /* MeditationSessionViewModel.swift */; };
 		A10000010000000000000047 /* DashboardWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000048 /* DashboardWatchView.swift */; };
 		A10000010000000000000049 /* ReadinessWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000004A /* ReadinessWatchView.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* SubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC32AB53E082441085E99CCE /* SubscriptionView.swift */; };
 		B9178FDF2EE0D0D4005CB214 /* PlenaDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B9178FDD2EE0D0CA005CB214 /* PlenaDataModel.xcdatamodeld */; };
 		B9178FE02EE0D0D4005CB214 /* PlenaDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B9178FDD2EE0D0CA005CB214 /* PlenaDataModel.xcdatamodeld */; };
 		B9178FE22EE23A83005CB214 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9178FE12EE23A83005CB214 /* SettingsView.swift */; };
 		B9178FE32EE23A83005CB214 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9178FE12EE23A83005CB214 /* SettingsView.swift */; };
 		B9178FE52EE23AC2005CB214 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9178FE42EE23AC2005CB214 /* SettingsViewModel.swift */; };
+		BSM00000000000000000002 /* BackgroundSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BSM00000000000000000001 /* BackgroundSessionManager.swift */; };
 		B9178FE62EE23AC2005CB214 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9178FE42EE23AC2005CB214 /* SettingsViewModel.swift */; };
+		BSM00000000000000000003 /* BackgroundSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BSM00000000000000000001 /* BackgroundSessionManager.swift */; };
 		B9178FE92EE38035005CB214 /* StressZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9178FE82EE38035005CB214 /* StressZone.swift */; };
 		B9178FEA2EE38035005CB214 /* StressZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9178FE82EE38035005CB214 /* StressZone.swift */; };
 		B9178FEC2EE38053005CB214 /* ZoneClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9178FEB2EE38053005CB214 /* ZoneClassifier.swift */; };
@@ -135,6 +147,24 @@
 		B9A140602EE60450001CC8DD /* ReadinessContributor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A140252EE60450001CC8DD /* ReadinessContributor.swift */; };
 		B9A140612EE60450001CC8DD /* ReadinessStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A140272EE60450001CC8DD /* ReadinessStatus.swift */; };
 		B9A140622EE60450001CC8DD /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97A40DA2EDF43DE00CE409B /* DashboardViewModel.swift */; };
+		B9A28CDD2EF5B73C0000D03D /* PlenaIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = B9A28CDC2EF5B73C0000D03D /* PlenaIcon.icon */; };
+		B9A28CDE2EF5B73C0000D03D /* PlenaIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = B9A28CDC2EF5B73C0000D03D /* PlenaIcon.icon */; };
+		B9A28CE02EF5B73C0000D03D /* DeviceStateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A28CE12EF5B73C0000D03D /* DeviceStateService.swift */; };
+		B9A28CE22EF5B73C0000D03D /* DeviceStateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A28CE12EF5B73C0000D03D /* DeviceStateService.swift */; };
+		B9B128B22EFF0CD5009E78A6 /* WorkoutSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B128B12EFF0CD5009E78A6 /* WorkoutSessionService.swift */; };
+		B9B128B32EFF0CD5009E78A6 /* WorkoutSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B128B12EFF0CD5009E78A6 /* WorkoutSessionService.swift */; };
+		BC90231A5FB4469A8354B20F /* SubscriptionTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE985F70C6649FDBE67F2B2 /* SubscriptionTier.swift */; };
+		F57FB7E310B24113A8171FFE /* SubscriptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D064CD9FAFE047D0849429BC /* SubscriptionViewModel.swift */; };
+		3FA8C21ACB484637856C8636 /* SessionSyncPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8286059C65824A75B364DE5F /* SessionSyncPackage.swift */; };
+		F0334C0C9E9D46DA823B2D7F /* SessionSyncPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8286059C65824A75B364DE5F /* SessionSyncPackage.swift */; };
+		7F1DB10472284C1EB2D5B314 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74C7B932768471ABCFF8967 /* AnalyticsView.swift */; };
+		52870DAADF084C8787FADDDC /* SessionAnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F65FE78CE349E2B03F4179 /* SessionAnalyticsService.swift */; };
+		67F3DEE663CF4D6A9F4D29CE /* SessionAnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F65FE78CE349E2B03F4179 /* SessionAnalyticsService.swift */; };
+		BEAC54438CCB4AAD80C36590 /* DataExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D674216AD246E18BCB61DB /* DataExportView.swift */; };
+		5AE2E9A2913940A091A26C28 /* DataExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC142C725C1442A68D0554D6 /* DataExportService.swift */; };
+		D0CDF516F66A493782D45022 /* DataExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC142C725C1442A68D0554D6 /* DataExportService.swift */; };
+		49BB675479E6430AA81A2740 /* BackgroundSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6452DE70A12D4A708A621227 /* BackgroundSessionManager.swift */; };
+		2032BBD8A63841A3A92092AE /* BackgroundSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6452DE70A12D4A708A621227 /* BackgroundSessionManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,6 +192,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5323504B5C9D4077B79F7AE7 /* SubscriptionProduct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionProduct.swift; sourceTree = "<group>"; };
+		7DE985F70C6649FDBE67F2B2 /* SubscriptionTier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionTier.swift; sourceTree = "<group>"; };
+		8E54D9DC962146EEAF49CE72 /* SubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
 		A10000010000000000000002 /* PlenaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlenaApp.swift; sourceTree = "<group>"; };
 		A10000010000000000000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A10000010000000000000006 /* MeditationSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationSessionView.swift; sourceTree = "<group>"; };
@@ -187,9 +220,11 @@
 		A10000010000000000000028 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A10000010000000000000048 /* DashboardWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardWatchView.swift; sourceTree = "<group>"; };
 		A1000001000000000000004A /* ReadinessWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadinessWatchView.swift; sourceTree = "<group>"; };
+		B911F5B92EF885330091B131 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		B9178FDE2EE0D0CA005CB214 /* PlenaDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PlenaDataModel.xcdatamodel; sourceTree = "<group>"; };
 		B9178FE12EE23A83005CB214 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B9178FE42EE23AC2005CB214 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		BSM00000000000000000001 /* BackgroundSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundSessionManager.swift; sourceTree = "<group>"; };
 		B9178FE82EE38035005CB214 /* StressZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressZone.swift; sourceTree = "<group>"; };
 		B9178FEB2EE38053005CB214 /* ZoneClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneClassifier.swift; sourceTree = "<group>"; };
 		B97A40C92EDF43DE00CE409B /* SessionStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStorageService.swift; sourceTree = "<group>"; };
@@ -256,6 +291,19 @@
 		B9A140562EE60450001CC8DD /* SleepBalanceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepBalanceDetailView.swift; sourceTree = "<group>"; };
 		B9A140572EE60450001CC8DD /* SleepRegularityDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepRegularityDetailViewModel.swift; sourceTree = "<group>"; };
 		B9A140582EE60450001CC8DD /* SleepRegularityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepRegularityDetailView.swift; sourceTree = "<group>"; };
+		B9A28CDC2EF5B73C0000D03D /* PlenaIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = PlenaIcon.icon; sourceTree = "<group>"; };
+		B9A28CE12EF5B73C0000D03D /* DeviceStateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStateService.swift; sourceTree = "<group>"; };
+		B9B128B12EFF0CD5009E78A6 /* WorkoutSessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionService.swift; sourceTree = "<group>"; };
+		CC32AB53E082441085E99CCE /* SubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionView.swift; sourceTree = "<group>"; };
+		D064CD9FAFE047D0849429BC /* SubscriptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionViewModel.swift; sourceTree = "<group>"; };
+		D5B7B7D463A24145A528CE48 /* FeatureGateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureGateService.swift; sourceTree = "<group>"; };
+		FE96469D379F44B99D88A853 /* SubscriptionPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPaywallView.swift; sourceTree = "<group>"; };
+		8286059C65824A75B364DE5F /* SessionSyncPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSyncPackage.swift; sourceTree = "<group>"; };
+		F74C7B932768471ABCFF8967 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
+		35F65FE78CE349E2B03F4179 /* SessionAnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAnalyticsService.swift; sourceTree = "<group>"; };
+		99D674216AD246E18BCB61DB /* DataExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportView.swift; sourceTree = "<group>"; };
+		FC142C725C1442A68D0554D6 /* DataExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportService.swift; sourceTree = "<group>"; };
+		6452DE70A12D4A708A621227 /* BackgroundSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundSessionManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,6 +327,7 @@
 		A1000001000000000000002B = {
 			isa = PBXGroup;
 			children = (
+				B911F5B92EF885330091B131 /* Products.storekit */,
 				A1000001000000000000002C /* Plena */,
 				A1000001000000000000002D /* Plena Watch App */,
 				A1000001000000000000002E /* PlenaShared */,
@@ -318,6 +367,7 @@
 		A1000001000000000000002E /* PlenaShared */ = {
 			isa = PBXGroup;
 			children = (
+				B9A28CDC2EF5B73C0000D03D /* PlenaIcon.icon */,
 				A10000010000000000000034 /* Models */,
 				A10000010000000000000035 /* Services */,
 				A10000010000000000000036 /* ViewModels */,
@@ -330,7 +380,8 @@
 			children = (
 				A10000010000000000000023 /* Plena.app */,
 				A10000010000000000000024 /* Plena Watch App.app */,
-			);
+				6452DE70A12D4A708A621227 /* BackgroundSessionManager.swift */,
+);
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -357,7 +408,10 @@
 				B9A140582EE60450001CC8DD /* SleepRegularityDetailView.swift */,
 				B9A140312EE60450001CC8DD /* AxisLabelSettingsView.swift */,
 				B9A140412EE60450001CC8DD /* AxisLabelTestView.swift */,
+				CC32AB53E082441085E99CCE /* SubscriptionView.swift */,
 				B97A40E12EDF43DE00CE409B /* Components */,
+				F74C7B932768471ABCFF8967 /* AnalyticsView.swift */,
+				99D674216AD246E18BCB61DB /* DataExportView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -408,6 +462,9 @@
 				B9A140212EE60450001CC8DD /* ReadinessScore.swift */,
 				B9A140252EE60450001CC8DD /* ReadinessContributor.swift */,
 				B9A140272EE60450001CC8DD /* ReadinessStatus.swift */,
+				5323504B5C9D4077B79F7AE7 /* SubscriptionProduct.swift */,
+				7DE985F70C6649FDBE67F2B2 /* SubscriptionTier.swift */,
+				8286059C65824A75B364DE5F /* SessionSyncPackage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -415,9 +472,11 @@
 		A10000010000000000000035 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B9B128B12EFF0CD5009E78A6 /* WorkoutSessionService.swift */,
 				B9178FEB2EE38053005CB214 /* ZoneClassifier.swift */,
 				A10000010000000000000020 /* HealthKitService.swift */,
 				B97A41042EDF43DE00CE409B /* WatchConnectivityService.swift */,
+				B9A28CE12EF5B73C0000D03D /* DeviceStateService.swift */,
 				B97A40C92EDF43DE00CE409B /* SessionStorageService.swift */,
 				B97A40D22EE0D0D4005CB214 /* CoreDataStack.swift */,
 				B97A40D52EE0D0D4005CB214 /* CoreDataStorageService.swift */,
@@ -425,7 +484,11 @@
 				B9A140012EE60450001CC8DD /* BaselineCalculationService.swift */,
 				B9A140042EE60450001CC8DD /* MetricAggregationService.swift */,
 				B9A140232EE60450001CC8DD /* ReadinessScoreService.swift */,
+				D5B7B7D463A24145A528CE48 /* FeatureGateService.swift */,
+				8E54D9DC962146EEAF49CE72 /* SubscriptionService.swift */,
 				B9A140332EE60450001CC8DD /* HealthKitImportService.swift */,
+				35F65FE78CE349E2B03F4179 /* SessionAnalyticsService.swift */,
+				FC142C725C1442A68D0554D6 /* DataExportService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -434,10 +497,12 @@
 			isa = PBXGroup;
 			children = (
 				B9178FE42EE23AC2005CB214 /* SettingsViewModel.swift */,
+				BSM00000000000000000001 /* BackgroundSessionManager.swift */,
 				A10000010000000000000022 /* MeditationSessionViewModel.swift */,
 				B97A40CB2EDF43DE00CE409B /* DataVisualizationViewModel.swift */,
 				B97A40DA2EDF43DE00CE409B /* DashboardViewModel.swift */,
 				B9A1401F2EE60450001CC8DD /* ReadinessViewModel.swift */,
+				D064CD9FAFE047D0849429BC /* SubscriptionViewModel.swift */,
 				B9A1402F2EE60450001CC8DD /* RestingHeartRateDetailViewModel.swift */,
 				B9A140452EE60450001CC8DD /* HRVBalanceDetailViewModel.swift */,
 				B9A140492EE60450001CC8DD /* BodyTemperatureDetailViewModel.swift */,
@@ -468,6 +533,7 @@
 				B9A1401B2EE60450001CC8DD /* ConsistencyChartView.swift */,
 				B9A140292EE60450001CC8DD /* ReadinessScoreCard.swift */,
 				B9A1402B2EE60450001CC8DD /* ReadinessContributorRow.swift */,
+				FE96469D379F44B99D88A853 /* SubscriptionPaywallView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -547,6 +613,7 @@
 			files = (
 				A10000010000000000000009 /* Preview Assets.xcassets in Resources */,
 				A10000010000000000000007 /* Assets.xcassets in Resources */,
+				B9A28CDE2EF5B73C0000D03D /* PlenaIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -556,6 +623,7 @@
 			files = (
 				A10000010000000000000013 /* Preview Assets.xcassets in Resources */,
 				A10000010000000000000011 /* Assets.xcassets in Resources */,
+				B9A28CDD2EF5B73C0000D03D /* PlenaIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -583,6 +651,7 @@
 				A1000001000000000000001D /* StateOfMindLog.swift in Sources */,
 				A1000001000000000000001F /* HealthKitService.swift in Sources */,
 				B97A41032EDF43DE00CE409B /* WatchConnectivityService.swift in Sources */,
+				B9A28CE02EF5B73C0000D03D /* DeviceStateService.swift in Sources */,
 				B97A40C82EDF43DE00CE409B /* SessionStorageService.swift in Sources */,
 				B97A40D12EE0D0D4005CB214 /* CoreDataStack.swift in Sources */,
 				B97A40D42EE0D0D4005CB214 /* CoreDataStorageService.swift in Sources */,
@@ -606,6 +675,7 @@
 				B97A40F92EDF43DE00CE409B /* VO2MaxSample.swift in Sources */,
 				B97A40FC2EDF43DE00CE409B /* TemperatureSample.swift in Sources */,
 				B9178FE62EE23AC2005CB214 /* SettingsViewModel.swift in Sources */,
+				BSM00000000000000000003 /* BackgroundSessionManager.swift in Sources */,
 				B97A41002EDF43DE00CE409B /* SensorTypes.swift in Sources */,
 				B9A140002EE60450001CC8DD /* BaselineCalculationService.swift in Sources */,
 				B9A140032EE60450001CC8DD /* MetricAggregationService.swift in Sources */,
@@ -620,12 +690,20 @@
 				B9A1401A2EE60450001CC8DD /* ConsistencyChartView.swift in Sources */,
 				B9A1401C2EE60450001CC8DD /* ReadinessView.swift in Sources */,
 				B9A1401E2EE60450001CC8DD /* ReadinessViewModel.swift in Sources */,
+				F57FB7E310B24113A8171FFE /* SubscriptionViewModel.swift in Sources */,
 				B9A140202EE60450001CC8DD /* ReadinessScore.swift in Sources */,
 				B9A140222EE60450001CC8DD /* ReadinessScoreService.swift in Sources */,
+				70146A27A1D04A58A82F4525 /* FeatureGateService.swift in Sources */,
+				4D3BDA414B5E49D7A5E6FA10 /* SubscriptionService.swift in Sources */,
+				765B99A872A94531AEF7FAB9 /* SubscriptionProduct.swift in Sources */,
+				41413234CE70413EA46CFF5D /* SubscriptionTier.swift in Sources */,
 				B9A140242EE60450001CC8DD /* ReadinessContributor.swift in Sources */,
 				B9A140262EE60450001CC8DD /* ReadinessStatus.swift in Sources */,
+				B9B128B22EFF0CD5009E78A6 /* WorkoutSessionService.swift in Sources */,
 				B9A140282EE60450001CC8DD /* ReadinessScoreCard.swift in Sources */,
 				B9A1402A2EE60450001CC8DD /* ReadinessContributorRow.swift in Sources */,
+				11D4E5A675244F5D8CD72C69 /* SubscriptionPaywallView.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* SubscriptionView.swift in Sources */,
 				B9A1402C2EE60450001CC8DD /* RestingHeartRateDetailView.swift in Sources */,
 				B9A140482EE60450001CC8DD /* HRVBalanceDetailView.swift in Sources */,
 				B9A1404C2EE60450001CC8DD /* BodyTemperatureDetailView.swift in Sources */,
@@ -644,6 +722,11 @@
 				B9A140302EE60450001CC8DD /* AxisLabelSettingsView.swift in Sources */,
 				B9A140422EE60450001CC8DD /* AxisLabelTestView.swift in Sources */,
 				B9A140322EE60450001CC8DD /* HealthKitImportService.swift in Sources */,
+				3FA8C21ACB484637856C8636 /* SessionSyncPackage.swift in Sources */,
+				7F1DB10472284C1EB2D5B314 /* AnalyticsView.swift in Sources */,
+				52870DAADF084C8787FADDDC /* SessionAnalyticsService.swift in Sources */,
+				BEAC54438CCB4AAD80C36590 /* DataExportView.swift in Sources */,
+				5AE2E9A2913940A091A26C28 /* DataExportService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -665,18 +748,26 @@
 				B9A13F9E2EE60450001CC8DD /* DisclaimerView.swift in Sources */,
 				B9178FE32EE23A83005CB214 /* SettingsView.swift in Sources */,
 				B97A41082EDF43DE00CE409B /* MedicalDisclaimerDetailView.swift in Sources */,
+				B9B128B32EFF0CD5009E78A6 /* WorkoutSessionService.swift in Sources */,
 				B97A410B2EDF43DE00CE409B /* AboutView.swift in Sources */,
 				B9178FE52EE23AC2005CB214 /* SettingsViewModel.swift in Sources */,
+				BSM00000000000000000002 /* BackgroundSessionManager.swift in Sources */,
 				B97A40C02EDF43DE00CE409B /* StateOfMindLog.swift in Sources */,
 				B97A40C12EDF43DE00CE409B /* HealthKitService.swift in Sources */,
 				B97A41052EDF43DE00CE409B /* WatchConnectivityService.swift in Sources */,
+				B9A28CE22EF5B73C0000D03D /* DeviceStateService.swift in Sources */,
 				B97A40D02EDF43DE00CE409B /* SessionStorageService.swift in Sources */,
 				B97A40D32EE0D0D4005CB214 /* CoreDataStack.swift in Sources */,
 				B97A40D62EE0D0D4005CB214 /* CoreDataStorageService.swift in Sources */,
 				B9A140622EE60450001CC8DD /* DashboardViewModel.swift in Sources */,
 				B9A1405D2EE60450001CC8DD /* ReadinessViewModel.swift in Sources */,
+				67C5123D418A45A79D9270D8 /* SubscriptionViewModel.swift in Sources */,
 				B9A1405E2EE60450001CC8DD /* ReadinessScore.swift in Sources */,
 				B9A1405F2EE60450001CC8DD /* ReadinessScoreService.swift in Sources */,
+				913C7F6075884579984B01FA /* FeatureGateService.swift in Sources */,
+				1F97B2BEA5F14AF29A0C80AC /* SubscriptionService.swift in Sources */,
+				2BA04EB28A54410B85305913 /* SubscriptionProduct.swift in Sources */,
+				BC90231A5FB4469A8354B20F /* SubscriptionTier.swift in Sources */,
 				B9A140602EE60450001CC8DD /* ReadinessContributor.swift in Sources */,
 				B9A140612EE60450001CC8DD /* ReadinessStatus.swift in Sources */,
 				B97A40C22EDF43DE00CE409B /* MeditationSessionViewModel.swift in Sources */,
@@ -696,7 +787,11 @@
 				B9A1400B2EE60450001CC8DD /* ZoneSummary.swift in Sources */,
 				B9A1400E2EE60450001CC8DD /* TrendStats.swift in Sources */,
 				B9A140112EE60450001CC8DD /* SessionMetricSummary.swift in Sources */,
-			);
+							F0334C0C9E9D46DA823B2D7F /* SessionSyncPackage.swift in Sources */,
+				67F3DEE663CF4D6A9F4D29CE /* SessionAnalyticsService.swift in Sources */,
+				D0CDF516F66A493782D45022 /* DataExportService.swift in Sources */,
+				2032BBD8A63841A3A92092AE /* BackgroundSessionManager.swift in Sources */,
+);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
@@ -836,16 +931,14 @@
 		A10000010000000000000043 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = PlenaIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = Plena/Plena.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"Plena/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = C8SXTF2Y53;
+				DEVELOPMENT_TEAM = C8SXTF2Y53;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Plena/Info.plist;
@@ -864,7 +957,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.plena.meditation.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Plena Development";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -875,16 +967,14 @@
 		A10000010000000000000044 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = PlenaIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = Plena/Plena.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"Plena/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = C8SXTF2Y53;
+				DEVELOPMENT_TEAM = C8SXTF2Y53;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Plena/Info.plist;
@@ -903,7 +993,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.plena.meditation.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Plena Development";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -915,16 +1004,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = PlenaIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Plena Watch App/Plena Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"Plena Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=watchos*]" = C8SXTF2Y53;
+				DEVELOPMENT_TEAM = C8SXTF2Y53;
 				ENABLE_PREVIEWS = YES;
 				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = NO;
@@ -943,7 +1030,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.plena.meditation.app.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "Plena Watch Development";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -958,16 +1044,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = PlenaIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Plena Watch App/Plena Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"Plena Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=watchos*]" = C8SXTF2Y53;
+				DEVELOPMENT_TEAM = C8SXTF2Y53;
 				ENABLE_PREVIEWS = YES;
 				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = NO;
@@ -986,7 +1070,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.plena.meditation.app.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "Plena Watch Development";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;

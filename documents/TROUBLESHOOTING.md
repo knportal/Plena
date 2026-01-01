@@ -1,6 +1,6 @@
 # Plena Troubleshooting Guide
 
-Common issues and solutions for the Plena meditation tracking app.
+Common issues and solutions for the Plena mindfulness tracking app.
 
 ---
 
@@ -105,12 +105,80 @@ If you need to re-request permissions:
 
 ## Sensor Data Issues
 
+### "Put Watch on Wrist" Warning
+
+**Symptoms:**
+
+- Warning message appears: "Put watch on wrist" or "Watch needs to be on your wrist"
+- Status indicator shows red warning with watch icon
+- Sensor cards show "No recent updates" message
+- Sensor values stop updating or show stale data
+
+**What This Means:**
+
+Plena can detect when your Apple Watch is not being worn properly or is charging. The app monitors:
+
+- Device motion (when using Watch app directly)
+- Sensor data freshness (how recently data was updated)
+
+When the watch is off your wrist or charging, sensors stop providing new readings, which can lead to inaccurate session data.
+
+**Solutions:**
+
+1. **Wear Your Watch Properly:**
+
+   - Put your Apple Watch back on your wrist
+   - Ensure it's snug but comfortable
+   - The sensor on the back should contact your skin
+   - Wait 5-10 seconds for detection to update
+
+2. **If Watch Is Charging:**
+
+   - Remove watch from charger
+   - Put it on your wrist
+   - Wait for the warning to disappear before starting a session
+
+3. **Check Watch App Installation (for better detection):**
+
+   - For most accurate detection, ensure Plena Watch app is installed
+   - Open Watch app on iPhone → Find Plena → Ensure it's installed
+   - Watch app uses motion sensors for better detection
+   - Without Watch app: detection still works but may be less accurate
+
+4. **Verify Sensor Data:**
+
+   - Check Health app → Heart → Heart Rate
+   - Verify recent readings exist (within last minute)
+   - If no recent data, watch may need to be on wrist longer
+
+5. **If Warning Persists:**
+   - Restart Apple Watch
+   - Restart the session
+   - Ensure watch band isn't too loose
+
+**Understanding Detection Methods:**
+
+- **With Watch App Installed (Recommended):**
+
+  - Uses motion sensors to detect if watch is moving/on wrist
+  - Detects when watch is on charger (no motion)
+  - More accurate and faster detection (~5-10 seconds)
+
+- **Without Watch App Installed:**
+  - Uses sensor data staleness detection (15+ seconds without updates)
+  - Still works but less accurate
+  - May not distinguish between "charging" vs "on wrist but no data yet"
+  - Requires sensor data from HealthKit to determine staleness
+
+**Note:** The app will continue showing sensor values even when stale, but they'll be marked with warnings to indicate they're not current readings.
+
 ### No Heart Rate Data Appearing
 
 **Symptoms:**
 
 - Heart rate card shows "--" or is missing
 - No BPM values during session
+- "Put watch on wrist" warning appears
 
 **Solutions:**
 
@@ -119,6 +187,7 @@ If you need to re-request permissions:
    - Ensure Apple Watch is paired and connected
    - Check Watch battery level
    - Verify Watch is on your wrist and snug
+   - If you see "Put watch on wrist" warning, ensure watch is properly worn
 
 2. **Check HealthKit Data:**
 
@@ -157,7 +226,7 @@ If you need to re-request permissions:
 
    - HRV requires sufficient data
    - Minimum 3 HRV samples needed
-   - Try meditating for 10+ minutes
+   - Try a mindfulness session of 10+ minutes
 
 3. **Check HealthKit Data:**
 
@@ -194,7 +263,7 @@ If you need to re-request permissions:
 
 3. **Wait for Reading:**
    - Respiratory rate may take longer to appear
-   - Continue meditating and allow time for measurement
+   - Continue your mindfulness session and allow time for measurement
    - Ensure Watch is detecting movement (breathing)
 
 ### "Sensor Unavailable" Messages
@@ -470,7 +539,7 @@ If you need to re-request permissions:
 
 2. **Verify Data Exists:**
 
-   - Check Health app for meditation data
+   - Check Health app for session data
    - Open Health → Browse → Mindfulness
    - Verify sessions are recorded
 
@@ -672,7 +741,7 @@ If you need to re-request permissions:
    - Reinstall from App Store
    - **Warning:** This deletes local app data
 
-### Can't Start Meditation Session
+### Can't Start mindfulness session
 
 **Symptoms:**
 

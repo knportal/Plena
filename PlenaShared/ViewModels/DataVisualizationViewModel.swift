@@ -12,7 +12,14 @@ import SwiftUI
 @MainActor
 class DataVisualizationViewModel: ObservableObject {
     @Published var sessions: [MeditationSession] = []
-    @Published var selectedTimeRange: TimeRange = .day
+    @Published var selectedTimeRange: TimeRange = .day {
+        didSet {
+            // Only reset view mode to default when time range actually changes
+            if oldValue != selectedTimeRange {
+                viewMode = defaultViewMode(for: selectedTimeRange)
+            }
+        }
+    }
     @Published var selectedSensor: SensorType = .heartRate {
         didSet {
             // Invalidate cached computed properties when sensor changes
@@ -38,6 +45,7 @@ class DataVisualizationViewModel: ObservableObject {
     private let baselineService: BaselineCalculationServiceProtocol
     private let aggregationService: MetricAggregationServiceProtocol
     private let zoneClassifier: ZoneClassifierProtocol
+    private let featureGateService: FeatureGateServiceProtocol?
 
     // Cached baselines (recalculated when sessions change)
     private var _cachedHRVBaseline: Double?
@@ -48,16 +56,20 @@ class DataVisualizationViewModel: ObservableObject {
     private var _cachedZoneSummaries: [ZoneSummary]?
     private var _cachedTrendStats: TrendStats?
 
+    @Published var showPaywall = false
+
     init(
         storageService: SessionStorageServiceProtocol = CoreDataStorageService(),
         baselineService: BaselineCalculationServiceProtocol = BaselineCalculationService(),
         aggregationService: MetricAggregationServiceProtocol = MetricAggregationService(),
-        zoneClassifier: ZoneClassifierProtocol = ZoneClassifier()
+        zoneClassifier: ZoneClassifierProtocol = ZoneClassifier(),
+        featureGateService: FeatureGateServiceProtocol? = nil
     ) {
         self.storageService = storageService
         self.baselineService = baselineService
         self.aggregationService = aggregationService
         self.zoneClassifier = zoneClassifier
+        self.featureGateService = featureGateService
 
         // Set default view mode based on initial time range
         self.viewMode = defaultViewMode(for: selectedTimeRange)
@@ -74,6 +86,15 @@ class DataVisualizationViewModel: ObservableObject {
     }
 
     func loadSessions() async {
+        // Check if user has access to the selected time range
+        if let featureGate = featureGateService {
+            if !featureGate.hasAccessToTimeRange(selectedTimeRange) {
+                showPaywall = true
+                isLoading = false
+                return
+            }
+        }
+
         isLoading = true
         errorMessage = nil
 
@@ -123,8 +144,8 @@ class DataVisualizationViewModel: ObservableObject {
 
     /// Reloads sessions when time range changes
     func reloadForTimeRange() async {
-        // Update default view mode for new time range
-        viewMode = defaultViewMode(for: selectedTimeRange)
+        // Don't reset viewMode here - it's already handled by selectedTimeRange didSet
+        // This allows users to manually change view mode without it being reset on reload
         await loadSessions()
     }
 

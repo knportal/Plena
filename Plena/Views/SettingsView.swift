@@ -6,14 +6,47 @@
 //
 
 import SwiftUI
+import Combine
 #if os(iOS)
 import UIKit
 #endif
 
+// For watchOS, show a message since subscription management is handled on iPhone
+#if os(watchOS)
+private struct SubscriptionManagementView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "iphone")
+                .font(.largeTitle)
+            Text("Subscription management is available on iPhone")
+                .multilineTextAlignment(.center)
+                .padding()
+        }
+    }
+}
+#endif
+
+@MainActor
 struct SettingsView: View {
-    @StateObject private var viewModel = SettingsViewModel()
+    @StateObject private var viewModel: SettingsViewModel
     @State private var showHealthInstructions = false
+    @State private var showSubscriptionView = false
+    @State private var showExportSheet = false
+    @State private var showPaywall = false
+    @State private var subscriptionStatus: SubscriptionStatus = .notSubscribed
     private let healthKitService = HealthKitService()
+    private let subscriptionService: SubscriptionService
+    private let featureGateService: FeatureGateService
+
+    init() {
+        // Initialize with feature gate service if available
+        // Create subscription service on main actor (guaranteed by @MainActor on struct)
+        let subscriptionService = SubscriptionService()
+        let featureGateService = FeatureGateService(subscriptionService: subscriptionService)
+        _viewModel = StateObject(wrappedValue: SettingsViewModel(featureGateService: featureGateService))
+        self.subscriptionService = subscriptionService
+        self.featureGateService = featureGateService
+    }
 
     var body: some View {
         NavigationStack {
@@ -41,19 +74,21 @@ struct SettingsView: View {
                         isEnabled: $viewModel.respiratoryRateEnabled
                     )
 
-                    SensorToggleRow(
-                        title: "VO₂ Max",
-                        icon: "figure.run",
-                        iconColor: .orange,
-                        isEnabled: $viewModel.vo2MaxEnabled
-                    )
+                    if viewModel.hasAdvancedSensors {
+                        SensorToggleRow(
+                            title: "VO₂ Max",
+                            icon: "figure.run",
+                            iconColor: .orange,
+                            isEnabled: $viewModel.vo2MaxEnabled
+                        )
 
-                    SensorToggleRow(
-                        title: "Temperature",
-                        icon: "thermometer",
-                        iconColor: .purple,
-                        isEnabled: $viewModel.temperatureEnabled
-                    )
+                        SensorToggleRow(
+                            title: "Temperature",
+                            icon: "thermometer",
+                            iconColor: .purple,
+                            isEnabled: $viewModel.temperatureEnabled
+                        )
+                    }
                 } header: {
                     Text("Sensors")
                 } footer: {
@@ -63,6 +98,11 @@ struct SettingsView: View {
                         Text("Note: Different Apple Watch models support different sensors. It is your responsibility to verify that your Apple Watch model supports the sensors you wish to use. Some sensors require specific Apple Watch models (e.g., HRV requires Series 4+, Respiratory Rate requires Series 6+, Temperature requires Series 8+).")
                             .font(.caption)
                             .foregroundColor(.secondary)
+
+                        Text("Measurement Methods: Respiratory Rate on Apple Watch is algorithmically derived from accelerometer, motion sensor, and photoplethysmography (PPG) data, rather than directly counting breaths. This derived measurement provides an estimation of breathing frequency.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
                     }
                 }
 
@@ -190,8 +230,60 @@ struct SettingsView: View {
                     """)
                 }
 
-                // Test Data Section (iOS only)
+                // Data Export Section (iOS only)
                 #if os(iOS)
+                Section {
+                    Button(action: {
+                        // Check premium access
+                        if featureGateService.hasAccess(to: .dataExport) {
+                            showExportSheet = true
+                        } else {
+                            showPaywall = true
+                        }
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.title3)
+                                .foregroundColor(Color("PlenaPrimary"))
+                                .frame(width: 30)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack {
+                                    Text("Export Data")
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+
+                                    if !featureGateService.hasAccess(to: .dataExport) {
+                                        Image(systemName: "star.fill")
+                                            .font(.caption)
+                                            .foregroundColor(.yellow)
+                                    }
+                                }
+                                Text("Export session data to CSV")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                } header: {
+                    Text("Data")
+                } footer: {
+                    if featureGateService.hasAccess(to: .dataExport) {
+                        Text("Export your meditation session data as CSV files for analysis or backup.")
+                    } else {
+                        Text("Export your meditation session data as CSV files. Available with Premium subscription.")
+                    }
+                }
+                #endif
+
+                // Test Data Section (iOS only, DEBUG builds only)
+                #if os(iOS) && DEBUG
                 Section {
                     NavigationLink(destination: TestDataView()) {
                         HStack(spacing: 12) {
@@ -209,12 +301,80 @@ struct SettingsView: View {
                             }
                         }
                     }
+
+                    NavigationLink(destination: AnalyticsView()) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "chart.bar.doc.horizontal")
+                                .font(.title3)
+                                .foregroundColor(Color("PlenaPrimary"))
+                                .frame(width: 30)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("HRV Analytics")
+                                    .font(.body)
+                                Text("View data collection statistics")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+
+                    Button(action: {
+                        SessionAnalyticsService().printAnalytics()
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "doc.text.magnifyingglass")
+                                .font(.title3)
+                                .foregroundColor(Color("PlenaPrimary"))
+                                .frame(width: 30)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Print Analytics to Console")
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                                Text("For debugging")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
                 } header: {
-                    Text("Testing")
+                    Text("Testing & Diagnostics")
                 } footer: {
-                    Text("Generate test data with realistic sensor readings to preview features and test the app.")
+                    Text("Development tools. Available in debug builds only.")
                 }
                 #endif
+
+                // Subscription Section
+                Section {
+                    Button(action: {
+                        showSubscriptionView = true
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "star.fill")
+                                .font(.title3)
+                                .foregroundColor(Color("PlenaPrimary"))
+                                .frame(width: 30)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Subscription")
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                                Text(subscriptionStatus.isPremium ? "Premium" : "Free")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                } header: {
+                    Text("Subscription")
+                }
 
                 // About Section
                 Section {
@@ -257,6 +417,44 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showSubscriptionView) {
+                #if os(watchOS)
+                SubscriptionManagementView()
+                #else
+                SubscriptionView(subscriptionService: subscriptionService)
+                #endif
+            }
+            #if os(iOS)
+            .sheet(isPresented: $showExportSheet) {
+                DataExportView()
+            }
+            .sheet(isPresented: $showPaywall) {
+                SubscriptionPaywallView(
+                    feature: .dataExport,
+                    isPresented: $showPaywall
+                )
+            }
+            #endif
+            .onAppear {
+                // Refresh subscription status when view appears
+                Task {
+                    await subscriptionService.checkSubscriptionStatus()
+                    subscriptionStatus = subscriptionService.currentSubscriptionStatus()
+                }
+            }
+            .onChange(of: showSubscriptionView) { oldValue, newValue in
+                // Refresh subscription status when subscription view is dismissed
+                if oldValue == true && newValue == false {
+                    Task {
+                        await subscriptionService.checkSubscriptionStatus()
+                        subscriptionStatus = subscriptionService.currentSubscriptionStatus()
+                    }
+                }
+            }
+            .onReceive(subscriptionService.subscriptionStatus.eraseToAnyPublisher()) { status in
+                // Observe subscription status changes
+                subscriptionStatus = status
+            }
         }
     }
 }

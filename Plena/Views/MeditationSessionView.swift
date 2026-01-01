@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 // iOS 16 compatible pulsing heart animation
 struct PulsingHeartView: View {
@@ -27,6 +28,7 @@ enum SensorDataStatus {
     case receiving
     case waiting
     case noSensorsEnabled
+    case watchOffWrist
 
     var displayName: String {
         switch self {
@@ -36,6 +38,8 @@ enum SensorDataStatus {
             return "Waiting for data..."
         case .noSensorsEnabled:
             return "No sensors enabled"
+        case .watchOffWrist:
+            return "No sensor data"
         }
     }
 
@@ -47,6 +51,8 @@ enum SensorDataStatus {
             return "hourglass"
         case .noSensorsEnabled:
             return "exclamationmark.circle"
+        case .watchOffWrist:
+            return "applewatch.slash"
         }
     }
 
@@ -58,6 +64,8 @@ enum SensorDataStatus {
             return .orange
         case .noSensorsEnabled:
             return .secondary
+        case .watchOffWrist:
+            return .red
         }
     }
 }
@@ -84,12 +92,21 @@ struct SensorDataStatusView: View {
 
 struct MeditationSessionView: View {
     @StateObject private var viewModel: MeditationSessionViewModel
-    @StateObject private var settingsViewModel = SettingsViewModel()
+    @StateObject private var settingsViewModel: SettingsViewModel
+    @State private var showPaywall = false
+    @State private var screenDimmed = false
+    @State private var savedBrightness: CGFloat = 0.5
 
     init(healthKitService: HealthKitServiceProtocol) {
+        // Initialize subscription services
+        let subscriptionService = SubscriptionService()
+        let featureGateService = FeatureGateService(subscriptionService: subscriptionService)
+
+        _settingsViewModel = StateObject(wrappedValue: SettingsViewModel(featureGateService: featureGateService))
         _viewModel = StateObject(wrappedValue: MeditationSessionViewModel(
             healthKitService: healthKitService,
-            storageService: CoreDataStorageService()
+            storageService: CoreDataStorageService(),
+            featureGateService: featureGateService
         ))
     }
 
@@ -106,146 +123,107 @@ struct MeditationSessionView: View {
                         .foregroundColor(.secondary)
                 }
             } else if viewModel.isTracking {
-                VStack(spacing: 30) {
-                    PulsingHeartView()
-                        .font(.system(size: 60))
-                        .foregroundColor(Color("HeartRateColor"))
+                VStack(spacing: 40) {
+                    // Timer display
+                    Text(formatElapsedTime(viewModel.sessionElapsedTime))
+                        .font(.system(size: 72, weight: .light, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundColor(.primary)
+                        .opacity(screenDimmed ? 0.3 : 1.0)
 
-                    Text("Live Tracking")
-                        .font(.largeTitle)
-                        .fontWeight(.semibold)
+                    Text("Session in progress")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                        .opacity(screenDimmed ? 0.3 : 1.0)
 
-                    // Sensor data status indicator
-                    SensorDataStatusView(
-                        status: {
-                            if !viewModel.hasEnabledSensors(settings: settingsViewModel) {
-                                return .noSensorsEnabled
-                            } else if viewModel.hasActiveSensorData(settings: settingsViewModel) {
-                                return .receiving
-                            } else {
-                                return .waiting
-                            }
-                        }()
-                    )
-                    .padding(.horizontal)
-
-                    // Real-time sensor data as soft rounded buttons
-                    VStack(spacing: 12) {
-                        // Primary metrics row
-                        HStack(spacing: 12) {
-                            // Heart Rate Button
-                            if settingsViewModel.heartRateEnabled, let heartRate = viewModel.currentHeartRate {
-                                SensorValueCard(
-                                    icon: "heart.fill",
-                                    iconColor: Color("HeartRateColor"),
-                                    value: "\(Int(heartRate))",
-                                    unit: "BPM",
-                                    label: "Heart Rate",
-                                    size: SensorValueCard.CardSize.large,
-                                    zone: viewModel.currentHeartRateZone,
-                                    isStale: viewModel.isHeartRateStale
-                                )
-                            }
-
-                            // HRV Button
-                            if settingsViewModel.hrvEnabled, let hrv = viewModel.currentHRV {
-                                SensorValueCard(
-                                    icon: "waveform.path.ecg",
-                                    iconColor: Color("HRVColor"),
-                                    value: "\(Int(hrv))",
-                                    unit: "ms",
-                                    label: "HRV (SDNN)",
-                                    size: SensorValueCard.CardSize.large,
-                                    zone: viewModel.currentHRVZone,
-                                    isStale: viewModel.isHRVStale
-                                )
-                            }
-
-                            // Respiratory Rate Button
-                            if settingsViewModel.respiratoryRateEnabled, let respiratoryRate = viewModel.currentRespiratoryRate {
-                                SensorValueCard(
-                                    icon: "wind",
-                                    iconColor: Color("RespiratoryColor"),
-                                    value: "\(Int(respiratoryRate))",
-                                    unit: "/min",
-                                    label: "Respiratory Rate",
-                                    size: SensorValueCard.CardSize.large,
-                                    isStale: viewModel.isRespiratoryRateStale
-                                )
-                            }
-
-                            // Waiting state
-                            if !hasAnyEnabledPrimarySensor(settingsViewModel) ||
-                               (settingsViewModel.heartRateEnabled && viewModel.currentHeartRate == nil &&
-                                settingsViewModel.hrvEnabled && viewModel.currentHRV == nil &&
-                                settingsViewModel.respiratoryRateEnabled && viewModel.currentRespiratoryRate == nil) {
-                                Text("Waiting for sensor data...")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .frame(maxWidth: .infinity)
-                            }
+                    // Simple watch connection status
+                    if viewModel.watchConnectionStatus == .connected && !screenDimmed {
+                        HStack(spacing: 6) {
+                            Image(systemName: "applewatch")
+                            Text("Watch connected")
                         }
-
-                        // Secondary metrics row (VO2 Max and Temperature)
-                        HStack(spacing: 12) {
-                            // VO2 Max Button
-                            if settingsViewModel.vo2MaxEnabled {
-                                if let vo2Max = viewModel.currentVO2Max {
-                                    SensorValueCard(
-                                        icon: "figure.run",
-                                        iconColor: Color("VO2MaxColor"),
-                                        value: String(format: "%.1f", vo2Max),
-                                        unit: "mL/kg/min",
-                                        label: "VO₂ Max",
-                                        size: SensorValueCard.CardSize.large
-                                    )
-                                } else if viewModel.vo2MaxAvailable == false {
-                                    SensorValueCard(
-                                        icon: "figure.run",
-                                        iconColor: Color.gray.opacity(0.5),
-                                        value: "—",
-                                        unit: "Not available",
-                                        label: "VO₂ Max",
-                                        size: SensorValueCard.CardSize.large,
-                                        isUnavailable: true
-                                    )
-                                }
-                            }
-
-                            // Temperature Button
-                            if settingsViewModel.temperatureEnabled {
-                                if let temperatureCelsius = viewModel.currentTemperature {
-                                    let convertedTemp = settingsViewModel.convertTemperature(temperatureCelsius)
-                                    SensorValueCard(
-                                        icon: "thermometer",
-                                        iconColor: Color("TemperatureColor"),
-                                        value: String(format: "%.1f", convertedTemp),
-                                        unit: settingsViewModel.temperatureUnitSymbol,
-                                        label: "Temperature",
-                                        size: SensorValueCard.CardSize.large
-                                    )
-                                } else if viewModel.temperatureAvailable == false {
-                                    SensorValueCard(
-                                        icon: "thermometer",
-                                        iconColor: Color.gray.opacity(0.5),
-                                        value: "—",
-                                        unit: "Not available",
-                                        label: "Temperature",
-                                        size: SensorValueCard.CardSize.large,
-                                        isUnavailable: true
-                                    )
-                                }
-                            }
-                        }
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     }
-                    .padding(.horizontal)
+
+                    Spacer()
 
                     Button("Stop Session") {
                         viewModel.stopSession()
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
+                    .opacity(screenDimmed ? 0.3 : 1.0)
                 }
+                .padding()
+                .onAppear {
+                    // Prevent auto-lock during session
+                    savedBrightness = UIScreen.main.brightness
+                    UIApplication.shared.isIdleTimerDisabled = true
+
+                    // Dim screen after 15 seconds
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
+                        guard viewModel.isTracking else { return }
+                        withAnimation(.easeOut(duration: 2.0)) {
+                            screenDimmed = true
+                            UIScreen.main.brightness = 0.1
+                        }
+                    }
+                }
+                .onDisappear {
+                    // Re-enable auto-lock and restore brightness
+                    UIApplication.shared.isIdleTimerDisabled = false
+                    if screenDimmed {
+                        UIScreen.main.brightness = savedBrightness
+                        screenDimmed = false
+                    }
+                }
+                .onTapGesture {
+                    // Wake up screen on tap
+                    if screenDimmed {
+                        withAnimation(.easeIn(duration: 0.3)) {
+                            screenDimmed = false
+                            UIScreen.main.brightness = savedBrightness
+                        }
+
+                        // Auto-dim again after 10 seconds
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                            guard viewModel.isTracking && !screenDimmed else { return }
+                            withAnimation(.easeOut(duration: 2.0)) {
+                                screenDimmed = true
+                                UIScreen.main.brightness = 0.1
+                            }
+                        }
+                    }
+                }
+            } else if viewModel.isWaitingForSessionPackage {
+                // Loading state while waiting for post-session package
+                VStack(spacing: 30) {
+                    ProgressView()
+                        .scaleEffect(1.5)
+
+                    Text("Syncing with Apple Watch...")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+
+                    Text("Receiving session data")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+
+                    // Add skip button for user control
+                    Button(action: {
+                        // User wants to skip waiting - show local summary
+                        viewModel.forceShowLocalSummary()
+                    }) {
+                        Text("Show Summary Now")
+                            .font(.footnote)
+                            .foregroundColor(.accentColor)
+                    }
+                    .padding(.top, 20)
+                }
+                .padding()
             } else {
                 VStack(spacing: 30) {
                     Image(systemName: "leaf.fill")
@@ -256,7 +234,7 @@ struct MeditationSessionView: View {
                         .font(.largeTitle)
                         .fontWeight(.bold)
 
-                    Text("Monitor your biometrics in real-time: heart rate, HRV, breathing, and more (requires Apple Watch)")
+                    Text("Monitor your biometrics: heart rate (continuous), HRV & breathing (periodic updates) - requires Apple Watch")
                         .font(.body)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -323,8 +301,16 @@ struct MeditationSessionView: View {
 
     // MARK: - Helper Functions
 
-    private func hasAnyEnabledPrimarySensor(_ settings: SettingsViewModel) -> Bool {
-        return settings.heartRateEnabled || settings.hrvEnabled || settings.respiratoryRateEnabled
+    private func formatElapsedTime(_ timeInterval: TimeInterval) -> String {
+        let hours = Int(timeInterval) / 3600
+        let minutes = Int(timeInterval) / 60 % 60
+        let seconds = Int(timeInterval) % 60
+
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%d:%02d", minutes, seconds)
+        }
     }
 }
 

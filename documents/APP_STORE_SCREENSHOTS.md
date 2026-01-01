@@ -1,6 +1,6 @@
 # App Store Screenshot Requirements Guide
 
-Complete guide for creating App Store screenshots for Plena meditation tracking app.
+Complete guide for creating App Store screenshots for Plena mindfulness tracking app.
 
 ---
 
@@ -65,12 +65,12 @@ Complete guide for creating App Store screenshots for Plena meditation tracking 
 
 **iOS App Screenshots:**
 
-1. **Screenshot 1: Main Meditation Screen**
+1. **Screenshot 1: Main mindfulness screen**
 
    - Show real-time heart rate, HRV, respiratory rate
    - Display stress zone indicators (Calm/Optimal/Elevated)
    - Clean, focused interface
-   - Text overlay (optional): "Track meditation with real-time biometrics"
+   - Text overlay (optional): "Track mindfulness with real-time biometrics"
 
 2. **Screenshot 2: Stress Zone Classification**
 
@@ -91,7 +91,7 @@ Complete guide for creating App Store screenshots for Plena meditation tracking 
    - Show interactive graphs
    - Display multiple sensors (HR, HRV, breathing)
    - Demonstrate time range views
-   - Text overlay (optional): "See your meditation journey visualized"
+   - Text overlay (optional): "See your mindfulness journey visualized"
 
 5. **Screenshot 5: Session Summary**
 
@@ -113,7 +113,7 @@ Complete guide for creating App Store screenshots for Plena meditation tracking 
    - Show real-time sensor readings on Watch
    - Display heart rate with zone indicator
    - Clean, readable Watch interface
-   - Text overlay (optional): "Track meditation on your wrist"
+   - Text overlay (optional): "Track mindfulness on your wrist"
 
 2. **Screenshot 2: Multiple Sensors**
    - Show scrolling through sensors (HR, HRV, breathing)
@@ -203,11 +203,11 @@ Complete guide for creating App Store screenshots for Plena meditation tracking 
 
 **Content Examples:**
 
-- "Track meditation with real-time biometrics"
+- "Track mindfulness with real-time biometrics"
 - "Understand your body's response"
 - "See your progress visualized"
 - "Start sessions from your Apple Watch"
-- "Data-driven meditation insights"
+- "Data-driven mindfulness insights"
 
 **Avoid:**
 
@@ -335,12 +335,12 @@ Before submitting screenshots, verify:
 
 **Content:**
 
-- Main meditation screen with live data
+- Main mindfulness screen with live data
 - Clean, calming interface
 - Real-time heart rate, HRV, breathing
 
 **Text Overlay Example:**
-"Track meditation with real-time biometrics"
+"Track mindfulness with real-time biometrics"
 
 **Why:** First impression should immediately show what app does
 
@@ -379,7 +379,7 @@ Before submitting screenshots, verify:
 - Time range views (Week/Month)
 
 **Text Overlay Example:**
-"See your meditation journey visualized"
+"See your mindfulness journey visualized"
 
 **Why:** Demonstrates depth of data analysis
 

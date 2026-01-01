@@ -55,7 +55,7 @@ struct MeditationWatchView: View {
                                 Text("Avg BPM")
                                     .font(.caption2)
                                     .fontWeight(.semibold)
-                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
+                                    .foregroundColor(Color("TextSecondaryColor"))
                             }
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity)
@@ -65,31 +65,33 @@ struct MeditationWatchView: View {
                             )
                         }
 
-                        // HRV Change
-                        if let hrvStart = summary.hrvStart,
-                           let hrvEnd = summary.hrvEnd,
-                           let hrvChange = summary.hrvChange {
+                        // Average HRV
+                        if let avgHRV = summary.averageHRV {
                             VStack(spacing: 4) {
                                 Image(systemName: "waveform.path.ecg")
                                     .font(.caption)
                                     .foregroundColor(Color("HRVColor"))
-                                HStack(spacing: 4) {
-                                    Text("\(Int(hrvStart))")
-                                        .font(.caption)
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(Color("TextPrimaryColor"))
-                                    Image(systemName: "arrow.right")
-                                        .font(.caption2)
-                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.8))
-                                    Text("\(Int(hrvEnd))")
-                                        .font(.caption)
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(Color("TextPrimaryColor"))
-                                }
-                                Text(hrvChange >= 0 ? "+\(Int(hrvChange)) ms" : "\(Int(hrvChange)) ms")
+                                Text("\(Int(avgHRV))")
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(Color("TextPrimaryColor"))
+                                Text("Avg HRV (ms)")
                                     .font(.caption2)
                                     .fontWeight(.semibold)
-                                    .foregroundColor(hrvChange >= 0 ? Color("SuccessColor") : Color("WarningColor"))
+                                    .foregroundColor(Color("TextSecondaryColor"))
+
+                                // HRV Trend indicator
+                                if summary.hrvTrend != .insufficientData {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: trendIcon(summary.hrvTrend))
+                                            .font(.caption2)
+                                            .foregroundColor(trendColor(summary.hrvTrend))
+                                        Text(trendText(summary.hrvTrend))
+                                            .font(.caption2)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(trendColor(summary.hrvTrend))
+                                    }
+                                }
                             }
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity)
@@ -112,7 +114,7 @@ struct MeditationWatchView: View {
                                 Text("Breaths/min")
                                     .font(.caption2)
                                     .fontWeight(.semibold)
-                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
+                                    .foregroundColor(Color("TextSecondaryColor"))
                             }
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity)
@@ -131,187 +133,23 @@ struct MeditationWatchView: View {
                     }
                 }
             } else if viewModel.isTracking {
-                ScrollView {
-                    VStack(spacing: 15) {
-                        // Heart Rate
-                        if settingsViewModel.heartRateEnabled, let heartRate = viewModel.currentHeartRate {
-                            VStack(spacing: 5) {
-                                Image(systemName: "heart.fill")
-                                    .font(.title2)
-                                    .foregroundColor(Color("HeartRateColor"))
-                                Text("\(Int(heartRate))")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color("TextPrimaryColor"))
-                                Text("BPM")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
+                // Check if this is a remote session (started from iPhone)
+                if viewModel.isRemoteSession {
+                    // Silent background mode - no UI needed
+                    // Watch collects data in background only
+                    EmptyView()
+                } else {
+                    // Local watch session - show timer UI
+                    VStack(spacing: 20) {
+                        // Timer display
+                        Text(formatElapsedTime(viewModel.sessionElapsedTime))
+                            .font(.system(size: 48, weight: .light, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundColor(.primary)
 
-                                // Zone indicator
-                                if let zone = viewModel.currentHeartRateZone {
-                                    Text(zone.displayName)
-                                        .font(.caption2)
-                                        .foregroundColor(zone.color)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 2)
-                                        .background(
-                                            Capsule()
-                                                .fill(zone.backgroundColor)
-                                        )
-                                }
-                            }
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(viewModel.currentHeartRateZone?.backgroundColor ?? Color.clear)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(viewModel.currentHeartRateZone?.borderColor ?? Color.clear, lineWidth: viewModel.currentHeartRateZone != nil ? 1.5 : 0)
-                                    )
-                            )
-                        }
-
-                        // HRV
-                        if settingsViewModel.hrvEnabled, let hrv = viewModel.currentHRV {
-                            VStack(spacing: 5) {
-                                Image(systemName: "waveform.path.ecg")
-                                    .font(.title2)
-                                    .foregroundColor(Color("HRVColor"))
-                                Text("\(Int(hrv))")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color("TextPrimaryColor"))
-                                Text("ms SDNN")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
-
-                                // Zone indicator
-                                if let zone = viewModel.currentHRVZone {
-                                    Text(zone.displayName)
-                                        .font(.caption2)
-                                        .foregroundColor(zone.color)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 2)
-                                        .background(
-                                            Capsule()
-                                                .fill(zone.backgroundColor)
-                                        )
-                                }
-                            }
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(viewModel.currentHRVZone?.backgroundColor ?? Color.clear)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(viewModel.currentHRVZone?.borderColor ?? Color.clear, lineWidth: viewModel.currentHRVZone != nil ? 1.5 : 0)
-                                    )
-                            )
-                        }
-
-                        // Respiratory Rate
-                        if settingsViewModel.respiratoryRateEnabled, let respiratoryRate = viewModel.currentRespiratoryRate {
-                            VStack(spacing: 5) {
-                                Image(systemName: "wind")
-                                    .font(.title2)
-                                    .foregroundColor(Color("RespiratoryColor"))
-                                Text("\(Int(respiratoryRate))")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color("TextPrimaryColor"))
-                                Text("/min")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
-                            }
-                            .padding()
-                        }
-
-                        // VO2 Max
-                        if settingsViewModel.vo2MaxEnabled {
-                            if let vo2Max = viewModel.currentVO2Max {
-                                VStack(spacing: 5) {
-                                    Image(systemName: "figure.run")
-                                        .font(.title2)
-                                        .foregroundColor(Color("VO2MaxColor"))
-                                    Text(String(format: "%.1f", vo2Max))
-                                        .font(.title3)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(Color("TextPrimaryColor"))
-                                    Text("VO₂ Max")
-                                        .font(.caption)
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
-                                }
-                                .padding()
-                            } else if viewModel.vo2MaxAvailable == false {
-                                VStack(spacing: 5) {
-                                    Image(systemName: "figure.run")
-                                        .font(.title2)
-                                        .foregroundColor(.gray.opacity(0.5))
-                                    Text("—")
-                                        .font(.title3)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.secondary)
-                                    Text("Not available")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .padding()
-                            }
-                        }
-
-                        // Temperature
-                        if settingsViewModel.temperatureEnabled {
-                            if let temperatureCelsius = viewModel.currentTemperature {
-                                let convertedTemp = settingsViewModel.convertTemperature(temperatureCelsius)
-                                VStack(spacing: 5) {
-                                    Image(systemName: "thermometer")
-                                        .font(.title2)
-                                        .foregroundColor(Color("TemperatureColor"))
-                                    Text(String(format: "%.1f", convertedTemp))
-                                        .font(.title3)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(Color("TextPrimaryColor"))
-                                    Text(settingsViewModel.temperatureUnitSymbol)
-                                        .font(.caption)
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.9))
-                                }
-                                .padding()
-                            } else if viewModel.temperatureAvailable == false {
-                                VStack(spacing: 5) {
-                                    Image(systemName: "thermometer")
-                                        .font(.title2)
-                                        .foregroundColor(.gray.opacity(0.5))
-                                    Text("—")
-                                        .font(.title3)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.7))
-                                    Text("Not available")
-                                        .font(.caption)
-                                        .fontWeight(.medium)
-                                        .foregroundColor(Color("TextSecondaryColor").opacity(0.7))
-                                }
-                                .padding()
-                            }
-                        }
-
-                        // Waiting state
-                        if !hasAnyEnabledSensor(settingsViewModel) ||
-                           (settingsViewModel.heartRateEnabled && viewModel.currentHeartRate == nil &&
-                            settingsViewModel.hrvEnabled && viewModel.currentHRV == nil &&
-                            settingsViewModel.respiratoryRateEnabled && viewModel.currentRespiratoryRate == nil) {
-                            PulsingHeartView()
-                                .font(.system(size: 40))
-                                .foregroundColor(Color("HeartRateColor"))
-                            Text("Waiting for data...")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(Color("TextSecondaryColor").opacity(0.8))
-                        }
+                        Text("Session in progress")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
 
                         Button("Stop") {
                             viewModel.stopSession()
@@ -372,6 +210,35 @@ struct MeditationWatchView: View {
             }
         }
         .onAppear {
+            // Set up workout session request handler from iPhone
+            #if os(watchOS)
+            let watchConnectivity = WatchConnectivityService.shared
+            watchConnectivity.onWorkoutSessionRequested { [weak viewModel] in
+                Task {
+                    // Start workout session when requested from iPhone
+                    // The viewModel will handle this through its startSession flow
+                    // But we need to ensure the workout session service starts
+                    await viewModel?.startWorkoutSessionFromRequest()
+                }
+            }
+
+            // Set up meditation session request handler from iPhone
+            watchConnectivity.onMeditationSessionRequested { [weak viewModel] in
+                Task {
+                    // Start meditation session in background (no UI) when requested from iPhone
+                    await viewModel?.startSession(isRemote: true)
+                }
+            }
+
+            // Set up session stop request handler from iPhone
+            watchConnectivity.onSessionStopRequested { [weak viewModel] in
+                Task { @MainActor in
+                    // Stop the session when requested from iPhone
+                    viewModel?.stopSession()
+                }
+            }
+            #endif
+
             // If tracking when view appears, ensure session management is active
             if viewModel.isTracking {
                 ExtensionDelegate.shared?.startSession()
@@ -394,6 +261,57 @@ struct MeditationWatchView: View {
     private func hasAnyEnabledSensor(_ settings: SettingsViewModel) -> Bool {
         return settings.heartRateEnabled || settings.hrvEnabled || settings.respiratoryRateEnabled ||
                settings.vo2MaxEnabled || settings.temperatureEnabled
+    }
+
+    private func formatElapsedTime(_ timeInterval: TimeInterval) -> String {
+        let hours = Int(timeInterval) / 3600
+        let minutes = Int(timeInterval) / 60 % 60
+        let seconds = Int(timeInterval) % 60
+
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%d:%02d", minutes, seconds)
+        }
+    }
+
+    private func trendIcon(_ trend: SessionSummary.HRVTrend) -> String {
+        switch trend {
+        case .increasing:
+            return "arrow.up.right"
+        case .decreasing:
+            return "arrow.down.right"
+        case .stable:
+            return "arrow.right"
+        case .insufficientData:
+            return "minus"
+        }
+    }
+
+    private func trendColor(_ trend: SessionSummary.HRVTrend) -> Color {
+        switch trend {
+        case .increasing:
+            return Color("SuccessColor")
+        case .decreasing:
+            return Color("WarningColor")
+        case .stable:
+            return Color("TextSecondaryColor")
+        case .insufficientData:
+            return Color("TextSecondaryColor")
+        }
+    }
+
+    private func trendText(_ trend: SessionSummary.HRVTrend) -> String {
+        switch trend {
+        case .increasing:
+            return "Increasing"
+        case .decreasing:
+            return "Decreasing"
+        case .stable:
+            return "Stable"
+        case .insufficientData:
+            return "Insufficient data"
+        }
     }
 }
 

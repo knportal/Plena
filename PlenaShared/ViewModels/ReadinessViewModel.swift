@@ -15,24 +15,58 @@ class ReadinessViewModel: ObservableObject {
     @Published var selectedDate: Date = Date()
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var showPaywall = false
 
     let storageService: SessionStorageServiceProtocol
     let healthKitService: HealthKitServiceProtocol?
     private let readinessService: ReadinessScoreServiceProtocol
+    private let featureGateService: FeatureGateServiceProtocol?
+
+    // Track the last date we loaded data for to prevent reloading the same date
+    private var lastLoadedDate: Date?
 
     init(
         storageService: SessionStorageServiceProtocol = CoreDataStorageService(),
         healthKitService: HealthKitServiceProtocol? = nil,
-        readinessService: ReadinessScoreServiceProtocol = ReadinessScoreService()
+        readinessService: ReadinessScoreServiceProtocol = ReadinessScoreService(),
+        featureGateService: FeatureGateServiceProtocol? = nil
     ) {
         self.storageService = storageService
         self.healthKitService = healthKitService
         self.readinessService = readinessService
+        self.featureGateService = featureGateService
+    }
+
+    /// Check if user has access to readiness score
+    var hasAccess: Bool {
+        featureGateService?.hasAccess(to: .readinessScore) ?? true // Default to true if no service
     }
 
     // MARK: - Data Loading
 
     func loadReadinessScore(for date: Date) async {
+        // Guard against concurrent loads - if already loading, return early
+        if isLoading {
+            return
+        }
+
+        // Guard against reloading the same date if we already have data
+        if let lastDate = lastLoadedDate,
+           Calendar.current.isDate(date, inSameDayAs: lastDate),
+           readinessScore != nil {
+            return
+        }
+
+        // Check premium access (async to ensure fresh status)
+        if let featureGate = featureGateService {
+            let hasAccess = await featureGate.checkAccess(to: .readinessScore)
+            if !hasAccess {
+                showPaywall = true
+                isLoading = false
+                return
+            }
+        }
+
         isLoading = true
         errorMessage = nil
 
@@ -48,6 +82,7 @@ class ReadinessViewModel: ObservableObject {
             )
 
             readinessScore = score
+            lastLoadedDate = date // Track that we've loaded data for this date
 
             // Also load yesterday's score for comparison
             if let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: date) {

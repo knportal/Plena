@@ -73,3 +73,10 @@ echo "After resetting, test the permission flow by:"
 echo "  1. Opening the app"
 echo "  2. Starting a meditation session"
 echo "  3. Observing the permission dialog"
+
+
+
+
+
+
+

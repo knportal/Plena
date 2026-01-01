@@ -24,3 +24,10 @@ struct StateOfMindLog: Identifiable, Codable {
 
 
 
+
+
+
+
+
+
+

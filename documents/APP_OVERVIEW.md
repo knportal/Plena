@@ -2,7 +2,7 @@
 
 ## What is Plena?
 
-**Plena** is a meditation tracking application for iPhone and Apple Watch that monitors your biometric data in real time during meditation sessions. By tracking heart rate, heart rate variability (HRV), respiratory rate, and other vital signs, Plena helps you understand how your body responds to meditation and track your progress over time.
+**Plena** is a mindfulness tracking application for iPhone and Apple Watch that monitors your biometric data in real time during mindfulness sessions. By tracking heart rate, heart rate variability (HRV), respiratory rate, and other vital signs, Plena helps you understand how your body responds to mindfulness sessions and track your progress over time.
 
 ---
 
@@ -30,7 +30,7 @@ When they work in harmony, the triangle becomes balanced — stable, coherent, a
 
 ### Real-Time Biometric Tracking
 
-Plena tracks multiple biometric signals during your meditation sessions:
+Plena tracks multiple biometric signals during your mindfulness sessions:
 
 - **Heart Rate (HR)** - Monitors your heart rate in beats per minute (BPM)
 - **Heart Rate Variability (HRV/SDNN)** - Measures the variation between heartbeats, indicating your body's ability to adapt to stress
@@ -52,10 +52,10 @@ These zones provide instant visual feedback to help you understand your current 
 
 ### Comprehensive Dashboard
 
-View your meditation progress at a glance:
+View your mindfulness progress at a glance:
 
-- **Session Statistics** - Total sessions, total meditation time, current streak
-- **Trend Analysis** - See how your meditation practice evolves over time
+- **Session Statistics** - Total sessions, total session time, current streak
+- **Trend Analysis** - See how your mindfulness practice evolves over time
 - **Session Frequency Charts** - Visualize your consistency
 - **Duration Trends** - Track session length patterns
 - **HRV Insights** - Get personalized insights about your heart rate variability trends
@@ -64,7 +64,7 @@ The dashboard supports multiple time ranges: Day, Week, Month, and Year views.
 
 ### Interactive Data Visualization
 
-Explore your historical meditation data with beautiful, interactive graphs:
+Explore your historical session data with beautiful, interactive graphs:
 
 - **Time-Based Views** - Day, Week, Month, and Year perspectives
 - **Sensor-Specific Charts** - Individual graphs for each biometric measurement
@@ -73,18 +73,20 @@ Explore your historical meditation data with beautiful, interactive graphs:
 
 ### Apple Watch Integration
 
-Start and track meditation sessions directly from your Apple Watch:
+Start and track mindfulness sessions directly from your Apple Watch:
 
 - **Independent Operation** - Works independently from your iPhone
-- **Real-Time Display** - See sensor readings on your wrist
+- **Real-Time Display** - See sensor readings on your wrist during sessions
+- **Live Data Sync** - Streams sensor data directly to iPhone in real-time
 - **Zone Indicators** - Visual stress zone feedback on the Watch face
 - **Easy Controls** - Start/stop sessions with a simple tap
 - **3-2-1 Countdown** - Gentle preparation countdown before sessions begin
+- **Seamless Integration** - iPhone displays timer while Watch handles sensor measurements
 
 ### Session Management
 
 - **Session Summaries** - Review detailed statistics after each session
-- **State of Mind Logging** - Record how you felt during meditation
+- **State of Mind Logging** - Record how you felt during mindfulness sessions
 - **Automatic Saving** - All sessions are automatically saved to your device
 - **Historical Import** - Import existing HealthKit data from past sessions
 
@@ -93,8 +95,19 @@ Start and track meditation sessions directly from your Apple Watch:
 Plena analyzes your data to provide meaningful insights:
 
 - **Weekly HRV Trends** - Compare current week to previous week
-- **Improvement Tracking** - Identify positive trends in your meditation practice
+- **Improvement Tracking** - Identify positive trends in your mindfulness practice
 - **Pattern Recognition** - Discover what times or durations work best for you
+- **Readiness Score** - Daily score (0-100) combining Resting Heart Rate, HRV Balance, Body Temperature, Recovery Index, and Sleep metrics
+
+### Readiness Score
+
+Get a holistic view of your recovery and readiness:
+
+- **Daily Score (0-100)** - Comprehensive assessment of your body's readiness
+- **Multiple Contributors** - Combines Resting Heart Rate, HRV Balance, Body Temperature, Recovery Index, and Sleep metrics
+- **Detailed Breakdowns** - View individual contributor scores and their impact
+- **Historical Comparison** - Compare today's score to yesterday to track recovery trends
+- **Actionable Insights** - Understand what factors are helping or hindering your recovery
 
 ---
 
@@ -124,26 +137,26 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for deta
 
 Plena is ideal for:
 
-- **Meditation Practitioners** - Anyone who practices meditation and wants to understand their body's response
+- **Mindfulness Practitioners** - Anyone who practices mindfulness and wants to understand their body's response
 - **Wellness Enthusiasts** - People interested in tracking their stress levels and recovery
-- **Biohackers** - Individuals who want data-driven insights into their meditation practice
-- **Health-Conscious Individuals** - Anyone looking to improve their mental and physical wellbeing through meditation
+- **Biohackers** - Individuals who want data-driven insights into their mindfulness practice
+- **Health-Conscious Individuals** - Anyone looking to improve their mental and physical wellbeing through mindfulness sessions
 
 ---
 
 ## Benefits of Using Plena
 
-### 📊 Data-Driven Meditation
+### 📊 Data-Driven Mindfulness
 
-Move beyond subjective feelings and gain objective insights into how meditation affects your body.
+Move beyond subjective feelings and gain objective insights into how mindfulness sessions affect your body.
 
 ### 🎯 Track Progress
 
-See real improvements over time with visual charts and statistics that show your meditation journey.
+See real improvements over time with visual charts and statistics that show your mindfulness journey.
 
 ### 🧘 Deeper Understanding
 
-Learn how different meditation sessions, durations, and times of day affect your stress levels and recovery.
+Learn how different mindfulness sessions, durations, and times of day affect your stress levels and recovery.
 
 ### ⚡ Real-Time Feedback
 
@@ -169,8 +182,8 @@ See how heart rate, HRV, and breathing work together as an interconnected system
 
 ### Permissions Required
 
-- **HealthKit Read Access** - To read heart rate, HRV, respiratory rate, temperature, and VO₂ Max data
-- **HealthKit Write Access** - To save meditation session data back to HealthKit
+- **HealthKit Read Access** - To read heart rate, HRV, respiratory rate, temperature, VO₂ Max, sleep data, and resting heart rate
+- **HealthKit Write Access** - To save mindfulness session data back to HealthKit
 
 All permissions are requested when you first use the app, and you can change them anytime in Settings → Privacy & Security → Health.
 
@@ -190,7 +203,7 @@ All permissions are requested when you first use the app, and you can change the
 
 1. **Download** Plena from the App Store
 2. **Grant Permissions** - Allow HealthKit access when prompted
-3. **Start Your First Session** - Tap "Start Session" and begin meditating
+3. **Start Your First Session** - Tap "Start Session" and begin your mindfulness practice
 4. **Review Your Data** - Check the Dashboard and Data tabs to see your progress
 
 For detailed setup instructions, see the [User Guide](USER_GUIDE.md).
@@ -199,7 +212,7 @@ For detailed setup instructions, see the [User Guide](USER_GUIDE.md).
 
 ## Summary
 
-Plena transforms meditation from a subjective practice into a data-driven journey of self-discovery. By tracking the three core rhythms — heart rate, HRV, and breath — Plena helps you understand how meditation affects your body and mind, track your progress, and develop a more consistent, effective meditation practice.
+Plena transforms mindfulness from a subjective practice into a data-driven journey of self-discovery. By tracking the three core rhythms — heart rate, HRV, and breath — Plena helps you understand how mindfulness sessions affect your body and mind, track your progress, and develop a more consistent, effective mindfulness practice.
 
 The triangle in our icon isn't just a design choice — it represents the interconnected balance between mind, body, and breath that Plena helps you achieve.
 
@@ -210,6 +223,6 @@ _For setup instructions, see [User Guide](USER_GUIDE.md)._
 
 ---
 
-**Last Updated:** December 12, 2025
+**Last Updated:** January 1, 2026
 
 

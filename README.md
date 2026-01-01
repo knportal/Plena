@@ -14,9 +14,11 @@ A meditation tracking application for iPhone and Apple Watch that monitors biome
 
 - **Apple Watch Integration**
   - Start/Stop meditation sessions with 3-2-1 countdown
-  - Display one sensor at a time with scrolling
-  - Companion app for iPhone
+  - Display real-time sensor data on Watch during sessions
+  - Live sensor data streaming from Watch to iPhone
+  - Companion app for iPhone shows timer during sessions
   - Automatic data sync between devices
+  - Post-session data package transfer
 
 - **Comprehensive Dashboard**
   - Session statistics (total sessions, time, streak)
@@ -132,14 +134,14 @@ Plena/
 
 The app requires HealthKit permissions for:
 
-- **Reading**: Heart Rate, HRV (SDNN), Respiratory Rate, Body Temperature, VO₂ Max, Sleep data
+- **Reading**: Heart Rate, HRV (SDNN), Respiratory Rate, Body Temperature, VO₂ Max, Sleep data, Resting Heart Rate
 - **Writing**: Meditation session data (Mindfulness sessions)
 
 ## Development Status
 
 ✅ **Production Ready** - Core features complete and tested.
 
-**Last Updated:** December 12, 2025
+**Last Updated:** January 1, 2026
 
 ## License
 

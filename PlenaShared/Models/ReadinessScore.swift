@@ -38,3 +38,10 @@ struct ReadinessScore: Identifiable {
 
 
 
+
+
+
+
+
+
+

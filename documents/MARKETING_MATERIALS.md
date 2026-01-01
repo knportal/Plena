@@ -1,6 +1,6 @@
 # Marketing Materials
 
-Marketing copy, taglines, and promotional materials for Plena meditation tracking app.
+Marketing copy, taglines, and promotional materials for Plena mindfulness tracking app.
 
 ---
 
@@ -28,7 +28,7 @@ These three systems form a loop:
 
 When they work in harmony, the triangle becomes balanced — stable, coherent, and calm. That's exactly what Plena measures in real time.
 
-This meaning fits meditation, fits biometrics, fits science, fits our visual style, and gives the logo a purpose beyond aesthetics. It's intentional, elevated, and meaningful.
+This meaning fits mindfulness, fits biometrics, fits science, fits our visual style, and gives the logo a purpose beyond aesthetics. It's intentional, elevated, and meaningful.
 
 ---
 
@@ -36,22 +36,22 @@ This meaning fits meditation, fits biometrics, fits science, fits our visual sty
 
 ### Short Taglines
 
-- **"Meditation meets biometrics"**
+- **"mindfulness meets biometrics"**
 - **"Track your inner calm"**
 - **"Mind, breath, body — measured"**
-- **"Data-driven meditation"**
-- **"See what meditation does"**
-- **"Your body's meditation story"**
+- **"Data-driven mindfulness"**
+- **"See what mindfulness does"**
+- **"Your body's mindfulness story"**
 
 ### Long Taglines
 
-- **"Transform meditation with real-time biometrics. Track heart rate, HRV, and breathing to understand your body's response."**
+- **"Transform mindfulness with real-time biometrics. Track heart rate, HRV, and breathing to understand your body's response."**
 - **"The triangle of calm: Mind, breath, body. Plena measures all three in real time."**
-- **"Meditation with meaning. See how your practice affects your heart, your breathing, and your stress."**
+- **"mindfulness with meaning. See how your practice affects your heart, your breathing, and your stress."**
 
 ### Marketing Taglines
 
-- **"Meditation. Measured."** (Ultra-short, memorable)
+- **"mindfulness. Measured."** (Ultra-short, memorable)
 - **"Know your calm."** (Simple, powerful)
 - **"The data behind the practice."** (Direct, clear)
 - **"Balance measured."** (Plays on triangle/balance theme)
@@ -65,7 +65,7 @@ This meaning fits meditation, fits biometrics, fits science, fits our visual sty
 **Real-Time Tracking:**
 
 - "Track heart rate, HRV, and breathing in real time"
-- "See your body respond to meditation as it happens"
+- "See your body respond to mindfulness as it happens"
 - "Live biometric feedback during every session"
 
 **Stress Zone Classification:**
@@ -77,25 +77,25 @@ This meaning fits meditation, fits biometrics, fits science, fits our visual sty
 **Dashboard & Analytics:**
 
 - "Track your progress with detailed statistics and insights"
-- "See your meditation journey visualized"
+- "See your mindfulness journey visualized"
 - "Build consistency with streak tracking"
 
 **Apple Watch Integration:**
 
 - "Start and track sessions directly from your wrist"
-- "Meditation without your phone"
+- "mindfulness without your phone"
 - "Real-time readings on your Apple Watch"
 
 **Data Visualization:**
 
-- "Explore your meditation data with beautiful interactive graphs"
+- "Explore your session data with beautiful interactive graphs"
 - "See trends over days, weeks, months, and years"
 - "Understand patterns in your practice"
 
 **HRV Insights:**
 
 - "Personalized insights about your heart rate variability"
-- "Discover how your meditation practice improves over time"
+- "Discover how your mindfulness practice improves over time"
 - "Data-driven feedback on your progress"
 
 ---
@@ -105,10 +105,10 @@ This meaning fits meditation, fits biometrics, fits science, fits our visual sty
 ### Real-Time Biometric Tracking
 
 **Short Version:**
-Monitor your heart rate, HRV, respiratory rate, temperature, and VO₂ Max during meditation sessions. See real-time readings with instant visual feedback.
+Monitor your heart rate, HRV, respiratory rate, temperature, and VO₂ Max during mindfulness sessions. See real-time readings with instant visual feedback.
 
 **Long Version:**
-Plena uses Apple's HealthKit to track multiple biometric signals during your meditation practice. See your heart rate in beats per minute, heart rate variability (HRV) in milliseconds, respiratory rate, body temperature, and VO₂ Max. All data is displayed in real time, giving you immediate insights into how your body responds to meditation.
+Plena uses Apple's HealthKit to track multiple biometric signals during your mindfulness practice. See your heart rate in beats per minute, heart rate variability (HRV) in milliseconds, respiratory rate, body temperature, and VO₂ Max. All data is displayed in real time, giving you immediate insights into how your body responds to mindfulness.
 
 ### Stress Zone Classification
 
@@ -121,18 +121,18 @@ Plena automatically classifies your biometric readings into three color-coded st
 ### Dashboard & Progress Tracking
 
 **Short Version:**
-Comprehensive dashboard showing session statistics, trends, streak tracking, and personalized HRV insights. Track your meditation journey over time.
+Comprehensive dashboard showing session statistics, trends, streak tracking, and personalized HRV insights. Track your mindfulness journey over time.
 
 **Long Version:**
-The Plena dashboard provides a complete view of your meditation practice. See total sessions, cumulative meditation time, current streak, and average session duration. View session frequency charts, duration trends, and personalized HRV insights that analyze your progress. Switch between Day, Week, Month, and Year views to see your meditation journey from different perspectives.
+The Plena dashboard provides a complete view of your mindfulness practice. See total sessions, cumulative session time, current streak, and average session duration. View session frequency charts, duration trends, and personalized HRV insights that analyze your progress. Switch between Day, Week, Month, and Year views to see your mindfulness journey from different perspectives.
 
 ### Apple Watch Integration
 
 **Short Version:**
-Start and track meditation sessions directly from your Apple Watch. See real-time sensor readings and stress zones on your wrist.
+Start and track mindfulness sessions directly from your Apple Watch. See real-time sensor readings and stress zones on your wrist.
 
 **Long Version:**
-The Plena Watch app works independently from your iPhone, letting you meditate without your phone nearby. Start sessions with a tap, see real-time heart rate, HRV, and breathing data on your wrist, and get instant stress zone feedback. Swipe through sensors to see different metrics, and all data automatically syncs to your iPhone when you're done.
+The Plena Watch app works independently from your iPhone, letting you practice mindfulness without your phone nearby. Start sessions with a tap, see real-time heart rate, HRV, and breathing data on your wrist, and get instant stress zone feedback. Swipe through sensors to see different metrics, and all data automatically syncs to your iPhone when you're done.
 
 ---
 
@@ -144,12 +144,12 @@ The Plena Watch app works independently from your iPhone, letting you meditate w
 
 - Plena app icon/logo appears
 - Triangle icon animation (optional)
-- Tagline text: "Meditation meets biometrics"
+- Tagline text: "mindfulness meets biometrics"
 - Clean, calming visual style
 
 **Feature Demo (3-15 seconds):**
 
-- Start meditation session on iPhone
+- Start mindfulness session on iPhone
 - Real-time heart rate appears (e.g., 72 BPM)
 - HRV reading appears (e.g., 65 ms)
 - Respiratory rate appears (e.g., 14 /min)
@@ -176,7 +176,7 @@ The Plena Watch app works independently from your iPhone, letting you meditate w
 
 **Narrated Version:**
 
-> "Plena transforms meditation with real-time biometric tracking. See your heart rate, HRV, and breathing as you meditate. Watch your stress zones change from elevated to optimal to calm. Track your progress with detailed analytics and insights. Start your meditation journey today with Plena."
+> "Plena transforms mindfulness with real-time biometric tracking. See your heart rate, HRV, and breathing during your mindfulness sessions. Watch your stress zones change from elevated to optimal to calm. Track your progress with detailed analytics and insights. Start your mindfulness journey today with Plena."
 
 **Key Points to Emphasize:**
 
@@ -188,7 +188,7 @@ The Plena Watch app works independently from your iPhone, letting you meditate w
 ### Visual Style Recommendations
 
 - **Color Palette:** Calming blues and greens, soft gradients
-- **Transitions:** Smooth, gentle, meditation-appropriate
+- **Transitions:** Smooth, gentle, mindfulness-appropriate
 - **Music:** Calming, ambient, non-distracting
 - **Pacing:** Slower, mindful, not rushed
 - **Text:** Minimal, clear, readable fonts
@@ -199,9 +199,9 @@ The Plena Watch app works independently from your iPhone, letting you meditate w
 
 ### App Summary (100 words)
 
-**Plena: Meditation Tracking with Real-Time Biometrics**
+**Plena: mindfulness tracking with Real-Time Biometrics**
 
-Plena is a meditation tracking app for iPhone and Apple Watch that monitors biometric data during meditation sessions. Using Apple's HealthKit, Plena tracks heart rate, heart rate variability (HRV), respiratory rate, and other vital signs in real time. The app automatically classifies readings into color-coded stress zones (Calm, Optimal, Elevated Stress), providing instant feedback. With comprehensive dashboards, data visualization, and personalized insights, Plena helps users understand how meditation affects their body and track progress over time. The app's triangle icon represents the interconnected balance between mind, breath, and body.
+Plena is a mindfulness tracking app for iPhone and Apple Watch that monitors biometric data during mindfulness sessions. Using Apple's HealthKit, Plena tracks heart rate, heart rate variability (HRV), respiratory rate, and other vital signs in real time. The app automatically classifies readings into color-coded stress zones (Calm, Optimal, Elevated Stress), providing instant feedback. With comprehensive dashboards, data visualization, and personalized insights, Plena helps users understand how mindfulness affects their body and track progress over time. The app's triangle icon represents the interconnected balance between mind, breath, and body.
 
 ### Key Facts
 
@@ -214,7 +214,7 @@ Plena is a meditation tracking app for iPhone and Apple Watch that monitors biom
   - Comprehensive analytics
   - Apple Watch integration
   - Data visualization
-- **Unique Selling Point:** Only meditation app with real-time stress zone classification based on HRV and heart rate
+- **Unique Selling Point:** Only mindfulness app with real-time stress zone classification based on HRV and heart rate
 - **Launch Date:** [To be announced]
 - **Pricing:** [Free / Paid / Freemium - to be determined]
 
@@ -260,7 +260,7 @@ The Plena screenshots package includes:
 
 **iOS Screenshots:**
 
-1. Main meditation screen with real-time biometrics
+1. Main mindfulness screen with real-time biometrics
 2. Stress zone indicators in action
 3. Dashboard with statistics and charts
 4. Data visualization graphs
@@ -269,7 +269,7 @@ The Plena screenshots package includes:
 
 **watchOS Screenshots:**
 
-1. Active meditation session on Watch
+1. Active mindfulness session on Watch
 2. Sensor scrolling interface
 3. Zone indicators on Watch
 
@@ -284,23 +284,23 @@ The Plena screenshots package includes:
 ### Twitter/X Posts
 
 **Launch Post:**
-"🧘✨ Introducing Plena — meditation tracking with real-time biometrics. Track your heart rate, HRV, and breathing as you meditate. See stress zones change in real time. Mind, breath, body — all measured. Available now on the App Store. #meditation #wellness #healthtech"
+"🧘✨ Introducing Plena — mindfulness tracking with real-time biometrics. Track your heart rate, HRV, and breathing during your mindfulness sessions. See stress zones change in real time. Mind, breath, body — all measured. Available now on the App Store. #mindfulness #wellness #healthtech"
 
 **Feature Highlight:**
-"The triangle in Plena's icon represents mind, breath, and body — the three rhythms of calm. See how they balance in real time during your meditation practice. 🧘‍♀️ #meditation #mindfulness"
+"The triangle in Plena's icon represents mind, breath, and body — the three rhythms of calm. See how they balance in real time during your mindfulness practice. 🧘‍♀️ #mindfulness #mindfulness"
 
 **Progress Post:**
-"7 days, 12 sessions, 3.5 hours. Plena helps you track your meditation journey with real data. See your HRV improve, your stress zones shift, and your practice deepen. 📊✨ #meditation #progress"
+"7 days, 12 sessions, 3.5 hours. Plena helps you track your mindfulness journey with real data. See your HRV improve, your stress zones shift, and your practice deepen. 📊✨ #mindfulness #progress"
 
 **Watch Integration:**
-"Start your meditation session from your Apple Watch. No phone needed. Just you, your breath, and real-time biometric feedback. 🍎⌚️ #AppleWatch #meditation"
+"Start your mindfulness session from your Apple Watch. No phone needed. Just you, your breath, and real-time biometric feedback. 🍎⌚️ #AppleWatch #mindfulness"
 
 ### Instagram Captions
 
 **Main Post:**
-"🧘‍♀️ Meditation just got measurable.
+"🧘‍♀️ mindfulness just got measurable.
 
-Plena tracks your heart rate, HRV, and breathing in real time during meditation. Watch your stress zones change from elevated → optimal → calm.
+Plena tracks your heart rate, HRV, and breathing in real time during mindfulness sessions. Watch your stress zones change from elevated → optimal → calm.
 
 The triangle in our icon? It represents the balance between mind, breath, and body — the three rhythms Plena helps you track and improve.
 
@@ -309,9 +309,9 @@ The triangle in our icon? It represents the balance between mind, breath, and bo
 ⌚️ Apple Watch integration
 📈 Personalized insights
 
-Download Plena and see what meditation does.
+Download Plena and see what mindfulness does.
 
-#meditation #mindfulness #wellness #healthtech #meditationapp #AppleWatch"
+#mindfulness #mindfulness #wellness #healthtech #mindfulnessapp #AppleWatch"
 
 **Feature Highlight:**
 "See your stress zones in real time.
@@ -320,42 +320,42 @@ Download Plena and see what meditation does.
 🟢 Optimal — balanced, functioning well
 🟠 Elevated — higher stress response
 
-Plena automatically classifies your biometric readings to give you instant feedback on your meditation state.
+Plena automatically classifies your biometric readings to give you instant feedback on your mindfulness state.
 
-#stressrelief #meditation #mindfulness #wellness"
+#stressrelief #mindfulness #mindfulness #wellness"
 
 ### LinkedIn Posts
 
 **Professional Post:**
-"We're excited to introduce Plena, a meditation tracking app that combines mindfulness practice with real-time biometric data.
+"We're excited to introduce Plena, a mindfulness tracking app that combines mindfulness practice with real-time biometric data.
 
-Plena uses Apple's HealthKit to track heart rate, heart rate variability (HRV), respiratory rate, and other vital signs during meditation sessions. The app automatically classifies readings into stress zones, providing users with objective insights into how meditation affects their body.
+Plena uses Apple's HealthKit to track heart rate, heart rate variability (HRV), respiratory rate, and other vital signs during mindfulness sessions. The app automatically classifies readings into stress zones, providing users with objective insights into how mindfulness affects their body.
 
-Key differentiator: Real-time stress zone classification based on HRV and heart rate, helping users understand their body's response to meditation as it happens.
+Key differentiator: Real-time stress zone classification based on HRV and heart rate, helping users understand their body's response to mindfulness as it happens.
 
-Perfect for meditation practitioners, wellness enthusiasts, and anyone interested in data-driven self-improvement.
+Perfect for mindfulness practitioners, wellness enthusiasts, and anyone interested in data-driven self-improvement.
 
-#healthtech #meditation #wellness #AppleHealthKit #mobilehealth"
+#healthtech #mindfulness #wellness #AppleHealthKit #mobilehealth"
 
 ---
 
 ## Blog Post Ideas
 
-### 1. "Why We Built Plena: The Data Behind Meditation"
+### 1. "Why We Built Plena: The Data Behind mindfulness"
 
 **Topics:**
 
-- The subjective vs. objective problem in meditation
+- The subjective vs. objective problem in mindfulness
 - Why biometric tracking matters
 - The science behind HRV and stress zones
 - The triangle concept: mind, breath, body
 
-### 2. "Understanding Heart Rate Variability (HRV) in Meditation"
+### 2. "Understanding Heart Rate Variability (HRV) in mindfulness"
 
 **Topics:**
 
 - What is HRV?
-- Why HRV matters for meditation
+- Why HRV matters for mindfulness
 - How Plena tracks HRV
 - Interpreting HRV readings
 - HRV trends over time
@@ -369,7 +369,7 @@ Perfect for meditation practitioners, wellness enthusiasts, and anyone intereste
 - What zone changes mean
 - Using zones to improve practice
 
-### 4. "Building a Meditation Habit: How Plena Helps"
+### 4. "Building a mindfulness Habit: How Plena Helps"
 
 **Topics:**
 
@@ -384,13 +384,13 @@ Perfect for meditation practitioners, wellness enthusiasts, and anyone intereste
 
 ### Welcome Email
 
-**Subject:** Welcome to Plena — Start Your Meditation Journey
+**Subject:** Welcome to Plena — Start Your mindfulness journey
 
 **Body:**
 
 Welcome to Plena! 🧘‍♀️✨
 
-We're excited to help you track your meditation practice with real-time biometrics.
+We're excited to help you track your mindfulness practice with real-time biometrics.
 
 **Getting Started:**
 
@@ -411,7 +411,7 @@ The icon represents the balance between mind, breath, and body — the three rhy
 
 Ready to start? Open Plena and begin your first session.
 
-Happy meditating,
+Happy practicing,
 The Plena Team
 
 ### Feature Update Email
@@ -420,7 +420,7 @@ The Plena Team
 
 **Body:**
 
-We've enhanced Plena's HRV insights to give you even better feedback on your meditation practice.
+We've enhanced Plena's HRV insights to give you even better feedback on your mindfulness practice.
 
 **New Features:**
 
@@ -434,11 +434,11 @@ Plena analyzes your HRV data to identify trends and improvements. When you have 
 - "HRV increased 12% this week"
 - "Your last 3 sessions show improved calm response"
 
-These insights help you understand how your meditation practice is affecting your body over time.
+These insights help you understand how your mindfulness practice is affecting your body over time.
 
 Open Plena to see your personalized insights.
 
-Happy meditating,
+Happy practicing,
 The Plena Team
 
 ---
@@ -448,10 +448,10 @@ The Plena Team
 ### Hero Section
 
 **Headline:**
-"Meditation. Measured."
+"mindfulness. Measured."
 
 **Subheadline:**
-"Track your heart rate, HRV, and breathing in real time. Understand how meditation affects your body. See your progress visualized."
+"Track your heart rate, HRV, and breathing in real time. Understand how mindfulness affects your body. See your progress visualized."
 
 **CTA Button:**
 "Download on the App Store"
@@ -462,7 +462,7 @@ The Plena Team
 "Real-Time Biometric Tracking"
 
 **Description:**
-"Plena uses Apple's HealthKit to monitor multiple biometric signals during your meditation sessions. See your heart rate, heart rate variability (HRV), respiratory rate, and more in real time. Automatic stress zone classification gives you instant feedback on your body's response."
+"Plena uses Apple's HealthKit to monitor multiple biometric signals during your mindfulness sessions. See your heart rate, heart rate variability (HRV), respiratory rate, and more in real time. Automatic stress zone classification gives you instant feedback on your body's response."
 
 **Key Points:**
 
@@ -495,8 +495,8 @@ All marketing materials emphasize:
 
 - Professional yet accessible tone
 - Focus on benefits, not just features
-- Meditation-first, technology-second
-- Respectful of meditation tradition
+- mindfulness-first, technology-second
+- Respectful of mindfulness tradition
 - Data-driven but not overwhelming
 
 ---

@@ -126,3 +126,10 @@ If the App Group isn't listed, you need to:
 - Manual profiles need to be renewed before they expire
 - You'll need to create new profiles if you add new devices
 - For App Store builds, create "App Store" type profiles instead of "Development"
+
+
+
+
+
+
+

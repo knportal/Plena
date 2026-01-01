@@ -54,6 +54,13 @@ struct MedicalDisclaimerDetailView: View {
                     )
 
                     DisclaimerDetailSection(
+                        icon: "wind",
+                        iconColor: .green,
+                        title: "Derived Measurements",
+                        content: "Some biometric measurements are algorithmically derived rather than directly measured. For example, Respiratory Rate on Apple Watch is estimated using accelerometer, motion sensor, and photoplethysmography (PPG) data, rather than directly counting breaths. These derived measurements provide estimations that may differ from direct clinical measurements. Accuracy can be affected by factors including movement, device positioning, signal quality, and algorithm limitations."
+                    )
+
+                    DisclaimerDetailSection(
                         icon: "chart.bar.fill",
                         iconColor: .green,
                         title: "Stress Zone Classifications",

@@ -1,12 +1,12 @@
 # TestFlight Deployment Guide
 
-**Last Updated:** December 12, 2025
+**Last Updated:** December 14, 2025
 
 ## Pre-Deployment Checklist
 
 ### ✅ Critical Configuration
 
-1. **Entitlements** - ✅ `aps-environment` set to `production` in both iOS and Watch app entitlements
+1. **Entitlements** - Update `aps-environment` to `production` (currently set to `development`)
 2. **Version Numbers** - Currently set correctly:
    - Marketing Version: 1.0
    - Build Number: 1
@@ -27,7 +27,10 @@
 
 ### ⚠️ Pre-Deployment Actions Required
 
-1. **✅ Entitlements Verified** - Both `Plena.entitlements` and `Plena Watch App.entitlements` have `aps-environment` set to `production`
+1. **Update Entitlements for Production**
+
+   - Change `aps-environment` from `development` to `production` in `Plena.entitlements`
+   - This is required for TestFlight and App Store builds
 
 2. **Verify Code Signing**
 
@@ -50,27 +53,25 @@
 
 ## Step-by-Step TestFlight Deployment
 
-### Step 1: Verify Entitlements (✅ Already Complete)
+### Step 1: Update Entitlements
 
-**Files to check:**
+**File:** `Plena/Plena.entitlements`
 
-- `Plena/Plena.entitlements` - ✅ Set to `production`
-- `Plena Watch App/Plena Watch App.entitlements` - ✅ Set to `production`
+Change:
 
-Both files should contain:
+```xml
+<key>aps-environment</key>
+<string>development</string>
+```
+
+To:
 
 ```xml
 <key>aps-environment</key>
 <string>production</string>
 ```
 
-**Verification:**
-
-1. Open both entitlements files in Xcode
-2. Confirm `aps-environment` is set to `production`
-3. Verify the entitlements are linked in Build Settings → Code Signing Entitlements
-
-**Note:** If you're not using push notifications, you can remove this key entirely, but keeping it set to `production` is safe and recommended.
+**Note:** If you're not using push notifications, you can remove this key entirely.
 
 ### Step 2: Clean Build
 
@@ -188,7 +189,7 @@ If this is your first time deploying:
 
    - Category: Health & Fitness
    - Subcategory: (optional)
-   - Privacy Policy URL: (required for TestFlight external testing)
+   - Privacy Policy URL: https://plenitudo.ai/privacy-policy (required for TestFlight external testing)
 
 2. **Pricing and Availability**:
 

@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import StoreKit
 @testable import PlenaShared
 
 // MARK: - Mock HealthKitService
@@ -231,5 +232,72 @@ extension MeditationSession {
         return session
     }
 }
+
+// MARK: - Mock Subscription Service
+
+@MainActor
+class MockSubscriptionService: SubscriptionServiceProtocol {
+    var subscriptionStatus = CurrentValueSubject<SubscriptionStatus, Never>(.notSubscribed)
+    var isLoading = CurrentValueSubject<Bool, Never>(false)
+
+    private(set) var loadProductsCalled = false
+    private(set) var purchaseCalled = false
+    private(set) var restorePurchasesCalled = false
+    private(set) var checkSubscriptionStatusCalled = false
+
+    var mockProducts: [Product] = []
+    var mockSubscriptionStatus: SubscriptionStatus = .notSubscribed
+    var shouldFailPurchase = false
+    var shouldFailRestore = false
+
+    func loadProducts() async throws -> [Product] {
+        loadProductsCalled = true
+        isLoading.send(true)
+        defer { isLoading.send(false) }
+        return mockProducts
+    }
+
+    func purchase(_ product: Product) async throws -> Transaction? {
+        purchaseCalled = true
+        isLoading.send(true)
+        defer { isLoading.send(false) }
+
+        if shouldFailPurchase {
+            throw SubscriptionError.purchaseFailed(NSError(domain: "TestError", code: 1))
+        }
+
+        // Simulate successful purchase
+        mockSubscriptionStatus = .subscribed(tier: .premium, expirationDate: Date().addingTimeInterval(86400 * 30))
+        subscriptionStatus.send(mockSubscriptionStatus)
+        return nil // In real implementation, would return transaction
+    }
+
+    func restorePurchases() async throws {
+        restorePurchasesCalled = true
+        isLoading.send(true)
+        defer { isLoading.send(false) }
+
+        if shouldFailRestore {
+            throw SubscriptionError.verificationFailed(NSError(domain: "TestError", code: 1))
+        }
+
+        // Simulate restore
+        await checkSubscriptionStatus()
+    }
+
+    func checkSubscriptionStatus() async {
+        checkSubscriptionStatusCalled = true
+        subscriptionStatus.send(mockSubscriptionStatus)
+    }
+
+    func currentSubscriptionStatus() -> SubscriptionStatus {
+        return mockSubscriptionStatus
+    }
+}
+
+
+
+
+
 
 

@@ -60,34 +60,39 @@ struct GraphView: View {
                 VStack(spacing: 0) {
                     Chart {
                         // Background range zones using RectangleMark for full width
-                        if let firstDate = dataPoints.first?.date, let lastDate = dataPoints.last?.date {
-                            // Above range zone
-                            RectangleMark(
-                                xStart: .value("Start", firstDate),
-                                xEnd: .value("End", lastDate),
-                                yStart: .value("Above Start", sensorRange.above.lowerBound),
-                                yEnd: .value("Above End", sensorRange.above.upperBound)
-                            )
-                            .foregroundStyle(.orange.opacity(0.12))
-
-                            // Normal range zone
-                            RectangleMark(
-                                xStart: .value("Start", firstDate),
-                                xEnd: .value("End", lastDate),
-                                yStart: .value("Normal Start", sensorRange.normal.lowerBound),
-                                yEnd: .value("Normal End", sensorRange.normal.upperBound)
-                            )
-                            .foregroundStyle(.green.opacity(0.12))
-
-                            // Below range zone
-                            RectangleMark(
-                                xStart: .value("Start", firstDate),
-                                xEnd: .value("End", lastDate),
-                                yStart: .value("Below Start", sensorRange.below.lowerBound),
-                                yEnd: .value("Below End", sensorRange.below.upperBound)
-                            )
-                            .foregroundStyle(.blue.opacity(0.12))
+                        // Use full visible range, not just data range, to ensure proper scaling
+                        let visibleRange = xAxisVisibleRange
+                        // Filter data points to visible range to prevent line extending beyond chart
+                        let filteredDataPoints = dataPoints.filter { point in
+                            point.date >= visibleRange.start && point.date <= visibleRange.end
                         }
+
+                        // Above range zone
+                        RectangleMark(
+                            xStart: .value("Start", visibleRange.start),
+                            xEnd: .value("End", visibleRange.end),
+                            yStart: .value("Above Start", sensorRange.above.lowerBound),
+                            yEnd: .value("Above End", sensorRange.above.upperBound)
+                        )
+                        .foregroundStyle(.orange.opacity(0.12))
+
+                        // Normal range zone
+                        RectangleMark(
+                            xStart: .value("Start", visibleRange.start),
+                            xEnd: .value("End", visibleRange.end),
+                            yStart: .value("Normal Start", sensorRange.normal.lowerBound),
+                            yEnd: .value("Normal End", sensorRange.normal.upperBound)
+                        )
+                        .foregroundStyle(.green.opacity(0.12))
+
+                        // Below range zone
+                        RectangleMark(
+                            xStart: .value("Start", visibleRange.start),
+                            xEnd: .value("End", visibleRange.end),
+                            yStart: .value("Below Start", sensorRange.below.lowerBound),
+                            yEnd: .value("Below End", sensorRange.below.upperBound)
+                        )
+                        .foregroundStyle(.blue.opacity(0.12))
 
                         // Range reference lines (boundaries)
                         RuleMark(y: .value("Above", sensorRange.above.lowerBound))
@@ -106,8 +111,8 @@ struct GraphView: View {
                             .foregroundStyle(.blue.opacity(0.4))
                             .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
 
-                        // Data line - single consistent blue color
-                        ForEach(Array(dataPoints.enumerated()), id: \.offset) { index, point in
+                        // Data line - single consistent blue color (using filtered points)
+                        ForEach(Array(filteredDataPoints.enumerated()), id: \.offset) { index, point in
                             LineMark(
                                 x: .value("Time", point.date, unit: .minute),
                                 y: .value("Value", point.value)
@@ -126,6 +131,8 @@ struct GraphView: View {
                         }
                     }
                     .frame(height: 220)
+                    .clipped()
+                    .chartXScale(domain: xAxisVisibleRange.start...xAxisVisibleRange.end)
                     .chartXAxis {
                         // Hide Chart's axis - we use separate view for labels
                         AxisMarks(position: .bottom) { _ in }
@@ -206,6 +213,53 @@ struct GraphView: View {
         }
     }
 
+    // MARK: - X-Axis Domain
+
+    /// Calculates the visible x-axis domain based on time range (not data range)
+    /// This ensures grid lines are evenly spaced across the full visible period
+    private var xAxisVisibleRange: (start: Date, end: Date) {
+        guard !dataPoints.isEmpty else {
+            let now = Date()
+            return (now, now)
+        }
+
+        let calendar = Calendar.current
+        let referenceDate = dataPoints.first?.date ?? Date()
+
+        switch timeRange {
+        case .day:
+            // Full day: start of day to start of next day
+            let startOfDay = calendar.startOfDay(for: referenceDate)
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+            return (startOfDay, endOfDay)
+
+        case .week:
+            // Full week: start of week to start of next week
+            let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: referenceDate)?.start
+                ?? calendar.startOfDay(for: referenceDate)
+            let endOfWeek = calendar.date(byAdding: .day, value: 7, to: startOfWeek) ?? startOfWeek
+            return (startOfWeek, endOfWeek)
+
+        case .month:
+            // Full month: start of month to start of next month (for proper chart scaling)
+            guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: referenceDate)),
+                  let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth) else {
+                let now = Date()
+                return (now, now)
+            }
+            return (startOfMonth, endOfMonth)
+
+        case .year:
+            // Full year: start of year to start of next year
+            guard let startOfYear = calendar.date(from: calendar.dateComponents([.year], from: referenceDate)),
+                  let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear) else {
+                let now = Date()
+                return (now, now)
+            }
+            return (startOfYear, endOfYear)
+        }
+    }
+
     // MARK: - X-Axis Grid Lines
 
     /// Generates dates for vertical grid lines that align with x-axis labels
@@ -214,18 +268,15 @@ struct GraphView: View {
 
         let calendar = Calendar.current
         let referenceDate = dataPoints.first?.date ?? Date()
-        let firstDate = dataPoints.first?.date ?? Date()
-        let lastDate = dataPoints.last?.date ?? Date()
+        let visibleRange = xAxisVisibleRange
 
         var dates: [Date] = []
 
         switch timeRange {
         case .day:
             dates = dayGridLineDates(calendar: calendar, referenceDate: referenceDate)
-            // Filter to only include dates within the data range
-            return dates.filter { date in
-                date >= firstDate && date <= lastDate
-            }
+            // Don't filter - always show full day grid lines to align with labels
+            return dates
         case .week:
             // For week view, show all 7 days regardless of data range
             // This ensures we always have lines for S M T W T F S
@@ -233,10 +284,9 @@ struct GraphView: View {
             return dates
         case .month:
             dates = monthGridLineDates(calendar: calendar, referenceDate: referenceDate)
-            // Filter to only include dates within the data range
-            return dates.filter { date in
-                date >= firstDate && date <= lastDate
-            }
+            // Filter to ensure dates are within visible range (prevent lines extending beyond chart)
+            // Only include dates strictly less than the end date (since end is start of next month)
+            return dates.filter { $0 >= visibleRange.start && $0 < visibleRange.end }
         case .year:
             // For year view, show all 12 months plus start of next year for proper spacing
             // Don't filter by data range to ensure all months are visible
@@ -287,8 +337,7 @@ struct GraphView: View {
         let dayCount = range.count
         var dates: [Date] = []
 
-        // Match the same logic as PlenaTimeAxisLabels.monthLabels() to ensure alignment
-        // Generate grid lines only for the days that have labels
+        // Match the exact same logic as PlenaTimeAxisLabels.monthLabels() to ensure alignment
         let targetLabelCount = 7
         let step = max(1, dayCount / (targetLabelCount - 1))
         var currentDay = 1
@@ -300,13 +349,17 @@ struct GraphView: View {
             currentDay += step
         }
 
-        // Ensure last day is included
-        if let lastDate = calendar.date(byAdding: .day, value: dayCount - 1, to: startOfMonth),
-           !dates.contains(lastDate) {
-            dates[dates.count - 1] = lastDate
-        } else if let lastDate = calendar.date(byAdding: .day, value: dayCount - 1, to: startOfMonth),
-                  dates.last != lastDate {
-            dates.append(lastDate)
+        // Ensure last day is included (matching PlenaTimeAxisLabels logic)
+        // Unlike labels which replace the last value, we should append the last day if it's not already included
+        // This ensures we have all intermediate grid lines plus the final day
+        if let lastDate = calendar.date(byAdding: .day, value: dayCount - 1, to: startOfMonth) {
+            let lastDayNumber = calendar.component(.day, from: lastDate)
+            // Check if last date is already in the list
+            let lastDayAlreadyIncluded = dates.contains { calendar.component(.day, from: $0) == lastDayNumber }
+            if !lastDayAlreadyIncluded {
+                // Append the last day instead of replacing, so we keep all intermediate dates
+                dates.append(lastDate)
+            }
         }
 
         return dates

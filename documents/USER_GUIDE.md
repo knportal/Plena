@@ -1,6 +1,6 @@
 # Plena User Guide
 
-Complete setup and usage instructions for the Plena meditation tracking app.
+Complete setup and usage instructions for the Plena mindfulness tracking app.
 
 ---
 
@@ -33,7 +33,7 @@ Complete setup and usage instructions for the Plena meditation tracking app.
 
 ### First Launch Walkthrough
 
-When you first open Plena, you'll see the main meditation screen with a "Start Session" button. Before you begin, you'll need to set up HealthKit permissions.
+When you first open Plena, you'll see the main mindfulness screen with a "Start Session" button. Before you begin, you'll need to set up HealthKit permissions.
 
 ---
 
@@ -48,7 +48,7 @@ Plena uses Apple's HealthKit framework to read and write health data. HealthKit 
 Plena needs permission to:
 
 - **Read** your heart rate, HRV, respiratory rate, temperature, and VO₂ Max data
-- **Write** meditation session data back to HealthKit
+- **Write** mindfulness session data back to HealthKit
 
 #### Step-by-Step Permission Grant
 
@@ -99,7 +99,7 @@ For more help, see the [Troubleshooting Guide](TROUBLESHOOTING.md).
 
 1. On your Watch, look for the Plena app icon (triangle with connected points)
 2. Tap to open it
-3. You should see the meditation interface
+3. You should see the mindfulness interface
 
 #### Watch App Permissions
 
@@ -131,15 +131,16 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 ### From iPhone
 
 1. Open the **Plena** app on your iPhone
-2. You'll see the main meditation screen with a "Start Session" button
+2. You'll see the main mindfulness screen with a "Start Session" button
 3. Tap **"Start Session"**
 4. A **3-2-1 countdown** will appear — take this time to get comfortable
 5. After the countdown, tracking begins automatically
-6. You'll see real-time sensor readings displayed as cards
+6. The iPhone displays a timer showing elapsed session time
+7. Your Apple Watch (if paired) displays real-time sensor readings and streams data to iPhone
 
 **To stop the session:**
 
-- Tap the **"Stop Session"** button
+- Tap the **"Stop Session"** button on either device
 - Review your session summary
 
 ### From Apple Watch
@@ -147,7 +148,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 1. Open the **Plena** app on your Apple Watch
 2. Tap the screen or Digital Crown to start
 3. A **3-2-1 countdown** begins
-4. After countdown, sensor readings appear
+4. After countdown, sensor readings appear and data streams live to your iPhone
 5. Swipe vertically to see different sensors (Heart Rate, HRV, Respiratory Rate)
 6. Each sensor shows:
    - Current value
@@ -157,18 +158,23 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 **To stop the session:**
 
 - Tap the **"Stop"** button on the Watch
-- Session automatically syncs to your iPhone
+- Session data automatically syncs to your iPhone
 
 ### During the Session
 
+- **iPhone Display**: Shows session timer (elapsed time in MM:SS format)
+- **Watch Display**: Shows real-time sensor data (Heart Rate, HRV, Respiratory Rate)
+- **Live Data Sync**: Watch streams sensor data directly to iPhone in real-time
 - **Stay Still**: For best sensor readings, try to remain relatively still
 - **Wear Your Watch Properly**: Ensure your Apple Watch is snug but comfortable on your wrist
 - **Focus on Breathing**: The sensors will track your body's response naturally
-- **Monitor Zones**: Watch the color-coded zone indicators for real-time feedback
+- **Monitor Zones**: Watch the color-coded zone indicators on your Watch for real-time feedback
 
 ---
 
 ## Understanding Real-Time Data
+
+**Important:** During meditation sessions, sensor data is displayed on your Apple Watch. The Watch streams this data in real-time to your iPhone, where you can view the complete summary after your session ends.
 
 ### Heart Rate
 
@@ -176,7 +182,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 
 **Normal range:** 60-100 BPM (resting)
 
-**During meditation:** Heart rate typically decreases as you relax
+**During mindfulness:** Heart rate typically decreases as you relax
 
 **Zone Classification:**
 
@@ -192,7 +198,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 
 **Normal range:** 50-100 ms (varies by age and fitness)
 
-**During meditation:** HRV typically increases as you relax
+**During mindfulness:** HRV typically increases as you relax
 
 **Zone Classification:**
 
@@ -204,7 +210,7 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 
 - Higher is generally better (shows adaptability)
 - HRV naturally decreases with age
-- Regular meditation can improve HRV over time
+- Regular mindfulness can improve HRV over time
 
 ### Respiratory Rate
 
@@ -212,9 +218,11 @@ See the [Apple Watch Compatibility Guide](APPLE_WATCH_COMPATIBILITY.md) for a co
 
 **Normal range:** 12-20 breaths per minute
 
-**During meditation:** Breathing typically slows and becomes more regular
+**During mindfulness:** Breathing typically slows and becomes more regular
 
 **Why it matters:** Slower, deeper breathing activates the parasympathetic nervous system (rest and digest)
+
+**How it's measured:** On Apple Watch (Series 6+), respiratory rate is algorithmically derived from accelerometer, motion sensor, and photoplethysmography (PPG) data rather than directly counting breaths. This provides an estimation of breathing frequency that may differ from direct clinical measurements. Accuracy can be affected by movement, device positioning, and signal quality.
 
 ### Other Sensors
 
@@ -284,14 +292,14 @@ Zones are calculated automatically based on:
 
 ## Using the Dashboard
 
-The Dashboard tab shows your meditation statistics and progress.
+The Dashboard tab shows your mindfulness statistics and progress.
 
 ### Viewing Statistics
 
 **Stat Cards:**
 
-- **Sessions** - Total number of meditation sessions
-- **Total Time** - Cumulative meditation time (with average duration)
+- **Sessions** - Total number of mindfulness sessions
+- **Total Time** - Cumulative mindfulness time (with average duration)
 - **Streak** - Current consecutive days with at least one session
 - **Avg Duration** - Average session length
 
@@ -311,7 +319,7 @@ The Dashboard tab shows your meditation statistics and progress.
 **Duration Trend Chart:**
 
 - Line chart showing average session duration over time
-- Trends upward? You're meditating longer
+- Trends upward? Your sessions are getting longer
 - Trends downward? Consider re-establishing your routine
 
 ### HRV Insights
@@ -327,7 +335,7 @@ These insights appear when you have sufficient data (typically 3+ sessions with 
 
 ## Data Visualization
 
-The Data tab lets you explore your historical meditation data in detail.
+The Data tab lets you explore your historical mindfulness data in detail.
 
 ### Viewing Historical Data
 
@@ -386,13 +394,13 @@ These help you understand if readings are typical or noteworthy.
 
 ## Session Summary
 
-After you stop a meditation session, you'll see a summary screen.
+After you stop a mindfulness session, you'll see a summary screen.
 
 ### Reviewing Session Data
 
 **Summary Information:**
 
-- **Duration** - How long you meditated
+- **Duration** - How long your session lasted
 - **Average Heart Rate** - Mean heart rate during session
 - **Average HRV** - Mean HRV during session
 - **Average Respiratory Rate** - Mean breathing rate
@@ -434,8 +442,11 @@ After reviewing your session, you can optionally log your state of mind:
 **For Best Respiratory Rate:**
 
 - Allow natural breathing (don't force it)
-- The sensor detects breathing automatically
+- The sensor uses algorithmic estimation from multiple data sources
+- Keep your Apple Watch snug on your wrist for better signal quality
+- Minimize excessive movement for more accurate readings
 - Relax and let your body breathe naturally
+- Note: This is a derived measurement, not a direct breath count
 
 ### Optimal Session Duration
 
@@ -449,23 +460,24 @@ After reviewing your session, you can optionally log your state of mind:
 
 **Use Apple Watch when:**
 
-- You want to meditate without your phone nearby
+- You want to practice mindfulness without your phone nearby
 - You prefer minimal distractions
+- You want to see real-time sensor data during your session
 - You want haptic feedback (future feature)
-- You're doing active meditation (walking, etc.)
+- You're doing active mindfulness (walking, etc.)
 
 **Use iPhone when:**
 
-- You want to see multiple sensors at once
-- You prefer larger displays
-- You're doing guided meditation with audio
-- You want to review data immediately after
+- You want to start a session and let your Watch handle the measurements
+- You prefer to review data after the session completes
+- You're doing guided mindfulness with audio
+- You want to review historical data and trends
 
-**Pro Tip:** Start sessions on either device — data syncs automatically between iPhone and Watch.
+**Pro Tip:** Start sessions from either device — the Watch collects sensor data and streams it live to your iPhone. After the session, view the complete summary on your iPhone with all the data collected by your Watch.
 
 ### Building Consistency
 
-- **Set a Schedule** - Meditate at the same time each day
+- **Set a Schedule** - Practice mindfulness at the same time each day
 - **Track Your Streak** - Watch your Dashboard streak grow
 - **Review Weekly** - Check your Week view to see progress
 - **Be Patient** - HRV improvements take time (weeks to months)
@@ -499,7 +511,7 @@ After reviewing your session, you can optionally log your state of mind:
 1. Open Plena app
 2. Tap "Start Session"
 3. Wait for 3-2-1 countdown
-4. Meditate and monitor readings
+4. Practice mindfulness and monitor readings
 5. Tap "Stop Session" when done
 
 ### Checking Permissions
@@ -537,10 +549,10 @@ For technical support, see the [App Overview](APP_OVERVIEW.md) for contact infor
 
 ---
 
-_Happy meditating! 🧘‍♀️✨_
+_Happy practicing! 🧘‍♀️✨_
 
 ---
 
-**Last Updated:** December 12, 2025
+**Last Updated:** January 1, 2026
 
 

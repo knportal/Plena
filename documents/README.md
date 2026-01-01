@@ -1,6 +1,6 @@
 # Plena Documentation
 
-Complete documentation suite for the Plena meditation tracking app.
+Complete documentation suite for the Plena mindfulness tracking app.
 
 ---
 
@@ -115,5 +115,3 @@ Before App Store submission:
 ---
 
 _Last Updated: December 12, 2025_
-
-

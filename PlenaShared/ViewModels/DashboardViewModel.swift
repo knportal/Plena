@@ -73,20 +73,24 @@ struct TimelineSessionDataPoint {
 @MainActor
 class DashboardViewModel: ObservableObject {
     @Published var sessions: [MeditationSession] = []
-    @Published var selectedTimeRange: TimeRange = .month
+    @Published var selectedTimeRange: TimeRange = .week  // Default to free tier (week instead of month)
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var showPaywall = false
 
     private let storageService: SessionStorageServiceProtocol
     private let healthKitService: HealthKitServiceProtocol?
+    private let featureGateService: FeatureGateServiceProtocol?
     private var remoteChangeObserver: NSObjectProtocol?
 
     init(
         storageService: SessionStorageServiceProtocol = CoreDataStorageService(),
-        healthKitService: HealthKitServiceProtocol? = nil
+        healthKitService: HealthKitServiceProtocol? = nil,
+        featureGateService: FeatureGateServiceProtocol? = nil
     ) {
         self.storageService = storageService
         self.healthKitService = healthKitService
+        self.featureGateService = featureGateService
 
         // Listen for remote Core Data changes (CloudKit sync)
         setupRemoteChangeObserver()
@@ -156,7 +160,37 @@ class DashboardViewModel: ObservableObject {
     }
 
     func reloadForTimeRange() async {
+        // Check if user has access to the selected time range
+        if let featureGate = featureGateService {
+            if !featureGate.hasAccessToTimeRange(selectedTimeRange) {
+                showPaywall = true
+                return
+            }
+        }
         await loadSessions()
+    }
+
+    /// Set the time range, checking for premium access
+    func setTimeRange(_ timeRange: TimeRange) {
+        if let featureGate = featureGateService {
+            if !featureGate.hasAccessToTimeRange(timeRange) {
+                showPaywall = true
+                return
+            }
+        }
+        selectedTimeRange = timeRange
+        Task {
+            await reloadForTimeRange()
+        }
+    }
+
+    /// Available time ranges based on subscription status
+    var availableTimeRanges: [TimeRange] {
+        if let featureGate = featureGateService, featureGate.hasAccess(to: .extendedTimeRanges) {
+            return TimeRange.allCases
+        }
+        // Free users only get Day and Week
+        return [.day, .week]
     }
 
     // MARK: - Primary Statistics

@@ -11,7 +11,12 @@ struct ViewModeToggle: View {
     @Binding var viewMode: ViewMode
 
     var body: some View {
-        Picker("View Mode", selection: $viewMode) {
+        Picker("View Mode", selection: Binding(
+            get: { viewMode },
+            set: { newValue in
+                viewMode = newValue
+            }
+        )) {
             ForEach(ViewMode.allCases, id: \.self) { mode in
                 Text(mode.rawValue).tag(mode)
             }
@@ -24,5 +29,10 @@ struct ViewModeToggle: View {
     ViewModeToggle(viewMode: .constant(.consistency))
         .padding()
 }
+
+
+
+
+
 
 

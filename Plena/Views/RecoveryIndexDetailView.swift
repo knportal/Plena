@@ -236,7 +236,7 @@ struct RecoveryIndexDetailView: View {
                 .font(.title2)
                 .fontWeight(.bold)
 
-            Text("Recovery index measures your meditation session frequency. Consistent, moderate frequency (1-2 sessions per day) indicates good recovery patterns and sustainable practice. Too few or too many sessions may suggest imbalanced recovery.")
+            Text("Recovery index measures your mindful session frequency. Consistent, moderate frequency (1-2 sessions per day) indicates good recovery patterns and sustainable practice. Too few or too many sessions may suggest imbalanced recovery.")
                 .font(.body)
                 .foregroundColor(.secondary)
 

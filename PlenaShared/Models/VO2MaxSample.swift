@@ -21,3 +21,10 @@ struct VO2MaxSample: Identifiable, Codable {
 
 
 
+
+
+
+
+
+
+

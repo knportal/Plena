@@ -30,7 +30,7 @@ struct AboutView: View {
             }
 
             Section {
-                Text("Plena is a meditation tracking application that monitors biometric data during meditation sessions using HealthKit. Track your heart rate, HRV, respiratory rate, and more to gain insights into how meditation affects your body and mind.")
+                Text("Plena is a mindfulness tracking application that monitors biometric data during mindfulness sessions using HealthKit. Track your heart rate (continuously) and HRV, respiratory rate, and more (measured periodically by Apple Watch) to gain insights into how mindfulness practice affects your body and mind.")
                     .font(.body)
                     .padding(.vertical, 4)
             } header: {
@@ -38,9 +38,8 @@ struct AboutView: View {
             }
 
             Section {
-                // Update this URL with your actual privacy policy location
-                // Set to nil to hide the link until you have a hosted privacy policy
-                if let privacyURL = URL(string: "https://plenitudo.ai/privacy") {
+                // Privacy Policy URL - hosted on plenitudo.ai website
+                if let privacyURL = URL(string: "https://plenitudo.ai/privacy-policy") {
                     Link(destination: privacyURL) {
                         HStack {
                             Text("Privacy Policy")

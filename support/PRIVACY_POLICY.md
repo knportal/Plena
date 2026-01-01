@@ -8,7 +8,7 @@
 
 ## Introduction
 
-Plena ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our meditation tracking application ("App") and related services.
+Plena ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mindfulness tracking application ("App") and related services.
 
 **Important:** This app uses Apple's HealthKit framework to access health data. Your health information is sensitive, and we take its protection seriously.
 
@@ -30,7 +30,7 @@ Plena accesses the following health data types through Apple's HealthKit framewo
 
 **Data We Write:**
 
-- Meditation session data (mindfulness sessions)
+- mindfulness session data (mindfulness sessions)
 - Session duration and timestamps
 
 **How HealthKit Works:**
@@ -64,11 +64,11 @@ We may collect information about how you use the App, including:
 
 **Health Data:**
 
-- Display real-time biometric readings during meditation sessions
+- Display real-time biometric readings during mindfulness sessions
 - Calculate stress zone classifications
 - Generate session summaries and statistics
 - Create data visualizations and trend analysis
-- Provide personalized insights about your meditation practice
+- Provide personalized insights about your mindfulness practice
 
 **Device Information:**
 
@@ -237,8 +237,8 @@ We may disclose your information if required by law, such as:
 
 **Our Use of HealthKit:**
 
-- We read biometric data during meditation sessions
-- We write meditation session data back to HealthKit
+- We read biometric data during mindfulness sessions
+- We write mindfulness session data back to HealthKit
 - We do not read or write data outside of app usage
 - We only access data types necessary for app functionality
 

@@ -288,3 +288,10 @@ After completing the Developer Portal setup:
 3. **Rebuild and reinstall** both apps
 4. **Check console logs** - container UUIDs should match
 5. **Test sync** - start session on Watch, check iPhone Dashboard
+
+
+
+
+
+
+

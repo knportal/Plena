@@ -130,3 +130,10 @@ Once UUIDs match:
 2. Complete the session
 3. Open iPhone Dashboard
 4. Session should appear automatically
+
+
+
+
+
+
+

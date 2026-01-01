@@ -11,9 +11,36 @@ import HealthKit
 import UIKit
 #endif
 
+// MARK: - Debug Logging Helper
+// #region agent log
+private func debugLog(_ message: String, data: [String: Any] = [:]) {
+    let logPath = "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log"
+    let timestamp = Date().timeIntervalSince1970 * 1000
+    var logEntry: [String: Any] = [
+        "timestamp": Int(timestamp),
+        "message": message,
+        "sessionId": "debug-session",
+        "runId": "run1"
+    ]
+    logEntry.merge(data) { (_, new) in new }
+
+    if let jsonData = try? JSONSerialization.data(withJSONObject: logEntry),
+       let jsonString = String(data: jsonData, encoding: .utf8) {
+        if FileManager.default.fileExists(atPath: logPath),
+           let fileHandle = FileHandle(forWritingAtPath: logPath) {
+            fileHandle.seekToEndOfFile()
+            fileHandle.write((jsonString + "\n").data(using: .utf8)!)
+            fileHandle.closeFile()
+        } else {
+            try? (jsonString + "\n").write(toFile: logPath, atomically: false, encoding: .utf8)
+        }
+    }
+}
+// #endregion agent log
+
 // Callback types for real-time data
 typealias HeartRateHandler = (Double) -> Void
-typealias HRVHandler = (Double) -> Void
+typealias HRVHandler = (Double, Date) -> Void  // (sdnn, timestamp)
 typealias RespiratoryRateHandler = (Double) -> Void
 typealias VO2MaxHandler = (Double) -> Void
 typealias TemperatureHandler = (Double) -> Void
@@ -56,6 +83,7 @@ protocol HealthKitServiceProtocol {
     func fetchLatestTemperature() async throws -> Double?
     func fetchLatestHeartRate() async throws -> Double?
     func fetchLatestHRV() async throws -> Double?
+    func fetchHRVSamples(startDate: Date, endDate: Date) async throws -> [Double]
     func fetchLatestRespiratoryRate() async throws -> Double?
     func startPeriodicVO2MaxQuery(interval: TimeInterval, handler: @escaping VO2MaxHandler) throws
     func startPeriodicTemperatureQuery(interval: TimeInterval, handler: @escaping TemperatureHandler) throws
@@ -132,6 +160,7 @@ class HealthKitService: HealthKitServiceProtocol {
     // Active queries
     private var heartRateQuery: HKAnchoredObjectQuery?
     private var hrvQuery: HKAnchoredObjectQuery?
+    private var hrvAnchor: HKQueryAnchor? // Store anchor to avoid reprocessing old samples
     private var respiratoryRateQuery: HKAnchoredObjectQuery?
     private var vo2MaxQuery: HKAnchoredObjectQuery?
     private var temperatureQuery: HKAnchoredObjectQuery?
@@ -301,93 +330,364 @@ class HealthKitService: HealthKitServiceProtocol {
         }
 
         // Create anchored query for real-time updates
+        // Use a predicate to only get samples from the last 5 minutes to avoid processing historical data
+        let now = Date()
+        let startDate = now.addingTimeInterval(-300) // Last 5 minutes
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate,
+            end: now,
+            options: .strictStartDate
+        )
+
         let query = HKAnchoredObjectQuery(
             type: heartRateType,
-            predicate: nil,
+            predicate: predicate,
             anchor: nil,
             limit: HKObjectQueryNoLimit
         ) { query, samples, deletedObjects, anchor, error in
-            guard let samples = samples as? [HKQuantitySample] else {
-                if let error = error {
-                    print("Heart rate query error: \(error)")
+            if let error = error {
+                print("⚠️ Heart rate query initial error: \(error)")
+                return
+            }
+
+            guard let samples = samples as? [HKQuantitySample], !samples.isEmpty else {
+                print("⚠️ Heart rate query returned no recent samples (initial)")
+                return
+            }
+
+            print("📊 Heart rate query initial: received \(samples.count) recent sample(s)")
+
+            // Process only recent samples (within last 5 minutes)
+            // Since we already filtered at query level (last 5 minutes), we can be more lenient here
+            // This ensures we catch samples that might be slightly older but still relevant
+            let cutoffDate = Date().addingTimeInterval(-300) // 5 minutes ago
+            let recentSamples = samples.filter { $0.endDate >= cutoffDate }
+
+            if recentSamples.isEmpty {
+                // Log details about why samples were rejected
+                if let oldestSample = samples.first {
+                    let oldestAge = Date().timeIntervalSince(oldestSample.endDate)
+                    print("⚠️ No samples within last 5 minutes. Oldest sample age: \(String(format: "%.1f", oldestAge))s")
+                } else {
+                    print("⚠️ No samples within last 5 minutes, waiting for new data...")
                 }
                 return
             }
 
-            // Process the most recent sample
-            if let latestSample = samples.last {
+            print("   → Processing \(recentSamples.count) sample(s) from last 5 minutes")
+
+            // Process all recent samples, sorted by date
+            for sample in recentSamples.sorted(by: { $0.endDate < $1.endDate }) {
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
-                let heartRate = latestSample.quantity.doubleValue(for: heartRateUnit)
+                let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
+                let sampleAge = Date().timeIntervalSince(sample.endDate)
+                print("   → HR: \(String(format: "%.1f", heartRate)) BPM (age: \(String(format: "%.1f", sampleAge))s)")
                 handler(heartRate)
             }
         }
 
         // Update handler for continuous updates
         query.updateHandler = { query, samples, deletedObjects, anchor, error in
-            guard let samples = samples as? [HKQuantitySample] else {
-                if let error = error {
-                    print("Heart rate update error: \(error)")
-                }
+            // #region agent log
+            debugLog("Heart rate anchored query update handler called", data: [
+                "hypothesisId": "D",
+                "location": "HealthKitService.swift:361",
+                "hasError": error != nil,
+                "sampleCount": (samples as? [HKQuantitySample])?.count ?? 0,
+                "hasDeletedObjects": deletedObjects != nil && !deletedObjects!.isEmpty
+            ])
+            // #endregion agent log
+            if let error = error {
+                print("⚠️ Heart rate update error: \(error)")
                 return
             }
 
-            if let latestSample = samples.last {
+            guard let samples = samples as? [HKQuantitySample], !samples.isEmpty else {
+                // #region agent log
+                debugLog("Heart rate anchored query: no samples in update", data: [
+                    "hypothesisId": "D",
+                    "location": "HealthKitService.swift:367"
+                ])
+                // #endregion agent log
+                print("⚠️ Heart rate query returned no samples")
+                return
+            }
+
+            print("📊 Heart rate query received \(samples.count) sample(s)")
+
+            // Process all new samples to ensure we get every update
+            let now = Date()
+            for sample in samples.sorted(by: { $0.endDate < $1.endDate }) {
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
-                let heartRate = latestSample.quantity.doubleValue(for: heartRateUnit)
-                handler(heartRate)
+                let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
+                let sampleAge = now.timeIntervalSince(sample.endDate)
+                print("   → HR: \(String(format: "%.1f", heartRate)) BPM at \(sample.endDate) (age: \(String(format: "%.1f", sampleAge))s)")
+                // #region agent log
+                debugLog("Heart rate anchored query: processing sample", data: [
+                    "hypothesisId": "D",
+                    "location": "HealthKitService.swift:376",
+                    "heartRate": heartRate,
+                    "sampleAge": sampleAge,
+                    "sampleEndDate": sample.endDate.timeIntervalSince1970,
+                    "willProcess": sampleAge <= 300
+                ])
+                // #endregion agent log
+
+                // Only process samples from the last 5 minutes to avoid processing old data
+                if sampleAge <= 300 {
+                    print("   ✅ Processing sample (within 5 minutes)")
+                    handler(heartRate)
+                } else {
+                    print("   ⚠️ Skipping sample (too old: \(String(format: "%.1f", sampleAge))s)")
+                }
             }
         }
 
         heartRateQuery = query
         healthStore.execute(query)
+        print("✅ Heart rate anchored query started")
     }
 
     func startHRVQuery(handler: @escaping HRVHandler) throws {
+        // #region agent log
+        let hasExistingAnchor = hrvAnchor != nil
+        let logData: [String: Any] = [
+            "location": "HealthKitService.swift:450",
+            "message": "startHRVQuery called",
+            "data": [
+                "hasExistingAnchor": hasExistingAnchor,
+                "hasExistingQuery": hrvQuery != nil
+            ],
+            "timestamp": Date().timeIntervalSince1970 * 1000,
+            "sessionId": "debug-session",
+            "runId": "run1",
+            "hypothesisId": "A"
+        ]
+        if let jsonData = try? JSONSerialization.data(withJSONObject: logData),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: false, encoding: .utf8)
+        }
+        // #endregion
+
         // Stop existing query if any
         if let existingQuery = hrvQuery {
             healthStore.stop(existingQuery)
         }
 
+        // Clear anchor when starting a new query to avoid reusing stale anchor from previous session
+        // The anchor should only persist within a single session, not across sessions
+        hrvAnchor = nil
+
         // Create anchored query for real-time updates
+        // HRV samples can be written during or after the workout session
+        // Use a more lenient predicate - check last 30 minutes to catch samples
+        // that might be written with a delay
+        let now = Date()
+        let startDate = now.addingTimeInterval(-60 * 30) // Last 30 minutes (more lenient)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate,
+            end: nil,
+            options: [] // Don't use strictStartDate - be more lenient
+        )
+
+        // #region agent log
+        let usingAnchor = hrvAnchor != nil
+        let logData2: [String: Any] = [
+            "location": "HealthKitService.swift:467",
+            "message": "Creating HRV anchored query",
+            "data": [
+                "usingAnchor": usingAnchor,
+                "startDate": startDate.timeIntervalSince1970,
+                "now": now.timeIntervalSince1970,
+                "windowMinutes": 10,
+                "anchorCleared": true
+            ],
+            "timestamp": Date().timeIntervalSince1970 * 1000,
+            "sessionId": "debug-session",
+            "runId": "run1",
+            "hypothesisId": "A"
+        ]
+        if let jsonData = try? JSONSerialization.data(withJSONObject: logData2),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
+        }
+        // #endregion
+
+        // Use the stored anchor if available, otherwise start fresh
+        // This prevents reprocessing old samples while still getting new ones
         let query = HKAnchoredObjectQuery(
             type: hrvType,
-            predicate: nil,
-            anchor: nil,
+            predicate: predicate,
+            anchor: hrvAnchor, // Use stored anchor to avoid reprocessing
             limit: HKObjectQueryNoLimit
-        ) { query, samples, deletedObjects, anchor, error in
+        ) { [weak self] query, samples, deletedObjects, anchor, error in
+            print("🔍 HRV query INITIAL handler called - samples: \(samples?.count ?? 0), error: \(error?.localizedDescription ?? "none")")
+
+            // #region agent log
+            let sampleCount = (samples as? [HKQuantitySample])?.count ?? 0
+            let logData3: [String: Any] = [
+                "location": "HealthKitService.swift:472",
+                "message": "HRV query initial handler called",
+                "data": [
+                    "sampleCount": sampleCount,
+                    "hasError": error != nil,
+                    "errorDescription": error?.localizedDescription ?? "none",
+                    "hasAnchor": anchor != nil,
+                    "hasDeletedObjects": deletedObjects != nil && !deletedObjects!.isEmpty
+                ],
+                "timestamp": Date().timeIntervalSince1970 * 1000,
+                "sessionId": "debug-session",
+                "runId": "run1",
+                "hypothesisId": "C"
+            ]
+            if let jsonData = try? JSONSerialization.data(withJSONObject: logData3),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
+            }
+            // #endregion
+
+            // Store anchor for next query
+            if let anchor = anchor {
+                self?.hrvAnchor = anchor
+            }
+
             guard let samples = samples as? [HKQuantitySample] else {
                 if let error = error {
-                    print("HRV query error: \(error)")
+                    print("❌ HRV query error: \(error)")
+                } else {
+                    print("⚠️ HRV query initial: no samples returned")
                 }
                 return
             }
 
-            // Process the most recent sample
-            if let latestSample = samples.last {
+            // #region agent log
+            if sampleCount > 0 {
+                let firstSampleDate = samples.first?.endDate.timeIntervalSince1970 ?? 0
+                let lastSampleDate = samples.last?.endDate.timeIntervalSince1970 ?? 0
+                let logData4: [String: Any] = [
+                    "location": "HealthKitService.swift:487",
+                    "message": "HRV query processing samples",
+                    "data": [
+                        "sampleCount": sampleCount,
+                        "firstSampleDate": firstSampleDate,
+                        "lastSampleDate": lastSampleDate,
+                        "willCallHandler": true
+                    ],
+                    "timestamp": Date().timeIntervalSince1970 * 1000,
+                    "sessionId": "debug-session",
+                    "runId": "run1",
+                    "hypothesisId": "C"
+                ]
+                if let jsonData = try? JSONSerialization.data(withJSONObject: logData4),
+                   let jsonString = String(data: jsonData, encoding: .utf8) {
+                    try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
+                }
+            }
+            // #endregion
+
+            // Process all new samples, not just the last one
+            // This ensures we get all HRV updates during the workout session
+            for sample in samples.sorted(by: { $0.endDate < $1.endDate }) {
                 let hrvUnit = HKUnit.secondUnit(with: .milli)
-                let sdnn = latestSample.quantity.doubleValue(for: hrvUnit)
-                handler(sdnn)
+                let sdnn = sample.quantity.doubleValue(for: hrvUnit)
+                handler(sdnn, sample.endDate)  // Pass timestamp with value
             }
         }
 
         // Update handler for continuous updates
-        query.updateHandler = { query, samples, deletedObjects, anchor, error in
+        query.updateHandler = { [weak self] query, samples, deletedObjects, anchor, error in
+            print("🔍 HRV query UPDATE handler called - samples: \(samples?.count ?? 0), error: \(error?.localizedDescription ?? "none")")
+
+            // #region agent log
+            let sampleCount = (samples as? [HKQuantitySample])?.count ?? 0
+            let logData5: [String: Any] = [
+                "location": "HealthKitService.swift:495",
+                "message": "HRV query update handler called",
+                "data": [
+                    "sampleCount": sampleCount,
+                    "hasError": error != nil,
+                    "errorDescription": error?.localizedDescription ?? "none",
+                    "hasAnchor": anchor != nil
+                ],
+                "timestamp": Date().timeIntervalSince1970 * 1000,
+                "sessionId": "debug-session",
+                "runId": "run1",
+                "hypothesisId": "C"
+            ]
+            if let jsonData = try? JSONSerialization.data(withJSONObject: logData5),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
+            }
+            // #endregion
+
+            // Store anchor for next query
+            if let anchor = anchor {
+                self?.hrvAnchor = anchor
+            }
+
             guard let samples = samples as? [HKQuantitySample] else {
                 if let error = error {
-                    print("HRV update error: \(error)")
+                    print("❌ HRV update error: \(error)")
+                } else {
+                    print("⚠️ HRV query update: no samples returned")
                 }
                 return
             }
 
-            if let latestSample = samples.last {
+            // #region agent log
+            if sampleCount > 0 {
+                let firstSampleDate = samples.first?.endDate.timeIntervalSince1970 ?? 0
+                let logData6: [String: Any] = [
+                    "location": "HealthKitService.swift:509",
+                    "message": "HRV query update processing samples",
+                    "data": [
+                        "sampleCount": sampleCount,
+                        "firstSampleDate": firstSampleDate,
+                        "willCallHandler": true
+                    ],
+                    "timestamp": Date().timeIntervalSince1970 * 1000,
+                    "sessionId": "debug-session",
+                    "runId": "run1",
+                    "hypothesisId": "C"
+                ]
+                if let jsonData = try? JSONSerialization.data(withJSONObject: logData6),
+                   let jsonString = String(data: jsonData, encoding: .utf8) {
+                    try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
+                }
+            }
+            // #endregion
+
+            // Process all new samples to ensure we get every HRV update
+            for sample in samples.sorted(by: { $0.endDate < $1.endDate }) {
                 let hrvUnit = HKUnit.secondUnit(with: .milli)
-                let sdnn = latestSample.quantity.doubleValue(for: hrvUnit)
-                handler(sdnn)
+                let sdnn = sample.quantity.doubleValue(for: hrvUnit)
+                handler(sdnn, sample.endDate)  // Pass timestamp with value
             }
         }
 
         hrvQuery = query
+        print("🔍 Executing HRV anchored query...")
         healthStore.execute(query)
+        print("✅ HRV anchored query execute() completed (with anchor persistence and 10-minute window)")
+
+        // #region agent log
+        let logData7: [String: Any] = [
+            "location": "HealthKitService.swift:517",
+            "message": "HRV query executed",
+            "data": [
+                "queryExecuted": true,
+                "hasHandler": true
+            ],
+            "timestamp": Date().timeIntervalSince1970 * 1000,
+            "sessionId": "debug-session",
+            "runId": "run1",
+            "hypothesisId": "D"
+        ]
+        if let jsonData = try? JSONSerialization.data(withJSONObject: logData7),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
+        }
+        // #endregion
     }
 
     func startRespiratoryRateQuery(handler: @escaping RespiratoryRateHandler) throws {
@@ -626,11 +926,21 @@ class HealthKitService: HealthKitServiceProtocol {
     }
 
     /// Fetches the most recent heart rate value from HealthKit
-    /// Returns nil if no data is available
+    /// Only returns samples from the last 60 seconds to ensure real-time data
+    /// Returns nil if no recent data is available
     func fetchLatestHeartRate() async throws -> Double? {
         guard HKHealthStore.isHealthDataAvailable() else {
             throw HealthKitError.notAvailable
         }
+
+        // Only fetch samples from the last 60 seconds to ensure we get current data
+        let now = Date()
+        let startDate = now.addingTimeInterval(-60)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate,
+            end: now,
+            options: .strictStartDate
+        )
 
         let sortDescriptor = NSSortDescriptor(
             key: HKSampleSortIdentifierEndDate,
@@ -640,22 +950,60 @@ class HealthKitService: HealthKitServiceProtocol {
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKSampleQuery(
                 sampleType: heartRateType,
-                predicate: nil,
+                predicate: predicate,
                 limit: 1,
                 sortDescriptors: [sortDescriptor]
             ) { _, samples, error in
                 if let error = error {
+                    print("⚠️ fetchLatestHeartRate query error: \(error)")
                     continuation.resume(throwing: error)
                     return
                 }
 
                 guard let sample = samples?.first as? HKQuantitySample else {
+                    // #region agent log
+                    debugLog("fetchLatestHeartRate: No samples found", data: [
+                        "hypothesisId": "A",
+                        "location": "HealthKitService.swift:717",
+                        "queryWindowSeconds": 60,
+                        "sampleCount": samples?.count ?? 0
+                    ])
+                    // #endregion agent log
+                    print("⚠️ fetchLatestHeartRate: No samples found in last 60 seconds")
                     continuation.resume(returning: nil)
                     return
                 }
 
+                // Accept any sample within the query window (60 seconds)
+                // The predicate already filters to last 60 seconds, so any sample returned is valid
+                // Apple Watch writes heart rate samples every 5-10 seconds during workouts,
+                // so samples up to 60 seconds old are still recent enough to display
+                let sampleAge = now.timeIntervalSince(sample.endDate)
+                print("📊 fetchLatestHeartRate: Found sample, age: \(String(format: "%.1f", sampleAge))s")
+                // #region agent log
+                debugLog("fetchLatestHeartRate: Sample age check", data: [
+                    "hypothesisId": "A",
+                    "location": "HealthKitService.swift:724",
+                    "sampleAge": sampleAge,
+                    "sampleEndDate": sample.endDate.timeIntervalSince1970,
+                    "currentTime": now.timeIntervalSince1970,
+                    "queryWindowSeconds": 60.0,
+                    "willAccept": sampleAge <= 60
+                ])
+                // #endregion agent log
+
+                // Accept samples within the query window (60 seconds)
+                // No additional age check needed since predicate already filtered
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
                 let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
+                // #region agent log
+                debugLog("fetchLatestHeartRate: Sample accepted", data: [
+                    "hypothesisId": "A",
+                    "location": "HealthKitService.swift:738",
+                    "heartRate": heartRate,
+                    "sampleAge": sampleAge
+                ])
+                // #endregion agent log
                 continuation.resume(returning: heartRate)
             }
 
@@ -664,11 +1012,21 @@ class HealthKitService: HealthKitServiceProtocol {
     }
 
     /// Fetches the most recent HRV value from HealthKit
-    /// Returns nil if no data is available
+    /// Only returns samples from the last 5 minutes (HRV updates less frequently)
+    /// Returns nil if no recent data is available
     func fetchLatestHRV() async throws -> Double? {
         guard HKHealthStore.isHealthDataAvailable() else {
             throw HealthKitError.notAvailable
         }
+
+        // HRV updates less frequently, so check last 5 minutes
+        let now = Date()
+        let startDate = now.addingTimeInterval(-300)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate,
+            end: now,
+            options: .strictStartDate
+        )
 
         let sortDescriptor = NSSortDescriptor(
             key: HKSampleSortIdentifierEndDate,
@@ -678,7 +1036,126 @@ class HealthKitService: HealthKitServiceProtocol {
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKSampleQuery(
                 sampleType: hrvType,
-                predicate: nil,
+                predicate: predicate,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                print("🔍 fetchLatestHRV callback - found: \(samples?.count ?? 0) samples, error: \(error?.localizedDescription ?? "none")")
+
+                if let error = error {
+                    print("❌ fetchLatestHRV error: \(error)")
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                guard let sample = samples?.first as? HKQuantitySample else {
+                    print("⚠️ fetchLatestHRV: No samples in last 5 minutes")
+                    continuation.resume(returning: nil)
+                    return
+                }
+
+                // Accept samples within last 5 minutes (HRV can be written with delays)
+                let sampleAge = now.timeIntervalSince(sample.endDate)
+                print("🔍 fetchLatestHRV: Sample age: \(String(format: "%.1f", sampleAge))s")
+
+                if sampleAge > 300 { // 5 minutes instead of 2
+                    print("⚠️ fetchLatestHRV: Sample too old (\(String(format: "%.1f", sampleAge))s), rejecting")
+                    continuation.resume(returning: nil)
+                    return
+                }
+
+                let hrvUnit = HKUnit.secondUnit(with: .milli)
+                let sdnn = sample.quantity.doubleValue(for: hrvUnit)
+                print("✅ fetchLatestHRV: Returning value: \(String(format: "%.1f", sdnn)) ms")
+                continuation.resume(returning: sdnn)
+            }
+
+            print("🔍 Executing fetchLatestHRV query...")
+            healthStore.execute(query)
+        }
+    }
+
+    /// Fetches all HRV samples from a specific time range
+    /// Useful for post-workout queries when HRV samples may be written after the workout ends
+    func fetchHRVSamples(startDate: Date, endDate: Date) async throws -> [Double] {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            throw HealthKitError.notAvailable
+        }
+
+        // Extend the end date by 2 minutes to catch samples written after workout ends
+        let extendedEndDate = endDate.addingTimeInterval(120)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate,
+            end: extendedEndDate,
+            options: []
+        )
+
+        let sortDescriptor = NSSortDescriptor(
+            key: HKSampleSortIdentifierEndDate,
+            ascending: true
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: hrvType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                print("🔍 fetchHRVSamples callback - found: \(samples?.count ?? 0) samples, error: \(error?.localizedDescription ?? "none")")
+
+                if let error = error {
+                    print("❌ fetchHRVSamples error: \(error)")
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                guard let samples = samples as? [HKQuantitySample] else {
+                    print("⚠️ fetchHRVSamples: No samples found in range")
+                    continuation.resume(returning: [])
+                    return
+                }
+
+                let hrvUnit = HKUnit.secondUnit(with: .milli)
+                let hrvValues = samples.map { sample in
+                    sample.quantity.doubleValue(for: hrvUnit)
+                }
+
+                print("✅ fetchHRVSamples: Returning \(hrvValues.count) HRV values")
+                continuation.resume(returning: hrvValues)
+            }
+
+            print("🔍 Executing fetchHRVSamples query (start: \(startDate), end: \(extendedEndDate))...")
+            healthStore.execute(query)
+        }
+    }
+
+    /// Fetches the most recent respiratory rate value from HealthKit
+    /// Only returns samples from the last 5 minutes
+    /// Returns nil if no recent data is available
+    func fetchLatestRespiratoryRate() async throws -> Double? {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            throw HealthKitError.notAvailable
+        }
+
+        // Respiratory rate updates less frequently, so check last 5 minutes
+        let now = Date()
+        let startDate = now.addingTimeInterval(-300)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate,
+            end: now,
+            options: .strictStartDate
+        )
+
+        let sortDescriptor = NSSortDescriptor(
+            key: HKSampleSortIdentifierEndDate,
+            ascending: false
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: respiratoryRateType,
+                predicate: predicate,
                 limit: 1,
                 sortDescriptors: [sortDescriptor]
             ) { _, samples, error in
@@ -692,40 +1169,9 @@ class HealthKitService: HealthKitServiceProtocol {
                     return
                 }
 
-                let hrvUnit = HKUnit.secondUnit(with: .milli)
-                let sdnn = sample.quantity.doubleValue(for: hrvUnit)
-                continuation.resume(returning: sdnn)
-            }
-
-            healthStore.execute(query)
-        }
-    }
-
-    /// Fetches the most recent respiratory rate value from HealthKit
-    /// Returns nil if no data is available
-    func fetchLatestRespiratoryRate() async throws -> Double? {
-        guard HKHealthStore.isHealthDataAvailable() else {
-            throw HealthKitError.notAvailable
-        }
-
-        let sortDescriptor = NSSortDescriptor(
-            key: HKSampleSortIdentifierEndDate,
-            ascending: false
-        )
-
-        return try await withCheckedThrowingContinuation { continuation in
-            let query = HKSampleQuery(
-                sampleType: respiratoryRateType,
-                predicate: nil,
-                limit: 1,
-                sortDescriptors: [sortDescriptor]
-            ) { _, samples, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-
-                guard let sample = samples?.first as? HKQuantitySample else {
+                // Double-check that the sample is recent (within last 2 minutes)
+                let sampleAge = now.timeIntervalSince(sample.endDate)
+                if sampleAge > 120 {
                     continuation.resume(returning: nil)
                     return
                 }
@@ -803,10 +1249,14 @@ class HealthKitService: HealthKitServiceProtocol {
         // Cancel existing periodic task if any
         periodicHeartRateTask?.cancel()
 
+        print("✅ Starting periodic heart rate query (interval: \(interval)s)")
         // Fetch immediately
         Task {
             if let heartRate = try? await fetchLatestHeartRate() {
+                print("📊 Periodic HR query (initial): \(String(format: "%.1f", heartRate)) BPM")
                 handler(heartRate)
+            } else {
+                print("⚠️ Periodic HR query (initial): No data available")
             }
         }
 
@@ -816,10 +1266,14 @@ class HealthKitService: HealthKitServiceProtocol {
                 do {
                     try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
                     if let heartRate = try? await fetchLatestHeartRate() {
+                        print("📊 Periodic HR query: \(String(format: "%.1f", heartRate)) BPM")
                         handler(heartRate)
+                    } else {
+                        print("⚠️ Periodic HR query: No data available")
                     }
                 } catch {
                     // Task was cancelled or sleep interrupted
+                    print("⚠️ Periodic HR query task cancelled or interrupted: \(error)")
                     break
                 }
             }
@@ -829,26 +1283,37 @@ class HealthKitService: HealthKitServiceProtocol {
     /// Starts a periodic query for HRV that fetches the latest value at specified intervals
     /// Useful as a fallback when real-time anchored queries don't provide frequent updates
     func startPeriodicHRVQuery(interval: TimeInterval, handler: @escaping HRVHandler) throws {
+        print("🔍 Starting periodic HRV query (interval: \(interval)s)")
+
         // Cancel existing periodic task if any
         periodicHRVTask?.cancel()
 
         // Fetch immediately
         Task {
+            print("🔍 Periodic HRV: Immediate fetch...")
             if let hrv = try? await fetchLatestHRV() {
-                handler(hrv)
+                print("✅ Periodic HRV: Immediate value: \(String(format: "%.1f", hrv)) ms")
+                handler(hrv, Date())  // Use current time for periodic queries
+            } else {
+                print("⚠️ Periodic HRV: No immediate value")
             }
         }
 
         // Set up periodic fetching
         periodicHRVTask = Task {
+            print("🔍 Periodic HRV task loop started")
             while !Task.isCancelled {
                 do {
                     try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+                    print("🔍 Periodic HRV: Woke up, fetching...")
                     if let hrv = try? await fetchLatestHRV() {
-                        handler(hrv)
+                        print("✅ Periodic HRV: Found value: \(String(format: "%.1f", hrv)) ms")
+                        handler(hrv, Date())  // Use current time for periodic queries
+                    } else {
+                        print("⚠️ Periodic HRV: No value this cycle")
                     }
                 } catch {
-                    // Task was cancelled or sleep interrupted
+                    print("🔍 Periodic HRV task ended: \(error)")
                     break
                 }
             }
@@ -885,13 +1350,18 @@ class HealthKitService: HealthKitServiceProtocol {
     }
 
     func stopAllQueries() {
+        print("🛑 Stopping all HealthKit queries...")
         if let query = heartRateQuery {
             healthStore.stop(query)
             heartRateQuery = nil
+            print("   → Heart rate query stopped")
         }
         if let query = hrvQuery {
             healthStore.stop(query)
             hrvQuery = nil
+            // Clear anchor when stopping to avoid reusing stale anchor in next session
+            hrvAnchor = nil
+            print("   → HRV query stopped (anchor cleared)")
         }
         if let query = respiratoryRateQuery {
             healthStore.stop(query)
@@ -950,7 +1420,7 @@ class HealthKitService: HealthKitServiceProtocol {
             end: endDate,
             metadata: [
                 HKMetadataKeyWorkoutBrandName: "Plena",
-                "sessionType": "meditation"
+                "sessionType": "mindfulness"
             ]
         )
 

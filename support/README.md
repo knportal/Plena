@@ -4,7 +4,7 @@
 
 **Note:** This is separate from the `documents/` folder, which contains project documentation for developers and App Store submission.
 
-Welcome to the Plena support page. Here you'll find help, documentation, and resources for the Plena meditation tracking app.
+Welcome to the Plena support page. Here you'll find help, documentation, and resources for the Plena mindfulness tracking app.
 
 ---
 
@@ -22,7 +22,7 @@ Welcome to the Plena support page. Here you'll find help, documentation, and res
 
 ### Common Issues
 
-**Can't start a meditation session?**
+**Can't start a mindfulness session?**
 - Check HealthKit permissions: Settings → Privacy & Security → Health → Plena
 - Ensure you're using a physical device (not simulator)
 - See [Troubleshooting Guide](TROUBLESHOOTING.md) for detailed solutions
@@ -105,13 +105,13 @@ A: Yes. All health data is stored locally on your device or in your personal iCl
 ### HealthKit & Permissions
 
 **Q: Why does Plena need HealthKit permissions?**
-A: Plena uses HealthKit to read biometric data (heart rate, HRV, respiratory rate) and write meditation session data. HealthKit is Apple's secure framework for health data.
+A: Plena uses HealthKit to read biometric data (heart rate, HRV, respiratory rate) and write mindfulness session data. HealthKit is Apple's secure framework for health data.
 
 **Q: Can I revoke permissions later?**
 A: Yes, you can manage permissions anytime in Settings → Privacy & Security → Health → Plena. You can turn individual data types on or off.
 
 **Q: What happens if I deny permissions?**
-A: The app will have limited functionality. You won't be able to start meditation sessions or view sensor data. You can grant permissions later in Settings.
+A: The app will have limited functionality. You won't be able to start mindfulness sessions or view sensor data. You can grant permissions later in Settings.
 
 **Q: Does Plena share my health data?**
 A: No. We do not share, sell, or transmit your health data to third parties. Your data stays on your device or in your iCloud account.
@@ -130,7 +130,7 @@ A: Plena works with Apple Watch Series 4 or newer running watchOS 10.0+. Differe
 A: HRV requires Apple Watch Series 4 or later and sufficient session duration (typically 10+ minutes with at least 3 HRV samples).
 
 **Q: Can I start sessions from my Watch?**
-A: Yes! The Watch app allows you to start and stop meditation sessions directly from your wrist. Data automatically syncs to your iPhone.
+A: Yes! The Watch app allows you to start and stop mindfulness sessions directly from your wrist. Data automatically syncs to your iPhone.
 
 ### Data & Sync
 
@@ -156,7 +156,7 @@ A: Plena tracks:
 - Body Temperature - Temperature monitoring during sessions
 - VO₂ Max - Maximum oxygen consumption (periodic readings)
 
-All sensors are tracked in real-time during meditation sessions and stored for historical analysis.
+All sensors are tracked in real-time during mindfulness sessions and stored for historical analysis.
 
 **Q: What are stress zones?**
 A: Stress zones classify your physiological state:

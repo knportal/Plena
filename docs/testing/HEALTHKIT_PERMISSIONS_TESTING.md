@@ -437,3 +437,10 @@ Use this checklist when testing:
 - [Apple HealthKit Documentation](https://developer.apple.com/documentation/healthkit)
 - [Requesting Authorization](https://developer.apple.com/documentation/healthkit/hkhealthstore/1614152-requestauthorization)
 - [Authorization Status](https://developer.apple.com/documentation/healthkit/hkauthorizationstatus)
+
+
+
+
+
+
+

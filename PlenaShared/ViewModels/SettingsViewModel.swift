@@ -65,8 +65,15 @@ class SettingsViewModel: ObservableObject {
     }
 
     private var cancellables = Set<AnyCancellable>()
+    private let featureGateService: FeatureGateServiceProtocol?
 
-    init() {
+    /// Whether premium sensors (Temperature, VO2Max) are available
+    var hasAdvancedSensors: Bool {
+        featureGateService?.hasAccess(to: PremiumFeature.advancedSensors) ?? true
+    }
+
+    init(featureGateService: FeatureGateServiceProtocol? = nil) {
+        self.featureGateService = featureGateService
         // Load initial values from iCloud Key-Value Store
         heartRateEnabled = iCloudStore.object(forKey: "sensorHeartRateEnabled") as? Bool ?? true
         hrvEnabled = iCloudStore.object(forKey: "sensorHRVEnabled") as? Bool ?? true

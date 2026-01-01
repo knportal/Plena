@@ -225,7 +225,7 @@ struct RestingHeartRateDetailView: View {
                 .font(.title2)
                 .fontWeight(.bold)
 
-            Text("Your resting heart rate is measured during the first 2 minutes of meditation sessions, when your body is in a natural resting state. A stable resting heart rate that's close to your personal baseline indicates good recovery and readiness.")
+            Text("Your resting heart rate is measured during the first 2 minutes of mindful sessions, when your body is in a natural resting state. A stable resting heart rate that's close to your personal baseline indicates good recovery and readiness.")
                 .font(.body)
                 .foregroundColor(.secondary)
 

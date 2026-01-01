@@ -336,13 +336,14 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             calmFraction = totalCalm / total
             calmScore = calmFraction * 100.0
 
-            // Determine dominant zone for bar color
-            if calmFraction >= 0.6 {
-                zone = .calm
-            } else if calmFraction >= 0.3 {
-                zone = .optimal
+            // Determine dominant zone for bar color based on actual zone fractions
+            // Bar color reflects which zone had the most time (not just calm thresholds)
+            if totalNeutral >= totalCalm && totalNeutral >= totalStress {
+                zone = .optimal  // Green when optimal is highest
+            } else if totalCalm >= totalStress {
+                zone = .calm     // Blue when calm is highest
             } else {
-                zone = .elevatedStress
+                zone = .elevatedStress  // Orange when elevated stress is highest
             }
         }
 

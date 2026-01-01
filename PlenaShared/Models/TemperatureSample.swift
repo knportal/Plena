@@ -21,3 +21,10 @@ struct TemperatureSample: Identifiable, Codable {
 
 
 
+
+
+
+
+
+
+

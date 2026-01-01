@@ -51,6 +51,72 @@ struct SessionSummaryView: View {
                         )
                     }
 
+                    // Average HRV
+                    if let avgHRV = summary.averageHRV {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "waveform.path.ecg")
+                                    .foregroundColor(Color("HRVColor"))
+                                    .font(.title3)
+
+                                Text("Average HRV")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(.secondary)
+                                    .font(.subheadline)
+                            }
+
+                            Text("\(Int(avgHRV)) ms")
+                                .font(.system(size: 48, weight: .light, design: .rounded))
+                                .foregroundColor(Color("HRVColor"))
+
+                            Text("HRV is measured periodically during your session, not continuously")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 4)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color("CardBackgroundColor"))
+                        )
+                    } else {
+                        // Show "Not measured" when HRV is unavailable
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "waveform.path.ecg")
+                                    .foregroundColor(.secondary)
+                                    .font(.title3)
+
+                                Text("Average HRV")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(.secondary)
+                                    .font(.subheadline)
+                            }
+
+                            Text("Not measured")
+                                .font(.system(size: 32, weight: .light, design: .rounded))
+                                .foregroundColor(.secondary)
+
+                            Text("HRV was not measured during this session. HRV is collected periodically by Apple Watch and may not be available for shorter sessions.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 4)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color("CardBackgroundColor"))
+                        )
+                    }
+
                     // HRV Change
                     if let hrvStart = summary.hrvStart,
                        let hrvEnd = summary.hrvEnd,
@@ -64,6 +130,10 @@ struct SessionSummaryView: View {
                                 Text("HRV Change")
                                     .font(.headline)
                                     .fontWeight(.semibold)
+
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(.secondary)
+                                    .font(.subheadline)
                             }
 
                             HStack(spacing: 16) {
@@ -101,6 +171,37 @@ struct SessionSummaryView: View {
                                 }
                             }
 
+                            // Trend indicator
+                            HStack {
+                                switch summary.hrvTrend {
+                                case .increasing:
+                                    Image(systemName: "arrow.up.circle.fill")
+                                        .foregroundColor(Color("SuccessColor"))
+                                    Text("Improving")
+                                        .font(.subheadline)
+                                        .foregroundColor(Color("SuccessColor"))
+                                case .decreasing:
+                                    Image(systemName: "arrow.down.circle.fill")
+                                        .foregroundColor(Color("WarningColor"))
+                                    Text("Decreasing")
+                                        .font(.subheadline)
+                                        .foregroundColor(Color("WarningColor"))
+                                case .stable:
+                                    Image(systemName: "minus.circle.fill")
+                                        .foregroundColor(Color("PlenaPrimary"))
+                                    Text("Stable")
+                                        .font(.subheadline)
+                                        .foregroundColor(Color("PlenaPrimary"))
+                                case .insufficientData:
+                                    Text("Insufficient data")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+
+                                Spacer()
+                            }
+                            .padding(.top, 4)
+
                             // Insight message
                             if let message = summary.hrvChangeMessage {
                                 HStack {
@@ -112,6 +213,19 @@ struct SessionSummaryView: View {
                                     Spacer()
                                 }
                                 .padding(.top, 4)
+                            }
+
+                            // Trend message
+                            if let trendMessage = summary.hrvTrendMessage {
+                                HStack {
+                                    Image(systemName: "info.circle.fill")
+                                        .foregroundColor(.blue)
+                                    Text(trendMessage)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                }
+                                .padding(.top, 2)
                             }
                         }
                         .padding()
@@ -231,6 +345,8 @@ struct SummaryCard: View {
             hrvStart: 45.0,
             hrvEnd: 52.0,
             hrvChange: 7.0,
+            averageHRV: 48.5,
+            hrvTrend: .increasing,
             averageRespiratoryRate: 14.5,
             respiratoryRateTrend: .decreasing
         ),
