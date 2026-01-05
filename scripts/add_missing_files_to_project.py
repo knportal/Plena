@@ -18,6 +18,11 @@ from typing import List, Tuple, Dict, Optional
 PROJECT_FILE = Path("Plena.xcodeproj/project.pbxproj")
 PROJECT_DIRS = ["Plena", "Plena Watch App", "PlenaShared", "Tests"]
 
+# Files to ignore (already properly configured in project, detection may be buggy)
+IGNORED_FILES = {
+    "BackgroundSessionManager.swift"  # Already in ViewModels group with correct targets
+}
+
 # Known build phase IDs
 IOS_SOURCES_PHASE = "A10000010000000000000039"
 WATCH_SOURCES_PHASE = "A1000001000000000000003D"
@@ -273,6 +278,9 @@ def main():
     # Find missing files
     missing_files = []
     for swift_file in swift_files:
+        # Skip ignored files
+        if swift_file.name in IGNORED_FILES:
+            continue
         if swift_file.name not in files_in_project:
             missing_files.append(swift_file)
 
