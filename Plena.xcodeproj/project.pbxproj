@@ -163,8 +163,6 @@
 		BEAC54438CCB4AAD80C36590 /* DataExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D674216AD246E18BCB61DB /* DataExportView.swift */; };
 		5AE2E9A2913940A091A26C28 /* DataExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC142C725C1442A68D0554D6 /* DataExportService.swift */; };
 		D0CDF516F66A493782D45022 /* DataExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC142C725C1442A68D0554D6 /* DataExportService.swift */; };
-		49BB675479E6430AA81A2740 /* BackgroundSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6452DE70A12D4A708A621227 /* BackgroundSessionManager.swift */; };
-		2032BBD8A63841A3A92092AE /* BackgroundSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6452DE70A12D4A708A621227 /* BackgroundSessionManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -303,7 +301,6 @@
 		35F65FE78CE349E2B03F4179 /* SessionAnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAnalyticsService.swift; sourceTree = "<group>"; };
 		99D674216AD246E18BCB61DB /* DataExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportView.swift; sourceTree = "<group>"; };
 		FC142C725C1442A68D0554D6 /* DataExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportService.swift; sourceTree = "<group>"; };
-		6452DE70A12D4A708A621227 /* BackgroundSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundSessionManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -380,7 +377,6 @@
 			children = (
 				A10000010000000000000023 /* Plena.app */,
 				A10000010000000000000024 /* Plena Watch App.app */,
-				6452DE70A12D4A708A621227 /* BackgroundSessionManager.swift */,
 );
 			name = Products;
 			sourceTree = "<group>";
@@ -790,7 +786,6 @@
 							F0334C0C9E9D46DA823B2D7F /* SessionSyncPackage.swift in Sources */,
 				67F3DEE663CF4D6A9F4D29CE /* SessionAnalyticsService.swift in Sources */,
 				D0CDF516F66A493782D45022 /* DataExportService.swift in Sources */,
-				2032BBD8A63841A3A92092AE /* BackgroundSessionManager.swift in Sources */,
 );
 			runOnlyForDeploymentPostprocessing = 0;
 		};

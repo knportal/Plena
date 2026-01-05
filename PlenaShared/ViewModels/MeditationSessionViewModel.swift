@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import OSLog
 #if os(watchOS)
 import HealthKit
 #if canImport(WatchKit)
@@ -17,6 +18,9 @@ import WatchKit
 
 @MainActor
 class MeditationSessionViewModel: ObservableObject {
+    // MARK: - Logging
+    private let logger = Logger(subsystem: "com.plena.app", category: "MeditationSession")
+
     @Published var currentSession: MeditationSession?
     @Published var isTracking: Bool = false
     @Published var countdown: Int?
@@ -533,26 +537,8 @@ class MeditationSessionViewModel: ObservableObject {
                         }
                     }
 
-                    // #region agent log
-                    let logData: [String: Any] = [
-                        "location": "MeditationSessionViewModel.swift:486",
-                        "message": "HRV handler callback received",
-                        "data": [
-                            "sdnn": sdnn,
-                            "sampleTimestamp": sampleTimestamp.timeIntervalSince1970,
-                            "hasCurrentSession": self.currentSession != nil,
-                            "isTracking": self.isTracking
-                        ],
-                        "timestamp": Date().timeIntervalSince1970 * 1000,
-                        "sessionId": "debug-session",
-                        "runId": "run1",
-                        "hypothesisId": "E"
-                    ]
-                    if let jsonData = try? JSONSerialization.data(withJSONObject: logData),
-                       let jsonString = String(data: jsonData, encoding: .utf8) {
-                        try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
-                    }
-                    // #endregion
+                    // Log HRV callback
+                    self.logger.debug("HRV handler callback - sdnn: \(sdnn), sampleTimestamp: \(sampleTimestamp.timeIntervalSince1970), hasCurrentSession: \(self.currentSession != nil), isTracking: \(self.isTracking)")
 
                     #if os(watchOS)
                     print("✅ Watch: HRV anchored query callback (within session): \(sdnn) ms")

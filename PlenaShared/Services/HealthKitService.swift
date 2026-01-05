@@ -7,36 +7,13 @@
 
 import Foundation
 import HealthKit
+import OSLog
 #if os(iOS)
 import UIKit
 #endif
 
-// MARK: - Debug Logging Helper
-// #region agent log
-private func debugLog(_ message: String, data: [String: Any] = [:]) {
-    let logPath = "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log"
-    let timestamp = Date().timeIntervalSince1970 * 1000
-    var logEntry: [String: Any] = [
-        "timestamp": Int(timestamp),
-        "message": message,
-        "sessionId": "debug-session",
-        "runId": "run1"
-    ]
-    logEntry.merge(data) { (_, new) in new }
-
-    if let jsonData = try? JSONSerialization.data(withJSONObject: logEntry),
-       let jsonString = String(data: jsonData, encoding: .utf8) {
-        if FileManager.default.fileExists(atPath: logPath),
-           let fileHandle = FileHandle(forWritingAtPath: logPath) {
-            fileHandle.seekToEndOfFile()
-            fileHandle.write((jsonString + "\n").data(using: .utf8)!)
-            fileHandle.closeFile()
-        } else {
-            try? (jsonString + "\n").write(toFile: logPath, atomically: false, encoding: .utf8)
-        }
-    }
-}
-// #endregion agent log
+// MARK: - Logging
+private let logger = Logger(subsystem: "com.plena.app", category: "HealthKit")
 
 // Callback types for real-time data
 typealias HeartRateHandler = (Double) -> Void
@@ -389,13 +366,13 @@ class HealthKitService: HealthKitServiceProtocol {
         // Update handler for continuous updates
         query.updateHandler = { query, samples, deletedObjects, anchor, error in
             // #region agent log
-            debugLog("Heart rate anchored query update handler called", data: [
-                "hypothesisId": "D",
-                "location": "HealthKitService.swift:361",
-                "hasError": error != nil,
-                "sampleCount": (samples as? [HKQuantitySample])?.count ?? 0,
-                "hasDeletedObjects": deletedObjects != nil && !deletedObjects!.isEmpty
-            ])
+            // debugLog("Heart rate anchored query update handler called", data: [
+            //     "hypothesisId": "D",
+            //     "location": "HealthKitService.swift:361",
+            //     "hasError": error != nil,
+            //     "sampleCount": (samples as? [HKQuantitySample])?.count ?? 0,
+            //     "hasDeletedObjects": deletedObjects != nil && !deletedObjects!.isEmpty
+            // ])
             // #endregion agent log
             if let error = error {
                 print("⚠️ Heart rate update error: \(error)")
@@ -404,10 +381,10 @@ class HealthKitService: HealthKitServiceProtocol {
 
             guard let samples = samples as? [HKQuantitySample], !samples.isEmpty else {
                 // #region agent log
-                debugLog("Heart rate anchored query: no samples in update", data: [
-                    "hypothesisId": "D",
-                    "location": "HealthKitService.swift:367"
-                ])
+                // debugLog("Heart rate anchored query: no samples in update", data: [
+                //     "hypothesisId": "D",
+                //     "location": "HealthKitService.swift:367"
+                // ])
                 // #endregion agent log
                 print("⚠️ Heart rate query returned no samples")
                 return
@@ -423,14 +400,14 @@ class HealthKitService: HealthKitServiceProtocol {
                 let sampleAge = now.timeIntervalSince(sample.endDate)
                 print("   → HR: \(String(format: "%.1f", heartRate)) BPM at \(sample.endDate) (age: \(String(format: "%.1f", sampleAge))s)")
                 // #region agent log
-                debugLog("Heart rate anchored query: processing sample", data: [
-                    "hypothesisId": "D",
-                    "location": "HealthKitService.swift:376",
-                    "heartRate": heartRate,
-                    "sampleAge": sampleAge,
-                    "sampleEndDate": sample.endDate.timeIntervalSince1970,
-                    "willProcess": sampleAge <= 300
-                ])
+                // debugLog("Heart rate anchored query: processing sample", data: [
+                //     "hypothesisId": "D",
+                //     "location": "HealthKitService.swift:376",
+                //     "heartRate": heartRate,
+                //     "sampleAge": sampleAge,
+                //     "sampleEndDate": sample.endDate.timeIntervalSince1970,
+                //     "willProcess": sampleAge <= 300
+                // ])
                 // #endregion agent log
 
                 // Only process samples from the last 5 minutes to avoid processing old data
@@ -449,25 +426,8 @@ class HealthKitService: HealthKitServiceProtocol {
     }
 
     func startHRVQuery(handler: @escaping HRVHandler) throws {
-        // #region agent log
-        let hasExistingAnchor = hrvAnchor != nil
-        let logData: [String: Any] = [
-            "location": "HealthKitService.swift:450",
-            "message": "startHRVQuery called",
-            "data": [
-                "hasExistingAnchor": hasExistingAnchor,
-                "hasExistingQuery": hrvQuery != nil
-            ],
-            "timestamp": Date().timeIntervalSince1970 * 1000,
-            "sessionId": "debug-session",
-            "runId": "run1",
-            "hypothesisId": "A"
-        ]
-        if let jsonData = try? JSONSerialization.data(withJSONObject: logData),
-           let jsonString = String(data: jsonData, encoding: .utf8) {
-            try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: false, encoding: .utf8)
-        }
-        // #endregion
+        // Log HRV query start
+        logger.debug("startHRVQuery called - hasExistingAnchor: \(self.hrvAnchor != nil), hasExistingQuery: \(self.hrvQuery != nil)")
 
         // Stop existing query if any
         if let existingQuery = hrvQuery {
@@ -490,28 +450,8 @@ class HealthKitService: HealthKitServiceProtocol {
             options: [] // Don't use strictStartDate - be more lenient
         )
 
-        // #region agent log
-        let usingAnchor = hrvAnchor != nil
-        let logData2: [String: Any] = [
-            "location": "HealthKitService.swift:467",
-            "message": "Creating HRV anchored query",
-            "data": [
-                "usingAnchor": usingAnchor,
-                "startDate": startDate.timeIntervalSince1970,
-                "now": now.timeIntervalSince1970,
-                "windowMinutes": 10,
-                "anchorCleared": true
-            ],
-            "timestamp": Date().timeIntervalSince1970 * 1000,
-            "sessionId": "debug-session",
-            "runId": "run1",
-            "hypothesisId": "A"
-        ]
-        if let jsonData = try? JSONSerialization.data(withJSONObject: logData2),
-           let jsonString = String(data: jsonData, encoding: .utf8) {
-            try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
-        }
-        // #endregion
+        // Log HRV query creation
+        logger.debug("Creating HRV anchored query - usingAnchor: \(self.hrvAnchor != nil), startDate: \(startDate.timeIntervalSince1970), windowMinutes: 30")
 
         // Use the stored anchor if available, otherwise start fresh
         // This prevents reprocessing old samples while still getting new ones
@@ -523,28 +463,9 @@ class HealthKitService: HealthKitServiceProtocol {
         ) { [weak self] query, samples, deletedObjects, anchor, error in
             print("🔍 HRV query INITIAL handler called - samples: \(samples?.count ?? 0), error: \(error?.localizedDescription ?? "none")")
 
-            // #region agent log
+            // Log HRV query initial handler
             let sampleCount = (samples as? [HKQuantitySample])?.count ?? 0
-            let logData3: [String: Any] = [
-                "location": "HealthKitService.swift:472",
-                "message": "HRV query initial handler called",
-                "data": [
-                    "sampleCount": sampleCount,
-                    "hasError": error != nil,
-                    "errorDescription": error?.localizedDescription ?? "none",
-                    "hasAnchor": anchor != nil,
-                    "hasDeletedObjects": deletedObjects != nil && !deletedObjects!.isEmpty
-                ],
-                "timestamp": Date().timeIntervalSince1970 * 1000,
-                "sessionId": "debug-session",
-                "runId": "run1",
-                "hypothesisId": "C"
-            ]
-            if let jsonData = try? JSONSerialization.data(withJSONObject: logData3),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
-                try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
-            }
-            // #endregion
+            logger.debug("HRV query initial handler - sampleCount: \(sampleCount), hasError: \(error != nil), hasAnchor: \(anchor != nil)")
 
             // Store anchor for next query
             if let anchor = anchor {
@@ -560,30 +481,12 @@ class HealthKitService: HealthKitServiceProtocol {
                 return
             }
 
-            // #region agent log
+            // Log sample processing
             if sampleCount > 0 {
                 let firstSampleDate = samples.first?.endDate.timeIntervalSince1970 ?? 0
                 let lastSampleDate = samples.last?.endDate.timeIntervalSince1970 ?? 0
-                let logData4: [String: Any] = [
-                    "location": "HealthKitService.swift:487",
-                    "message": "HRV query processing samples",
-                    "data": [
-                        "sampleCount": sampleCount,
-                        "firstSampleDate": firstSampleDate,
-                        "lastSampleDate": lastSampleDate,
-                        "willCallHandler": true
-                    ],
-                    "timestamp": Date().timeIntervalSince1970 * 1000,
-                    "sessionId": "debug-session",
-                    "runId": "run1",
-                    "hypothesisId": "C"
-                ]
-                if let jsonData = try? JSONSerialization.data(withJSONObject: logData4),
-                   let jsonString = String(data: jsonData, encoding: .utf8) {
-                    try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
-                }
+                logger.debug("HRV query processing samples - count: \(sampleCount), firstDate: \(firstSampleDate), lastDate: \(lastSampleDate)")
             }
-            // #endregion
 
             // Process all new samples, not just the last one
             // This ensures we get all HRV updates during the workout session
@@ -598,27 +501,9 @@ class HealthKitService: HealthKitServiceProtocol {
         query.updateHandler = { [weak self] query, samples, deletedObjects, anchor, error in
             print("🔍 HRV query UPDATE handler called - samples: \(samples?.count ?? 0), error: \(error?.localizedDescription ?? "none")")
 
-            // #region agent log
+            // Log HRV query update handler
             let sampleCount = (samples as? [HKQuantitySample])?.count ?? 0
-            let logData5: [String: Any] = [
-                "location": "HealthKitService.swift:495",
-                "message": "HRV query update handler called",
-                "data": [
-                    "sampleCount": sampleCount,
-                    "hasError": error != nil,
-                    "errorDescription": error?.localizedDescription ?? "none",
-                    "hasAnchor": anchor != nil
-                ],
-                "timestamp": Date().timeIntervalSince1970 * 1000,
-                "sessionId": "debug-session",
-                "runId": "run1",
-                "hypothesisId": "C"
-            ]
-            if let jsonData = try? JSONSerialization.data(withJSONObject: logData5),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
-                try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
-            }
-            // #endregion
+            logger.debug("HRV query update handler - sampleCount: \(sampleCount), hasError: \(error != nil), hasAnchor: \(anchor != nil)")
 
             // Store anchor for next query
             if let anchor = anchor {
@@ -634,28 +519,11 @@ class HealthKitService: HealthKitServiceProtocol {
                 return
             }
 
-            // #region agent log
+            // Log sample processing
             if sampleCount > 0 {
                 let firstSampleDate = samples.first?.endDate.timeIntervalSince1970 ?? 0
-                let logData6: [String: Any] = [
-                    "location": "HealthKitService.swift:509",
-                    "message": "HRV query update processing samples",
-                    "data": [
-                        "sampleCount": sampleCount,
-                        "firstSampleDate": firstSampleDate,
-                        "willCallHandler": true
-                    ],
-                    "timestamp": Date().timeIntervalSince1970 * 1000,
-                    "sessionId": "debug-session",
-                    "runId": "run1",
-                    "hypothesisId": "C"
-                ]
-                if let jsonData = try? JSONSerialization.data(withJSONObject: logData6),
-                   let jsonString = String(data: jsonData, encoding: .utf8) {
-                    try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
-                }
+                logger.debug("HRV query update processing samples - count: \(sampleCount), firstDate: \(firstSampleDate)")
             }
-            // #endregion
 
             // Process all new samples to ensure we get every HRV update
             for sample in samples.sorted(by: { $0.endDate < $1.endDate }) {
@@ -670,24 +538,8 @@ class HealthKitService: HealthKitServiceProtocol {
         healthStore.execute(query)
         print("✅ HRV anchored query execute() completed (with anchor persistence and 10-minute window)")
 
-        // #region agent log
-        let logData7: [String: Any] = [
-            "location": "HealthKitService.swift:517",
-            "message": "HRV query executed",
-            "data": [
-                "queryExecuted": true,
-                "hasHandler": true
-            ],
-            "timestamp": Date().timeIntervalSince1970 * 1000,
-            "sessionId": "debug-session",
-            "runId": "run1",
-            "hypothesisId": "D"
-        ]
-        if let jsonData = try? JSONSerialization.data(withJSONObject: logData7),
-           let jsonString = String(data: jsonData, encoding: .utf8) {
-            try? (jsonString + "\n").write(toFile: "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log", atomically: true, encoding: .utf8)
-        }
-        // #endregion
+        // Log query execution
+        logger.debug("HRV query executed successfully")
     }
 
     func startRespiratoryRateQuery(handler: @escaping RespiratoryRateHandler) throws {
@@ -962,12 +814,12 @@ class HealthKitService: HealthKitServiceProtocol {
 
                 guard let sample = samples?.first as? HKQuantitySample else {
                     // #region agent log
-                    debugLog("fetchLatestHeartRate: No samples found", data: [
-                        "hypothesisId": "A",
-                        "location": "HealthKitService.swift:717",
-                        "queryWindowSeconds": 60,
-                        "sampleCount": samples?.count ?? 0
-                    ])
+                    // debugLog("fetchLatestHeartRate: No samples found", data: [
+                    //     "hypothesisId": "A",
+                    //     "location": "HealthKitService.swift:717",
+                    //     "queryWindowSeconds": 60,
+                    //     "sampleCount": samples?.count ?? 0
+                    // ])
                     // #endregion agent log
                     print("⚠️ fetchLatestHeartRate: No samples found in last 60 seconds")
                     continuation.resume(returning: nil)
@@ -981,15 +833,15 @@ class HealthKitService: HealthKitServiceProtocol {
                 let sampleAge = now.timeIntervalSince(sample.endDate)
                 print("📊 fetchLatestHeartRate: Found sample, age: \(String(format: "%.1f", sampleAge))s")
                 // #region agent log
-                debugLog("fetchLatestHeartRate: Sample age check", data: [
-                    "hypothesisId": "A",
-                    "location": "HealthKitService.swift:724",
-                    "sampleAge": sampleAge,
-                    "sampleEndDate": sample.endDate.timeIntervalSince1970,
-                    "currentTime": now.timeIntervalSince1970,
-                    "queryWindowSeconds": 60.0,
-                    "willAccept": sampleAge <= 60
-                ])
+                // debugLog("fetchLatestHeartRate: Sample age check", data: [
+                //     "hypothesisId": "A",
+                //     "location": "HealthKitService.swift:724",
+                //     "sampleAge": sampleAge,
+                //     "sampleEndDate": sample.endDate.timeIntervalSince1970,
+                //     "currentTime": now.timeIntervalSince1970,
+                //     "queryWindowSeconds": 60.0,
+                //     "willAccept": sampleAge <= 60
+                // ])
                 // #endregion agent log
 
                 // Accept samples within the query window (60 seconds)
@@ -997,12 +849,12 @@ class HealthKitService: HealthKitServiceProtocol {
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
                 let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
                 // #region agent log
-                debugLog("fetchLatestHeartRate: Sample accepted", data: [
-                    "hypothesisId": "A",
-                    "location": "HealthKitService.swift:738",
-                    "heartRate": heartRate,
-                    "sampleAge": sampleAge
-                ])
+                // debugLog("fetchLatestHeartRate: Sample accepted", data: [
+                //     "hypothesisId": "A",
+                //     "location": "HealthKitService.swift:738",
+                //     "heartRate": heartRate,
+                //     "sampleAge": sampleAge
+                // ])
                 // #endregion agent log
                 continuation.resume(returning: heartRate)
             }

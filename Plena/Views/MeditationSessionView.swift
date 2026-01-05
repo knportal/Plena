@@ -123,39 +123,48 @@ struct MeditationSessionView: View {
                         .foregroundColor(.secondary)
                 }
             } else if viewModel.isTracking {
-                VStack(spacing: 40) {
-                    // Timer display
-                    Text(formatElapsedTime(viewModel.sessionElapsedTime))
-                        .font(.system(size: 72, weight: .light, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundColor(.primary)
-                        .opacity(screenDimmed ? 0.3 : 1.0)
+                ZStack {
+                    // Main content
+                    VStack(spacing: 40) {
+                        // Timer display
+                        Text(formatElapsedTime(viewModel.sessionElapsedTime))
+                            .font(.system(size: 72, weight: .light, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundColor(.primary)
 
-                    Text("Session in progress")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
-                        .opacity(screenDimmed ? 0.3 : 1.0)
+                        Text("Session in progress")
+                            .font(.title3)
+                            .foregroundColor(.secondary)
 
-                    // Simple watch connection status
-                    if viewModel.watchConnectionStatus == .connected && !screenDimmed {
-                        HStack(spacing: 6) {
-                            Image(systemName: "applewatch")
-                            Text("Watch connected")
+                        // Simple watch connection status
+                        if viewModel.watchConnectionStatus == .connected && !screenDimmed {
+                            HStack(spacing: 6) {
+                                Image(systemName: "applewatch")
+                                Text("Watch connected")
+                            }
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                         }
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    }
 
-                    Spacer()
+                        Spacer()
 
-                    Button("Stop Session") {
-                        viewModel.stopSession()
+                        Button("Stop Session") {
+                            viewModel.stopSession()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .opacity(screenDimmed ? 0.3 : 1.0)
+                    .padding()
+
+                    // Dimming overlay
+                    if screenDimmed {
+                        Color.black
+                            .opacity(0.7)
+                            .ignoresSafeArea()
+                            .allowsHitTesting(false)
+                            .transition(.opacity)
+                    }
                 }
-                .padding()
                 .onAppear {
                     // Prevent auto-lock during session
                     savedBrightness = UIScreen.main.brightness
