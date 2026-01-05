@@ -206,6 +206,64 @@ class MeditationSessionViewModel: ObservableObject {
                 }
             }
         }
+
+        // Register live sample handler for real-time watch sensor updates
+        print("📱 iPhone: Registering live sample handler")
+        watchConnectivityService.onLiveSampleReceived { [weak self] sample in
+            Task { @MainActor in
+                guard let self = self else { return }
+
+                // Only process live samples if we're currently tracking
+                guard self.isTracking else {
+                    print("📱 iPhone: Ignoring live sample (not tracking)")
+                    return
+                }
+
+                // Deduplicate by timestamp - ignore samples older than last received
+                if let lastReceived = self.lastLiveSampleReceivedTime,
+                   sample.timestamp <= lastReceived {
+                    print("📱 iPhone: Ignoring duplicate/old live sample (timestamp: \(sample.timestamp))")
+                    return
+                }
+
+                // Update last received time
+                self.lastLiveSampleReceivedTime = sample.timestamp
+                self.isReceivingLiveDataFromWatch = true
+
+                // Reset timeout timer
+                self.stopLiveDataTimeoutMonitoring()
+                self.startLiveDataTimeoutMonitoring()
+
+                // Update the appropriate sensor value
+                print("📱 iPhone: Live sample received: \(sample.sensorType.rawValue) = \(sample.value)")
+
+                switch sample.sensorType {
+                case .heartRate:
+                    self.currentHeartRate = sample.value
+                    self.lastHeartRateUpdate = sample.timestamp
+                    // Update zone classification
+                    self.currentHeartRateZone = self.zoneClassifier.classifyHeartRate(sample.value, baseline: nil)
+
+                case .hrv:
+                    self.currentHRV = sample.value
+                    self.lastHRVUpdate = sample.timestamp
+                    // Update zone classification
+                    self.currentHRVZone = self.zoneClassifier.classifyHRV(sample.value, age: nil, baseline: nil)
+
+                case .respiratoryRate:
+                    self.currentRespiratoryRate = sample.value
+                    self.lastRespiratoryRateUpdate = sample.timestamp
+
+                case .vo2Max:
+                    self.currentVO2Max = sample.value
+                    self.vo2MaxAvailable = true
+
+                case .temperature:
+                    self.currentTemperature = sample.value
+                    self.temperatureAvailable = true
+                }
+            }
+        }
         #elseif os(watchOS)
         // On watchOS, we need access to WatchConnectivityService to send sessions
         // Create a dummy protocol conformance for watchOS
@@ -491,7 +549,7 @@ class MeditationSessionViewModel: ObservableObject {
                     print("📊 Watch: Heart rate anchored query callback: \(heartRate) BPM")
                     #endif
                     self.updateHeartRate(heartRate)
-                    // No live sample sending during session - data stays on watch
+                    // Live samples sent to iPhone in updateHeartRate
                 }
             }
 
@@ -504,7 +562,7 @@ class MeditationSessionViewModel: ObservableObject {
                     print("📊 Watch: Heart rate periodic query callback: \(heartRate) BPM")
                     #endif
                     self.updateHeartRate(heartRate)
-                    // No live sample sending during session - data stays on watch
+                    // Live samples sent to iPhone in updateHeartRate
                 }
             }
 
@@ -547,7 +605,7 @@ class MeditationSessionViewModel: ObservableObject {
                     self.lastHRVUpdate = Date()
                     self.currentHRVZone = self.zoneClassifier.classifyHRV(sdnn, age: nil, baseline: nil)
                     self.addHRVSample(sdnn)
-                    // No live sample sending during session - data stays on watch
+                    // Live samples sent to iPhone (see periodic query below)
                 }
             }
 
@@ -623,7 +681,7 @@ class MeditationSessionViewModel: ObservableObject {
                     self.currentRespiratoryRate = rate
                     self.lastRespiratoryRateUpdate = Date()
                     self.addRespiratoryRateSample(rate)
-                    // No live sample sending during session - data stays on watch
+                    // Live samples sent to iPhone (see periodic query below)
                 }
             }
 
@@ -1394,6 +1452,9 @@ class MeditationSessionViewModel: ObservableObject {
             previousHeartRate = heartRate
             currentHeartRateZone = zoneClassifier.classifyHeartRate(heartRate, baseline: nil)
             addHeartRateSample(heartRate)
+            #if os(watchOS)
+            sendLiveSampleIfNeeded(sensorType: .heartRate, value: heartRate)
+            #endif
         } else {
             // Even if UI doesn't update, update timestamp to show we're receiving data
             // This prevents "No recent updates" warning
