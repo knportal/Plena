@@ -686,7 +686,7 @@ class DashboardViewModel: ObservableObject {
         }
 
         let trend: Trend = percentChange > 0 ? .improving : .declining
-        let direction = percentChange > 0 ? "increased" : "decreased"
+        let direction = percentChange > 0 ? "trended upward" : "trended downward"
         let message = String(format: "HRV %@ %.0f%% this week", direction, abs(percentChange))
 
         return HRVInsight(message: message, trend: trend, type: .weeklyTrend)
@@ -755,7 +755,7 @@ class DashboardViewModel: ObservableObject {
         }
 
         return HRVInsight(
-            message: "Your last 3 sessions show improved calm response",
+            message: "HRV trended upward across your last 3 sessions",
             trend: .improving,
             type: .recentSessions
         )

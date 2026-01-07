@@ -66,11 +66,11 @@ class SleepStatusDetailViewModel: ObservableObject {
                 if hours >= 7.0 && hours <= 9.0 {
                     status = .optimal
                 } else if (hours >= 6.0 && hours < 7.0) || (hours > 9.0 && hours <= 10.0) {
-                    status = .good
+                    status = .higher
                 } else if (hours >= 5.0 && hours < 6.0) || (hours > 10.0 && hours <= 11.0) {
-                    status = .payAttention
+                    status = .moderate
                 } else {
-                    status = .poor
+                    status = .lower
                 }
             }
 

@@ -163,7 +163,7 @@ struct ReadinessView: View {
                 }
                 .padding(.vertical)
             }
-            .navigationTitle("Readiness")
+            .navigationTitle("Daily Trend Score")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showPaywall) {
                 SubscriptionPaywallView(

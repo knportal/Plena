@@ -70,9 +70,9 @@ class RecoveryIndexDetailViewModel: ObservableObject {
                 if avg >= 1.0 && avg <= 2.0 {
                     status = .optimal
                 } else if (avg >= 0.5 && avg < 1.0) || (avg > 2.0 && avg <= 3.0) {
-                    status = .good
+                    status = .higher
                 } else {
-                    status = .payAttention
+                    status = .moderate
                 }
             }
 

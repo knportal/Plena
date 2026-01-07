@@ -139,13 +139,13 @@ class ReadinessScoreService: ReadinessScoreServiceProtocol {
             status = .optimal
             score = 1.0
         } else if deviation <= 10 {
-            status = .good
+            status = .higher
             score = 0.75
         } else if deviation <= 15 {
-            status = .payAttention
+            status = .moderate
             score = 0.5
         } else {
-            status = .poor
+            status = .lower
             score = 0.25
         }
 
@@ -188,13 +188,13 @@ class ReadinessScoreService: ReadinessScoreServiceProtocol {
             status = .optimal
             score = 1.0
         } else if percentChange >= -5 {
-            status = .good
+            status = .higher
             score = 0.75
         } else if percentChange >= -15 {
-            status = .payAttention
+            status = .moderate
             score = 0.5
         } else {
-            status = .poor
+            status = .lower
             score = 0.25
         }
 
@@ -244,13 +244,13 @@ class ReadinessScoreService: ReadinessScoreServiceProtocol {
             status = .optimal
             score = 1.0
         } else if deviation <= 0.6 { // ~1.0°F
-            status = .good
+            status = .higher
             score = 0.75
         } else if deviation <= 1.0 { // ~1.8°F
-            status = .payAttention
+            status = .moderate
             score = 0.5
         } else {
-            status = .poor
+            status = .lower
             score = 0.25
         }
 
@@ -294,10 +294,10 @@ class ReadinessScoreService: ReadinessScoreServiceProtocol {
             status = .optimal
             score = 1.0
         } else if (avgSessionsPerDay >= 0.5 && avgSessionsPerDay < 1.0) || (avgSessionsPerDay > 2.0 && avgSessionsPerDay <= 3.0) {
-            status = .good
+            status = .higher
             score = 0.75
         } else {
-            status = .payAttention
+            status = .moderate
             score = 0.5
         }
 
@@ -333,13 +333,13 @@ class ReadinessScoreService: ReadinessScoreServiceProtocol {
             status = .optimal
             score = 1.0
         } else if (hours >= 6.0 && hours < 7.0) || (hours > 9.0 && hours <= 10.0) {
-            status = .good
+            status = .higher
             score = 0.75
         } else if (hours >= 5.0 && hours < 6.0) || (hours > 10.0 && hours <= 11.0) {
-            status = .payAttention
+            status = .moderate
             score = 0.5
         } else {
-            status = .poor
+            status = .lower
             score = 0.25
         }
 
@@ -395,13 +395,13 @@ class ReadinessScoreService: ReadinessScoreServiceProtocol {
             status = .optimal
             score = 1.0
         } else if coefficientOfVariation <= 0.25 {
-            status = .good
+            status = .higher
             score = 0.75
         } else if coefficientOfVariation <= 0.35 {
-            status = .payAttention
+            status = .moderate
             score = 0.5
         } else {
-            status = .poor
+            status = .lower
             score = 0.25
         }
 
@@ -471,13 +471,13 @@ class ReadinessScoreService: ReadinessScoreServiceProtocol {
             status = .optimal
             score = 1.0
         } else if stdDev <= 1.0 { // 1 hour
-            status = .good
+            status = .higher
             score = 0.75
         } else if stdDev <= 2.0 { // 2 hours
-            status = .payAttention
+            status = .moderate
             score = 0.5
         } else {
-            status = .poor
+            status = .lower
             score = 0.25
         }
 

@@ -100,11 +100,11 @@ class SleepRegularityDetailViewModel: ObservableObject {
             if stdDev <= 0.5 { // 30 minutes
                 status = .optimal
             } else if stdDev <= 1.0 { // 1 hour
-                status = .good
+                status = .higher
             } else if stdDev <= 2.0 { // 2 hours
-                status = .payAttention
+                status = .moderate
             } else {
-                status = .poor
+                status = .lower
             }
 
             // Build trend data (bedtime hours for each day)

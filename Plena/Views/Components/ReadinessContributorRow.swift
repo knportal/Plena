@@ -102,8 +102,8 @@ struct ReadinessContributorRow: View {
         ReadinessContributorRow(
             contributor: ReadinessContributor(
                 name: "HRV balance",
-                value: "Good",
-                status: .good,
+                value: "Higher",
+                status: .higher,
                 score: 0.75
             )
         )
@@ -113,8 +113,8 @@ struct ReadinessContributorRow: View {
         ReadinessContributorRow(
             contributor: ReadinessContributor(
                 name: "Sleep",
-                value: "Pay attention",
-                status: .payAttention,
+                value: "Moderate",
+                status: .moderate,
                 score: 0.5
             )
         )

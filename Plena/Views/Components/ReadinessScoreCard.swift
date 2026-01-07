@@ -11,6 +11,8 @@ struct ReadinessScoreCard: View {
     let score: ReadinessScore
     let changeFromYesterday: Double?
 
+    @State private var isShowingMedicalDisclaimer = false
+
     var body: some View {
         VStack(spacing: 16) {
             // Score display
@@ -19,10 +21,14 @@ struct ReadinessScoreCard: View {
                     .font(.system(size: 64, weight: .bold, design: .rounded))
                     .foregroundColor(score.status.color)
 
-                Text("Readiness")
+                Text("Daily Trend Score")
                     .font(.title2)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
+
+                Text("For self-reflection only (not medical).")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
 
                 // Status badge
                 Text(score.status.rawValue)
@@ -42,17 +48,30 @@ struct ReadinessScoreCard: View {
                 HStack(spacing: 4) {
                     Image(systemName: change >= 0 ? "arrow.up" : "arrow.down")
                         .font(.caption)
-                        .foregroundColor(change >= 0 ? .green : .orange)
+                        .foregroundColor(.gray)
 
                     Text("\(change >= 0 ? "+" : "")\(Int(change))")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundColor(change >= 0 ? .green : .orange)
+                        .foregroundColor(.gray)
 
                     Text("vs yesterday")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
+            }
+
+            HStack {
+                Spacer()
+                Button {
+                    isShowingMedicalDisclaimer = true
+                } label: {
+                    Label("Disclaimer", systemImage: "info.circle")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Disclaimer")
             }
         }
         .padding(24)
@@ -62,6 +81,11 @@ struct ReadinessScoreCard: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 4)
         )
+        .sheet(isPresented: $isShowingMedicalDisclaimer) {
+            NavigationStack {
+                MedicalDisclaimerDetailView()
+            }
+        }
     }
 }
 

@@ -274,19 +274,19 @@ struct BodyTemperatureDetailView: View {
                 )
 
                 ThresholdRow(
-                    status: .good,
+                    status: .higher,
                     range: "≤0.6°C deviation",
                     description: "Stable, good recovery"
                 )
 
                 ThresholdRow(
-                    status: .payAttention,
+                    status: .moderate,
                     range: "≤1.0°C deviation",
                     description: "Some variability, monitor closely"
                 )
 
                 ThresholdRow(
-                    status: .poor,
+                    status: .lower,
                     range: ">1.0°C deviation",
                     description: "High variability, consider rest"
                 )
@@ -339,8 +339,8 @@ struct BodyTemperatureDetailView: View {
         BodyTemperatureDetailView(
             contributor: ReadinessContributor(
                 name: "Body temperature",
-                value: "Good",
-                status: .good,
+                value: "Higher",
+                status: .higher,
                 score: 0.75
             ),
             date: Date()

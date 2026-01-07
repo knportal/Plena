@@ -11,21 +11,21 @@ import SwiftUI
 /// Status levels for individual readiness contributors
 enum ReadinessStatus: String, Codable, Hashable {
     case optimal = "Optimal"
-    case good = "Good"
-    case payAttention = "Pay attention"
-    case poor = "Poor"
+    case higher = "Higher"
+    case moderate = "Moderate"
+    case lower = "Lower"
     case noData = "No data"
 
     var color: Color {
         switch self {
         case .optimal:
-            return .green
-        case .good:
             return .blue
-        case .payAttention:
-            return .orange
-        case .poor:
-            return .red
+        case .higher:
+            return .blue
+        case .moderate:
+            return .gray
+        case .lower:
+            return .gray
         case .noData:
             return .gray
         }
@@ -35,9 +35,9 @@ enum ReadinessStatus: String, Codable, Hashable {
     var scoreWeight: Double {
         switch self {
         case .optimal: return 1.0
-        case .good: return 0.75
-        case .payAttention: return 0.5
-        case .poor: return 0.25
+        case .higher: return 0.75
+        case .moderate: return 0.5
+        case .lower: return 0.25
         case .noData: return 0.0 // No data doesn't contribute to score
         }
     }
@@ -46,9 +46,9 @@ enum ReadinessStatus: String, Codable, Hashable {
     var progress: Double {
         switch self {
         case .optimal: return 1.0
-        case .good: return 0.75
-        case .payAttention: return 0.5
-        case .poor: return 0.25
+        case .higher: return 0.75
+        case .moderate: return 0.5
+        case .lower: return 0.25
         case .noData: return 0.0 // Empty bar for no data
         }
     }

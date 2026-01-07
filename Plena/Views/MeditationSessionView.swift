@@ -94,8 +94,6 @@ struct MeditationSessionView: View {
     @StateObject private var viewModel: MeditationSessionViewModel
     @StateObject private var settingsViewModel: SettingsViewModel
     @State private var showPaywall = false
-    @State private var screenDimmed = false
-    @State private var savedBrightness: CGFloat = 0.5
 
     init(healthKitService: HealthKitServiceProtocol) {
         // Initialize subscription services
@@ -136,8 +134,30 @@ struct MeditationSessionView: View {
                             .font(.title3)
                             .foregroundColor(.secondary)
 
+                        // Latest-available metrics (VO2 Max and Temperature update periodically and may lag)
+                        VStack(spacing: 10) {
+                            if settingsViewModel.vo2MaxEnabled {
+                                LatestMetricRow(
+                                    title: "VO2 Max",
+                                    valueText: viewModel.currentVO2Max.map { String(format: "%.1f", $0) } ?? "—",
+                                    unit: "mL/kg/min",
+                                    lastUpdated: viewModel.lastVO2MaxUpdate
+                                )
+                            }
+
+                            if settingsViewModel.temperatureEnabled {
+                                LatestMetricRow(
+                                    title: "Temperature",
+                                    valueText: viewModel.currentTemperature.map { String(format: "%.1f", $0) } ?? "—",
+                                    unit: "°C",
+                                    lastUpdated: viewModel.lastTemperatureUpdate
+                                )
+                            }
+                        }
+                        .padding(.top, 8)
+
                         // Simple watch connection status
-                        if viewModel.watchConnectionStatus == .connected && !screenDimmed {
+                        if viewModel.watchConnectionStatus == .connected {
                             HStack(spacing: 6) {
                                 Image(systemName: "applewatch")
                                 Text("Watch connected")
@@ -155,56 +175,9 @@ struct MeditationSessionView: View {
                         .controlSize(.large)
                     }
                     .padding()
-
-                    // Dimming overlay
-                    if screenDimmed {
-                        Color.black
-                            .opacity(0.7)
-                            .ignoresSafeArea()
-                            .allowsHitTesting(false)
-                            .transition(.opacity)
-                    }
                 }
-                .onAppear {
-                    // Prevent auto-lock during session
-                    savedBrightness = UIScreen.main.brightness
-                    UIApplication.shared.isIdleTimerDisabled = true
-
-                    // Dim screen after 15 seconds
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
-                        guard viewModel.isTracking else { return }
-                        withAnimation(.easeOut(duration: 2.0)) {
-                            screenDimmed = true
-                            UIScreen.main.brightness = 0.1
-                        }
-                    }
-                }
-                .onDisappear {
-                    // Re-enable auto-lock and restore brightness
-                    UIApplication.shared.isIdleTimerDisabled = false
-                    if screenDimmed {
-                        UIScreen.main.brightness = savedBrightness
-                        screenDimmed = false
-                    }
-                }
-                .onTapGesture {
-                    // Wake up screen on tap
-                    if screenDimmed {
-                        withAnimation(.easeIn(duration: 0.3)) {
-                            screenDimmed = false
-                            UIScreen.main.brightness = savedBrightness
-                        }
-
-                        // Auto-dim again after 10 seconds
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                            guard viewModel.isTracking && !screenDimmed else { return }
-                            withAnimation(.easeOut(duration: 2.0)) {
-                                screenDimmed = true
-                                UIScreen.main.brightness = 0.1
-                            }
-                        }
-                    }
-                }
+                // Let iOS handle screen auto-lock naturally
+                // Screen will sleep based on system settings and wake on touch/raise to wake
             } else if viewModel.isWaitingForSessionPackage {
                 // Loading state while waiting for post-session package
                 VStack(spacing: 30) {
@@ -320,6 +293,50 @@ struct MeditationSessionView: View {
         } else {
             return String(format: "%d:%02d", minutes, seconds)
         }
+    }
+}
+
+private struct LatestMetricRow: View {
+    let title: String
+    let valueText: String
+    let unit: String
+    let lastUpdated: Date?
+
+    var body: some View {
+        VStack(spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(valueText)
+                    .font(.headline)
+                    .monospacedDigit()
+                Text(unit)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            HStack {
+                Text(lastUpdatedText)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.secondarySystemBackground))
+        )
+    }
+
+    private var lastUpdatedText: String {
+        guard let lastUpdated else { return "Last updated: —" }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        return "Last updated \(formatter.localizedString(for: lastUpdated, relativeTo: Date()))"
     }
 }
 

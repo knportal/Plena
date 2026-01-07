@@ -15,7 +15,7 @@ import UIKit
 // MARK: - Logging
 private let logger = Logger(subsystem: "com.plena.app", category: "HealthKit")
 
-// Callback types for real-time data
+// Callback types for live/ongoing data updates
 typealias HeartRateHandler = (Double) -> Void
 typealias HRVHandler = (Double, Date) -> Void  // (sdnn, timestamp)
 typealias RespiratoryRateHandler = (Double) -> Void
@@ -306,7 +306,7 @@ class HealthKitService: HealthKitServiceProtocol {
             healthStore.stop(existingQuery)
         }
 
-        // Create anchored query for real-time updates
+        // Create anchored query for ongoing updates
         // Use a predicate to only get samples from the last 5 minutes to avoid processing historical data
         let now = Date()
         let startDate = now.addingTimeInterval(-300) // Last 5 minutes
@@ -438,7 +438,7 @@ class HealthKitService: HealthKitServiceProtocol {
         // The anchor should only persist within a single session, not across sessions
         hrvAnchor = nil
 
-        // Create anchored query for real-time updates
+        // Create anchored query for ongoing updates
         // HRV samples can be written during or after the workout session
         // Use a more lenient predicate - check last 30 minutes to catch samples
         // that might be written with a delay
@@ -548,7 +548,7 @@ class HealthKitService: HealthKitServiceProtocol {
             healthStore.stop(existingQuery)
         }
 
-        // Create anchored query for real-time updates
+        // Create anchored query for ongoing updates
         let query = HKAnchoredObjectQuery(
             type: respiratoryRateType,
             predicate: nil,
@@ -596,7 +596,7 @@ class HealthKitService: HealthKitServiceProtocol {
             healthStore.stop(existingQuery)
         }
 
-        // Note: VO2 Max is typically not measured in real-time during sessions
+        // Note: VO2 Max is typically not measured continuously during sessions
         // It's usually calculated from workout data. This query will capture
         // the most recent VO2 Max value and any updates during the session.
         let query = HKAnchoredObjectQuery(
@@ -653,7 +653,7 @@ class HealthKitService: HealthKitServiceProtocol {
         }
 
         // Note: Body temperature is typically measured during sleep or specific health events
-        // Real-time temperature during meditation may not be available on all devices
+        // Temperature updates during a session may be delayed or unavailable on some devices
         // This query will capture the most recent temperature reading and any updates
         let query = HKAnchoredObjectQuery(
             type: bodyTemperatureType,
@@ -778,7 +778,7 @@ class HealthKitService: HealthKitServiceProtocol {
     }
 
     /// Fetches the most recent heart rate value from HealthKit
-    /// Only returns samples from the last 60 seconds to ensure real-time data
+    /// Only returns samples from the last 60 seconds to keep it recent
     /// Returns nil if no recent data is available
     func fetchLatestHeartRate() async throws -> Double? {
         guard HKHealthStore.isHealthDataAvailable() else {
@@ -1038,7 +1038,7 @@ class HealthKitService: HealthKitServiceProtocol {
     }
 
     /// Starts a periodic query for VO2 Max that fetches the latest value at specified intervals
-    /// Useful as a fallback when real-time anchored queries don't provide frequent updates
+    /// Useful because VO2 Max may update infrequently or after activity
     func startPeriodicVO2MaxQuery(interval: TimeInterval, handler: @escaping VO2MaxHandler) throws {
         // Cancel existing periodic task if any
         periodicVO2MaxTask?.cancel()
@@ -1067,7 +1067,7 @@ class HealthKitService: HealthKitServiceProtocol {
     }
 
     /// Starts a periodic query for body temperature that fetches the latest value at specified intervals
-    /// Useful as a fallback when real-time anchored queries don't provide frequent updates
+    /// Useful because temperature may update infrequently or after activity
     func startPeriodicTemperatureQuery(interval: TimeInterval, handler: @escaping TemperatureHandler) throws {
         // Cancel existing periodic task if any
         periodicTemperatureTask?.cancel()

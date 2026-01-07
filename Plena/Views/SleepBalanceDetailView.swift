@@ -256,19 +256,19 @@ struct SleepBalanceDetailView: View {
                 )
 
                 ThresholdRow(
-                    status: .good,
+                    status: .higher,
                     range: "CV ≤ 0.25",
                     description: "Good consistency"
                 )
 
                 ThresholdRow(
-                    status: .payAttention,
+                    status: .moderate,
                     range: "CV ≤ 0.35",
                     description: "Moderate variability"
                 )
 
                 ThresholdRow(
-                    status: .poor,
+                    status: .lower,
                     range: "CV > 0.35",
                     description: "High variability, consider schedule changes"
                 )

@@ -44,7 +44,7 @@ struct ReadinessWatchView: View {
                             .font(.system(size: 56, weight: .bold))
                             .foregroundColor(score.status.color)
 
-                        Text("Readiness")
+                        Text("Daily Trend Score")
                             .font(.caption)
                             .foregroundColor(.secondary)
 
@@ -56,7 +56,7 @@ struct ReadinessWatchView: View {
                                 Text("\(change >= 0 ? "+" : "")\(Int(change))")
                                     .font(.caption)
                             }
-                            .foregroundColor(change >= 0 ? Color("SuccessColor") : Color("WarningColor"))
+                            .foregroundColor(.gray)
                         }
                     }
                     .padding()
@@ -93,7 +93,7 @@ struct ReadinessWatchView: View {
             }
             .padding()
         }
-        .navigationTitle("Readiness")
+        .navigationTitle("Daily Trend Score")
         .task {
             await viewModel.loadReadinessScore(for: viewModel.selectedDate)
         }
@@ -138,13 +138,13 @@ struct ContributorRowWatch: View {
     private var contributorColor: Color {
         switch contributor.status {
         case .optimal:
-            return Color("SuccessColor")
-        case .good:
             return .blue
-        case .payAttention:
-            return .orange
-        case .poor:
-            return Color("WarningColor")
+        case .higher:
+            return .blue
+        case .moderate:
+            return .gray
+        case .lower:
+            return .gray
         case .noData:
             return .gray
         }

@@ -70,8 +70,8 @@ struct MedicalDisclaimerDetailView: View {
                     DisclaimerDetailSection(
                         icon: "heart.text.square.fill",
                         iconColor: .red,
-                        title: "Meditation & Wellness",
-                        content: "Meditation tracking and biometric data are for personal awareness and self-improvement purposes only. Results may vary by individual. Plena is not a substitute for professional mental health care. If you are experiencing mental health issues, please consult with qualified healthcare professionals."
+                        title: "Mindfulness & Wellness",
+                        content: "Mindfulness tracking and biometric data are for personal awareness and self-improvement purposes only. Results may vary by individual. Plena is not a substitute for professional mental health care. If you are experiencing mental health issues, please consult with qualified healthcare professionals."
                     )
 
                     DisclaimerDetailSection(

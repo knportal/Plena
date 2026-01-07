@@ -268,19 +268,19 @@ struct SleepRegularityDetailView: View {
                 )
 
                 ThresholdRow(
-                    status: .good,
+                    status: .higher,
                     range: "≤1 hour deviation",
                     description: "Good schedule consistency"
                 )
 
                 ThresholdRow(
-                    status: .payAttention,
+                    status: .moderate,
                     range: "≤2 hours deviation",
                     description: "Moderate variability"
                 )
 
                 ThresholdRow(
-                    status: .poor,
+                    status: .lower,
                     range: ">2 hours deviation",
                     description: "High variability, consider schedule changes"
                 )

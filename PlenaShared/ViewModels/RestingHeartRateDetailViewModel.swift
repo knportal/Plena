@@ -73,11 +73,11 @@ class RestingHeartRateDetailViewModel: ObservableObject {
             if deviation! <= 5 {
                 status = .optimal
             } else if deviation! <= 10 {
-                status = .good
+                status = .higher
             } else if deviation! <= 15 {
-                status = .payAttention
+                status = .moderate
             } else {
-                status = .poor
+                status = .lower
             }
 
             // Build 7-day trend data

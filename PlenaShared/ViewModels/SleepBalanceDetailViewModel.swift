@@ -85,11 +85,11 @@ class SleepBalanceDetailViewModel: ObservableObject {
             if cv <= 0.15 {
                 status = .optimal
             } else if cv <= 0.25 {
-                status = .good
+                status = .higher
             } else if cv <= 0.35 {
-                status = .payAttention
+                status = .moderate
             } else {
-                status = .poor
+                status = .lower
             }
 
             trendData = dailySleep.sorted { $0.date < $1.date }

@@ -39,10 +39,12 @@ class MeditationSessionViewModel: ObservableObject {
     @Published var isWaitingForSessionPackage: Bool = false
     #endif
 
-    // Real-time sensor values
+    // Continuous sensor values (updated frequently during sessions)
     @Published var currentHeartRate: Double?
     @Published var currentHRV: Double?
     @Published var currentRespiratoryRate: Double?
+
+    // Episodic sensor values (updated periodically, may update after activity)
     @Published var currentVO2Max: Double?
     @Published var currentTemperature: Double?
 
@@ -64,6 +66,8 @@ class MeditationSessionViewModel: ObservableObject {
     @Published var lastHeartRateUpdate: Date?
     @Published var lastHRVUpdate: Date?
     @Published var lastRespiratoryRateUpdate: Date?
+    @Published var lastVO2MaxUpdate: Date?
+    @Published var lastTemperatureUpdate: Date?
 
     // Device state tracking
     @Published var isDeviceOnWrist: Bool = true
@@ -74,6 +78,10 @@ class MeditationSessionViewModel: ObservableObject {
     @Published var isWatchReachable: Bool = false
     private let watchConnectivityService: WatchConnectivityServiceProtocol
     private var watchConnectivityCancellables = Set<AnyCancellable>()
+
+    // Live samples can arrive while we're waiting for the post-session package; keep a separate gate
+    // so stopSession() can immediately ignore late-arriving samples.
+    private var isLiveSampleProcessingEnabled: Bool = false
     #endif
 
     private let healthKitService: HealthKitServiceProtocol
@@ -137,7 +145,8 @@ class MeditationSessionViewModel: ObservableObject {
         zoneClassifier: ZoneClassifierProtocol = ZoneClassifier(),
         featureGateService: FeatureGateServiceProtocol? = nil,
         deviceStateService: DeviceStateServiceProtocol = DeviceStateService(),
-        workoutSessionService: WorkoutSessionServiceProtocol = WorkoutSessionService()
+        workoutSessionService: WorkoutSessionServiceProtocol = WorkoutSessionService(),
+        watchConnectivityService: WatchConnectivityServiceProtocol = WatchConnectivityService.shared
     ) {
         self.healthKitService = healthKitService
         self.storageService = storageService
@@ -147,8 +156,7 @@ class MeditationSessionViewModel: ObservableObject {
         self.workoutSessionService = workoutSessionService
 
         #if os(iOS)
-        // Initialize watch connectivity service on iOS
-        let watchConnectivityService = WatchConnectivityService.shared
+        // Initialize watch connectivity service on iOS (DI-friendly for tests)
         self.watchConnectivityService = watchConnectivityService
 
         // Subscribe to watch connectivity updates
@@ -207,63 +215,7 @@ class MeditationSessionViewModel: ObservableObject {
             }
         }
 
-        // Register live sample handler for real-time watch sensor updates
-        print("📱 iPhone: Registering live sample handler")
-        watchConnectivityService.onLiveSampleReceived { [weak self] sample in
-            Task { @MainActor in
-                guard let self = self else { return }
-
-                // Only process live samples if we're currently tracking
-                guard self.isTracking else {
-                    print("📱 iPhone: Ignoring live sample (not tracking)")
-                    return
-                }
-
-                // Deduplicate by timestamp - ignore samples older than last received
-                if let lastReceived = self.lastLiveSampleReceivedTime,
-                   sample.timestamp <= lastReceived {
-                    print("📱 iPhone: Ignoring duplicate/old live sample (timestamp: \(sample.timestamp))")
-                    return
-                }
-
-                // Update last received time
-                self.lastLiveSampleReceivedTime = sample.timestamp
-                self.isReceivingLiveDataFromWatch = true
-
-                // Reset timeout timer
-                self.stopLiveDataTimeoutMonitoring()
-                self.startLiveDataTimeoutMonitoring()
-
-                // Update the appropriate sensor value
-                print("📱 iPhone: Live sample received: \(sample.sensorType.rawValue) = \(sample.value)")
-
-                switch sample.sensorType {
-                case .heartRate:
-                    self.currentHeartRate = sample.value
-                    self.lastHeartRateUpdate = sample.timestamp
-                    // Update zone classification
-                    self.currentHeartRateZone = self.zoneClassifier.classifyHeartRate(sample.value, baseline: nil)
-
-                case .hrv:
-                    self.currentHRV = sample.value
-                    self.lastHRVUpdate = sample.timestamp
-                    // Update zone classification
-                    self.currentHRVZone = self.zoneClassifier.classifyHRV(sample.value, age: nil, baseline: nil)
-
-                case .respiratoryRate:
-                    self.currentRespiratoryRate = sample.value
-                    self.lastRespiratoryRateUpdate = sample.timestamp
-
-                case .vo2Max:
-                    self.currentVO2Max = sample.value
-                    self.vo2MaxAvailable = true
-
-                case .temperature:
-                    self.currentTemperature = sample.value
-                    self.temperatureAvailable = true
-                }
-            }
-        }
+        registerLiveSampleHandler(reason: "init")
         #elseif os(watchOS)
         // On watchOS, we need access to WatchConnectivityService to send sessions
         // Create a dummy protocol conformance for watchOS
@@ -293,11 +245,26 @@ class MeditationSessionViewModel: ObservableObject {
 
                 print("📱 iPhone: Watch session started - starting iPhone timer display")
 
+                // Re-register live sample handler to ensure it's active for this session
+                // (Ensures handler is ready before samples arrive)
+                self.registerLiveSampleHandler(reason: "WatchSessionStarted")
+
                 // Create session and start tracking
                 self.currentSession = MeditationSession(id: sessionId, startDate: startDate)
                 self.isTracking = true
+                self.isLiveSampleProcessingEnabled = true
                 self.sessionElapsedTime = 0
                 self.startSessionTimer()
+
+                // Initialize live data monitoring - expect watch to send samples soon
+                // Set flag to false initially (watch hasn't sent data yet)
+                self.isReceivingLiveDataFromWatch = false
+                self.lastLiveSampleReceivedTime = nil
+
+                // Start monitoring for live data timeout
+                // This allows iPhone to detect if watch never sends samples
+                self.startLiveDataTimeoutMonitoring()
+                print("📱 iPhone: Started live data timeout monitoring (expecting watch samples)")
             }
         }
 
@@ -314,6 +281,10 @@ class MeditationSessionViewModel: ObservableObject {
                     print("📱 iPhone: Watch session ended - stopping iPhone session display")
                     // Stop the timer and wait for post-session package
                     self.isTracking = false
+                    self.isLiveSampleProcessingEnabled = false
+                    self.isReceivingLiveDataFromWatch = false
+                    self.lastLiveSampleReceivedTime = nil
+                    self.stopLiveDataTimeoutMonitoring()
                     self.stopSessionTimer()
                     self.isWaitingForSessionPackage = true
                     // Don't call stopSession() here - we want to wait for the package
@@ -412,6 +383,14 @@ class MeditationSessionViewModel: ObservableObject {
         sessionStartTime = Date()
         isTracking = true
         sessionElapsedTime = 0
+
+        #if os(iOS)
+        isLiveSampleProcessingEnabled = true
+        // Initialize live data monitoring - expect watch to send samples soon
+        isReceivingLiveDataFromWatch = false
+        lastLiveSampleReceivedTime = nil
+        startLiveDataTimeoutMonitoring()
+        #endif
 
         // Notify iPhone that session started (watchOS only)
         #if os(watchOS)
@@ -540,7 +519,7 @@ class MeditationSessionViewModel: ObservableObject {
             }
 
             #if os(watchOS)
-            // Start real-time sensor queries (WATCH ONLY - iPhone just shows timer)
+            // Start live/ongoing sensor queries (WATCH ONLY - iPhone UI may show latest values as they arrive)
             print("⌚️ Watch: Starting all sensor queries (HR, HRV, Respiratory, etc.)")
             try healthKitService.startHeartRateQuery { [weak self] heartRate in
                 Task { @MainActor in
@@ -554,7 +533,7 @@ class MeditationSessionViewModel: ObservableObject {
             }
 
             // Start periodic polling as fallback (every 2 seconds) to ensure updates even if anchored query doesn't fire
-            // Reduced interval for more frequent real-time updates
+            // Reduced interval for more frequent updates
             try healthKitService.startPeriodicHeartRateQuery(interval: 2.0) { [weak self] heartRate in
                 Task { @MainActor in
                     guard let self = self else { return }
@@ -729,13 +708,14 @@ class MeditationSessionViewModel: ObservableObject {
                         Task { @MainActor in
                             self?.currentVO2Max = vo2Max
                             self?.vo2MaxAvailable = true
+                            self?.lastVO2MaxUpdate = Date()
                             self?.addVO2MaxSample(vo2Max)
                             // No live sample sending during session - data stays on watch
                         }
                     }
                     vo2MaxQueryStarted = true
                 } catch {
-                    print("VO2 Max real-time query not available: \(error)")
+                    print("VO2 Max periodic query not available: \(error)")
                 }
 
                 // Start periodic VO2 Max query as fallback (every 30 seconds)
@@ -744,6 +724,7 @@ class MeditationSessionViewModel: ObservableObject {
                         Task { @MainActor in
                             self?.currentVO2Max = vo2Max
                             self?.vo2MaxAvailable = true
+                            self?.lastVO2MaxUpdate = Date()
                             self?.addVO2MaxSample(vo2Max)
                             // No live sample sending during session - data stays on watch
                         }
@@ -760,13 +741,14 @@ class MeditationSessionViewModel: ObservableObject {
                         Task { @MainActor in
                             self?.currentTemperature = temperature
                             self?.temperatureAvailable = true
+                            self?.lastTemperatureUpdate = Date()
                             self?.addTemperatureSample(temperature)
                             // No live sample sending during session - data stays on watch
                         }
                     }
                     temperatureQueryStarted = true
                 } catch {
-                    print("Temperature real-time query not available: \(error)")
+                    print("Temperature periodic query not available: \(error)")
                 }
 
                 // Start periodic temperature query as fallback (every 30 seconds)
@@ -775,6 +757,7 @@ class MeditationSessionViewModel: ObservableObject {
                         Task { @MainActor in
                             self?.currentTemperature = temperature
                             self?.temperatureAvailable = true
+                            self?.lastTemperatureUpdate = Date()
                             self?.addTemperatureSample(temperature)
                             // No live sample sending during session - data stays on watch
                         }
@@ -788,6 +771,7 @@ class MeditationSessionViewModel: ObservableObject {
                     await MainActor.run {
                         self.currentTemperature = temperature
                         self.temperatureAvailable = true
+                        self.lastTemperatureUpdate = Date()
                         self.addTemperatureSample(temperature)
                         // No live sample sending during session - data stays on watch
                     }
@@ -816,6 +800,11 @@ class MeditationSessionViewModel: ObservableObject {
 
     func stopSession() {
         guard var session = currentSession else { return }
+
+        #if os(iOS)
+        // Immediately stop accepting live samples on iPhone (late samples can arrive while waiting for package)
+        isLiveSampleProcessingEnabled = false
+        #endif
 
         // Stop all HealthKit queries (includes periodic tasks)
         healthKitService.stopAllQueries()
@@ -977,7 +966,7 @@ class MeditationSessionViewModel: ObservableObject {
         #endif
 
 
-        // Clear real-time values
+        // Clear in-session values
         currentHeartRate = nil
         currentHRV = nil
         currentRespiratoryRate = nil
@@ -993,6 +982,8 @@ class MeditationSessionViewModel: ObservableObject {
         lastHeartRateUpdate = nil
         lastHRVUpdate = nil
         lastRespiratoryRateUpdate = nil
+        lastVO2MaxUpdate = nil
+        lastTemperatureUpdate = nil
 
         // Clear session start time
         sessionStartTime = nil
@@ -1331,25 +1322,26 @@ class MeditationSessionViewModel: ObservableObject {
 
     #if os(iOS)
     /// Monitors if we're still receiving live data from watch
-    /// If no data received for liveDataTimeout seconds, assume watch stopped sending
+    /// Detects when data stops flowing or never arrives
     private func startLiveDataTimeoutMonitoring() {
         stopLiveDataTimeoutMonitoring()
         liveDataTimeoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self = self else { return }
-                guard self.isReceivingLiveDataFromWatch else { return }
+                guard self.isTracking else { return } // Only monitor during active sessions
 
                 if let lastReceived = self.lastLiveSampleReceivedTime {
+                    // Have received data before - check if it's now stale
                     let timeSinceLastSample = Date().timeIntervalSince(lastReceived)
-                    // Only stop if we're not tracking (session ended) or if it's been a very long time (30s)
-                    // This prevents false positives during normal gaps in sensor readings
-                    if timeSinceLastSample > self.liveDataTimeout {
-                        if !self.isTracking || timeSinceLastSample > 30.0 {
-                            self.isReceivingLiveDataFromWatch = false
-                            print("⚠️ Stopped receiving live data from watch - falling back to iPhone HealthKit")
-                        }
+
+                    // Mark as stale if beyond timeout (15s default)
+                    if timeSinceLastSample > self.liveDataTimeout && self.isReceivingLiveDataFromWatch {
+                        self.isReceivingLiveDataFromWatch = false
+                        print("⚠️ Live data from watch is stale (\(Int(timeSinceLastSample))s since last sample)")
                     }
                 }
+                // Note: If lastLiveSampleReceivedTime is nil, flag stays false (waiting for first sample)
+                // This is the correct behavior - UI will show "waiting for watch data"
             }
         }
     }
@@ -1461,6 +1453,69 @@ class MeditationSessionViewModel: ObservableObject {
             lastHeartRateUpdate = now
         }
     }
+
+    #if os(iOS)
+    private func registerLiveSampleHandler(reason: String) {
+        print("📱 iPhone: Registering live sample handler (\(reason))")
+        watchConnectivityService.onLiveSampleReceived { [weak self] sample in
+            Task { @MainActor in
+                self?.handleIncomingLiveSample(sample)
+            }
+        }
+    }
+
+    @MainActor
+    private func handleIncomingLiveSample(_ sample: LiveSensorSample) {
+        guard isLiveSampleProcessingEnabled else {
+            print("📱 iPhone: Ignoring live sample (processing disabled): \(sample.sensorType.rawValue) = \(sample.value)")
+            return
+        }
+
+        // Deduplicate by timestamp - ignore samples older than last received
+        if let lastReceived = lastLiveSampleReceivedTime,
+           sample.timestamp <= lastReceived {
+            print("📱 iPhone: Ignoring duplicate/old live sample (timestamp: \(sample.timestamp))")
+            return
+        }
+
+        lastLiveSampleReceivedTime = sample.timestamp
+        isReceivingLiveDataFromWatch = true
+
+        // Reset timeout timer
+        stopLiveDataTimeoutMonitoring()
+        startLiveDataTimeoutMonitoring()
+
+        print("📱 iPhone: Live sample received: \(sample.sensorType.rawValue) = \(sample.value)")
+
+        switch sample.sensorType {
+        case .heartRate:
+            updateHeartRate(sample.value)
+
+        case .hrv:
+            currentHRV = sample.value
+            lastHRVUpdate = sample.timestamp
+            currentHRVZone = zoneClassifier.classifyHRV(sample.value, age: nil, baseline: nil)
+            addHRVSample(sample.value)
+
+        case .respiratoryRate:
+            currentRespiratoryRate = sample.value
+            lastRespiratoryRateUpdate = sample.timestamp
+            addRespiratoryRateSample(sample.value)
+
+        case .vo2Max:
+            currentVO2Max = sample.value
+            vo2MaxAvailable = true
+            lastVO2MaxUpdate = sample.timestamp
+            addVO2MaxSample(sample.value)
+
+        case .temperature:
+            currentTemperature = sample.value
+            temperatureAvailable = true
+            lastTemperatureUpdate = sample.timestamp
+            addTemperatureSample(sample.value)
+        }
+    }
+    #endif
 
     /// Adds a heart rate sample with rate limiting to prevent memory issues
     private func addHeartRateSample(_ value: Double) {

@@ -480,17 +480,17 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
             deltaText = String(format: "%+.0f%% vs last period", rawDelta)
         }
 
-        // Determine status and description
+        // Determine status and description (descriptive-only, non-medical)
         let (status, description): (String, String)
         if effectiveDelta > 5 {
-            status = "Improving"
-            description = improvementDescription(for: metric)
+            status = "Higher"
+            description = higherDescription(for: metric)
         } else if effectiveDelta < -5 {
-            status = "Mixed"
-            description = mixedDescription(for: metric)
+            status = "Lower"
+            description = lowerDescription(for: metric)
         } else {
-            status = "Stable"
-            description = stableDescription(for: metric)
+            status = "Similar"
+            description = similarDescription(for: metric)
         }
 
         return TrendStats(
@@ -544,51 +544,51 @@ struct MetricAggregationService: MetricAggregationServiceProtocol {
         }
     }
 
-    /// Returns improvement description for metric
-    private func improvementDescription(for metric: SensorType) -> String {
+    /// Returns descriptive comparison copy (higher than previous period)
+    private func higherDescription(for metric: SensorType) -> String {
         switch metric {
         case .hrv:
-            return "Your nervous system is showing stronger recovery."
+            return "Average HRV was higher than the previous period."
         case .heartRate:
-            return "Your heart is spending more time in a calm range."
+            return "Average heart rate was lower than the previous period."
         case .respiratoryRate:
-            return "Your breathing is slower and more consistent during sessions."
+            return "Average respiratory rate was lower than the previous period."
         case .vo2Max:
-            return "Your cardiovascular fitness is improving."
+            return "Average VO2 Max was higher than the previous period."
         default:
-            return "Your metrics are improving."
+            return "Average value was higher than the previous period."
         }
     }
 
-    /// Returns mixed/declining description for metric
-    private func mixedDescription(for metric: SensorType) -> String {
+    /// Returns descriptive comparison copy (lower than previous period)
+    private func lowerDescription(for metric: SensorType) -> String {
         switch metric {
         case .hrv:
-            return "Recovery was lower this period — consider more gentle days."
+            return "Average HRV was lower than the previous period."
         case .heartRate:
-            return "Heart rate was elevated more often — stress or busy days may be affecting you."
+            return "Average heart rate was higher than the previous period."
         case .respiratoryRate:
-            return "Breathing was less steady this period — shorter or more distracted sessions."
+            return "Average respiratory rate was higher than the previous period."
         case .vo2Max:
-            return "Cardiovascular fitness was lower this period — consider adding more aerobic activity."
+            return "Average VO2 Max was lower than the previous period."
         default:
-            return "Metrics were lower this period."
+            return "Average value was lower than the previous period."
         }
     }
 
-    /// Returns stable description for metric
-    private func stableDescription(for metric: SensorType) -> String {
+    /// Returns descriptive comparison copy (similar to previous period)
+    private func similarDescription(for metric: SensorType) -> String {
         switch metric {
         case .hrv:
-            return "Your recovery pattern is holding steady."
+            return "Average HRV was similar to the previous period."
         case .heartRate:
-            return "Your session heart rate stayed in a similar range."
+            return "Average heart rate was similar to the previous period."
         case .respiratoryRate:
-            return "Your breathing patterns remained consistent."
+            return "Average respiratory rate was similar to the previous period."
         case .vo2Max:
-            return "Your cardiovascular fitness is maintaining its current level."
+            return "Average VO2 Max was similar to the previous period."
         default:
-            return "Your metrics are stable."
+            return "Average value was similar to the previous period."
         }
     }
 }

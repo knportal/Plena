@@ -301,6 +301,15 @@
 		35F65FE78CE349E2B03F4179 /* SessionAnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAnalyticsService.swift; sourceTree = "<group>"; };
 		99D674216AD246E18BCB61DB /* DataExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportView.swift; sourceTree = "<group>"; };
 		FC142C725C1442A68D0554D6 /* DataExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportService.swift; sourceTree = "<group>"; };
+		F1415CD354AE43EDA1120CE2 /* DashboardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModelTests.swift; sourceTree = "<group>"; };
+		88A5B1E6B1AA4CACAA1B29AA /* DataExportServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportServiceTests.swift; sourceTree = "<group>"; };
+		B464E214B82C45A0A311AE08 /* DataVisualizationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataVisualizationViewModelTests.swift; sourceTree = "<group>"; };
+		2707C9A10CA84A14BDBB26B1 /* FeatureGateServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureGateServiceTests.swift; sourceTree = "<group>"; };
+		E46AB9D2DEDD4503880383A1 /* HealthKitServiceVO2MaxTemperatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitServiceVO2MaxTemperatureTests.swift; sourceTree = "<group>"; };
+		6243D8B009DA4BF480681495 /* MeditationSessionViewModelSampleCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationSessionViewModelSampleCollectionTests.swift; sourceTree = "<group>"; };
+		9BC9267269294CC7A73FE1D4 /* SettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModelTests.swift; sourceTree = "<group>"; };
+		05DFED52BE0E4AF0A373B1CA /* SubscriptionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionServiceTests.swift; sourceTree = "<group>"; };
+		AC352D7E96DA4C9BBCA8EDE0 /* TestUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

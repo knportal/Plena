@@ -246,19 +246,19 @@ struct SleepStatusDetailView: View {
                 )
 
                 ThresholdRow(
-                    status: .good,
+                    status: .higher,
                     range: "6-7 or 9-10 hours",
                     description: "Good sleep duration"
                 )
 
                 ThresholdRow(
-                    status: .payAttention,
+                    status: .moderate,
                     range: "5-6 or 10-11 hours",
                     description: "Monitor sleep patterns"
                 )
 
                 ThresholdRow(
-                    status: .poor,
+                    status: .lower,
                     range: "<5 or >11 hours",
                     description: "May indicate sleep issues"
                 )

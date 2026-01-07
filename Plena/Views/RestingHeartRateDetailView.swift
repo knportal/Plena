@@ -260,19 +260,19 @@ struct RestingHeartRateDetailView: View {
                 )
 
                 ThresholdRow(
-                    status: .good,
+                    status: .higher,
                     range: "≤10 bpm deviation",
                     description: "Stable, good recovery"
                 )
 
                 ThresholdRow(
-                    status: .payAttention,
+                    status: .moderate,
                     range: "≤15 bpm deviation",
                     description: "Some variability, monitor closely"
                 )
 
                 ThresholdRow(
-                    status: .poor,
+                    status: .lower,
                     range: ">15 bpm deviation",
                     description: "High variability, consider rest"
                 )

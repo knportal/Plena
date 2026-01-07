@@ -260,19 +260,19 @@ struct HRVBalanceDetailView: View {
                 )
 
                 ThresholdRow(
-                    status: .good,
+                    status: .higher,
                     range: "Within ±5% of baseline",
                     description: "Good balance, stable recovery"
                 )
 
                 ThresholdRow(
-                    status: .payAttention,
+                    status: .moderate,
                     range: "5-15% below baseline",
                     description: "Some stress, monitor closely"
                 )
 
                 ThresholdRow(
-                    status: .poor,
+                    status: .lower,
                     range: ">15% below baseline",
                     description: "High stress, consider rest"
                 )
@@ -325,8 +325,8 @@ struct HRVBalanceDetailView: View {
         HRVBalanceDetailView(
             contributor: ReadinessContributor(
                 name: "HRV balance",
-                value: "Good",
-                status: .good,
+                value: "Higher",
+                status: .higher,
                 score: 0.75
             ),
             date: Date()

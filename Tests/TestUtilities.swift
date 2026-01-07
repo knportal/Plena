@@ -207,6 +207,52 @@ class MockStorageService: SessionStorageServiceProtocol {
     }
 }
 
+// MARK: - Mock WatchConnectivityService
+
+#if os(iOS)
+final class MockWatchConnectivityService: WatchConnectivityServiceProtocol {
+    private let connectionStatusSubject = CurrentValueSubject<WatchConnectionStatus, Never>(.connected)
+    private let isReachableSubject = CurrentValueSubject<Bool, Never>(true)
+
+    var connectionStatus: WatchConnectionStatus { connectionStatusSubject.value }
+    var isWatchReachable: Bool { isReachableSubject.value }
+    var connectionStatusPublisher: AnyPublisher<WatchConnectionStatus, Never> { connectionStatusSubject.eraseToAnyPublisher() }
+    var isWatchReachablePublisher: AnyPublisher<Bool, Never> { isReachableSubject.eraseToAnyPublisher() }
+
+    private var sessionReceivedHandler: ((MeditationSession) -> Void)?
+    private var sessionPackageReceivedHandler: ((SessionSyncPackage) -> Void)?
+    private var liveSampleReceivedHandler: ((LiveSensorSample) -> Void)?
+
+    func startMonitoring() {}
+    func stopMonitoring() {}
+
+    func sendSession(_ session: MeditationSession) async throws {}
+    func onSessionReceived(_ handler: @escaping (MeditationSession) -> Void) { sessionReceivedHandler = handler }
+
+    func sendSessionPackage(_ package: SessionSyncPackage) async throws {}
+    func onSessionPackageReceived(_ handler: @escaping (SessionSyncPackage) -> Void) { sessionPackageReceivedHandler = handler }
+
+    func requestWatchStartWorkoutSession() async throws {}
+    func requestWatchStartMeditationSession() async throws {}
+    func requestWatchStopSession() async throws {}
+
+    func sendLiveSample(_ sample: LiveSensorSample) async throws {}
+    func onLiveSampleReceived(_ handler: @escaping (LiveSensorSample) -> Void) { liveSampleReceivedHandler = handler }
+
+    func simulateLiveSample(_ sample: LiveSensorSample) {
+        liveSampleReceivedHandler?(sample)
+    }
+
+    func setConnectionStatus(_ status: WatchConnectionStatus) {
+        connectionStatusSubject.send(status)
+    }
+
+    func setReachable(_ reachable: Bool) {
+        isReachableSubject.send(reachable)
+    }
+}
+#endif
+
 // MARK: - Test Data Helpers
 
 extension MeditationSession {

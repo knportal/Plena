@@ -54,7 +54,7 @@ enum WatchConnectionStatus {
     }
 }
 
-/// Live sensor sample for real-time streaming from Watch to iPhone
+/// Live sensor sample for best-effort streaming from Watch to iPhone
 struct LiveSensorSample: Codable {
     enum SensorType: String, Codable {
         case heartRate
@@ -67,6 +67,26 @@ struct LiveSensorSample: Codable {
     let sensorType: SensorType
     let value: Double
     let timestamp: Date
+}
+
+/// Message payload wrapper for WatchConnectivity message data
+/// Provides type discrimination for robust message handling
+private struct MessagePayload: Codable {
+    let type: String
+    let data: Data
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case data
+    }
+}
+
+/// Message type discriminators
+private enum MessageType {
+    static let liveSample = "liveSample"
+    // Future message types can be added here:
+    // static let healthAlert = "healthAlert"
+    // static let sessionSync = "sessionSync"
 }
 
 protocol WatchConnectivityServiceProtocol {
@@ -443,11 +463,17 @@ class WatchConnectivityService: NSObject, WatchConnectivityServiceProtocol, Obse
         encoder.dateEncodingStrategy = .iso8601
 
         do {
+            // Encode the sample
             let sampleData = try encoder.encode(sample)
-            print("📤 Sending live sample: \(sample.sensorType.rawValue) = \(sample.value)")
-            // Use sendMessageData for real-time delivery
+
+            // Wrap with type discriminator for robust message handling
+            let payload = MessagePayload(type: MessageType.liveSample, data: sampleData)
+            let payloadData = try encoder.encode(payload)
+
+            print("📤 Sending live sample [\(MessageType.liveSample)]: \(sample.sensorType.rawValue) = \(sample.value)")
+            // Use sendMessageData for low-latency delivery when reachable
             // Note: This doesn't guarantee delivery, but that's acceptable for live samples
-            wcSession.sendMessageData(sampleData, replyHandler: nil) { error in
+            wcSession.sendMessageData(payloadData, replyHandler: nil) { error in
                 // Log error but don't throw - live samples are best-effort
                 print("⚠️ Error sending live sample to iPhone: \(error.localizedDescription)")
             }
@@ -794,11 +820,58 @@ extension WatchConnectivityService: WCSessionDelegate {
     /// Receive live sensor samples from Watch
     func session(_ session: WCSession, didReceiveMessageData messageData: Data) {
         print("📱 iPhone: Received messageData from Watch (\(messageData.count) bytes)")
-        do {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            let sample = try decoder.decode(LiveSensorSample.self, from: messageData)
 
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        // Try to decode as wrapped payload with discriminator (new format)
+        if let payload = try? decoder.decode(MessagePayload.self, from: messageData) {
+            print("📱 iPhone: Decoded message with type discriminator: [\(payload.type)]")
+
+            // Branch based on message type
+            switch payload.type {
+            case MessageType.liveSample:
+                handleLiveSampleMessage(payload.data, decoder: decoder)
+
+            default:
+                // Unknown message type - log and ignore gracefully
+                print("⚠️ iPhone: Unknown message type '\(payload.type)' - ignoring")
+                print("   This may be a newer message type not supported by this version")
+                // No crash, just log and continue
+            }
+            return
+        }
+
+        // Backward compatibility: Try to decode as bare LiveSensorSample (old format)
+        print("📱 iPhone: No discriminator found - attempting backward-compatible decode")
+        do {
+            let sample = try decoder.decode(LiveSensorSample.self, from: messageData)
+            print("📱 iPhone: Successfully decoded live sample (legacy format): \(sample.sensorType.rawValue) = \(sample.value)")
+
+            // Dispatch to main thread for handler execution
+            DispatchQueue.main.async { [weak self] in
+                guard let handler = self?.liveSampleReceivedHandler else {
+                    print("⚠️ iPhone: Live sample handler is nil!")
+                    return
+                }
+                print("📱 iPhone: Calling live sample handler")
+                handler(sample)
+            }
+        } catch {
+            // Failed to decode as any known format - log and ignore gracefully
+            print("⚠️ iPhone: Could not decode message data (not a recognized format)")
+            print("   Error: \(error.localizedDescription)")
+            if let jsonString = String(data: messageData, encoding: .utf8) {
+                print("   Raw data: \(jsonString)")
+            }
+            // No crash, just log and continue
+        }
+    }
+
+    /// Handle live sensor sample messages
+    private func handleLiveSampleMessage(_ data: Data, decoder: JSONDecoder) {
+        do {
+            let sample = try decoder.decode(LiveSensorSample.self, from: data)
             print("📱 iPhone: Successfully decoded live sample: \(sample.sensorType.rawValue) = \(sample.value)")
 
             // Dispatch to main thread for handler execution
@@ -811,10 +884,11 @@ extension WatchConnectivityService: WCSessionDelegate {
                 handler(sample)
             }
         } catch {
-            print("❌ Error decoding live sample from Watch: \(error.localizedDescription)")
-            if let jsonString = String(data: messageData, encoding: .utf8) {
-                print("   Raw data: \(jsonString)")
+            print("❌ iPhone: Error decoding live sample data: \(error.localizedDescription)")
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("   Sample data: \(jsonString)")
             }
+            // No crash, just log and continue
         }
     }
 

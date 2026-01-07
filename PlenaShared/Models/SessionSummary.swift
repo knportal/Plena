@@ -36,16 +36,16 @@ struct SessionSummary: Identifiable {
     var hrvChangeMessage: String? {
         guard let change = hrvChange else { return nil }
         let absChange = abs(change)
-        let direction = change > 0 ? "increased" : "decreased"
-        return "Your HRV \(direction) by \(Int(absChange)) ms — \(change > 0 ? "great!" : "keep practicing!")"
+        let direction = change > 0 ? "trended upward" : "trended downward"
+        return "Your HRV \(direction) by \(Int(absChange)) ms during this session."
     }
 
     var hrvTrendMessage: String? {
         switch hrvTrend {
         case .increasing:
-            return "HRV improved throughout your session"
+            return "HRV trended upward throughout your session"
         case .decreasing:
-            return "HRV decreased during your session"
+            return "HRV trended downward during your session"
         case .stable:
             return "HRV remained stable"
         case .insufficientData:

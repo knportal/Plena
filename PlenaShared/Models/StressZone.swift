@@ -22,7 +22,7 @@ enum StressZone: String, Codable, CaseIterable {
         case .optimal:
             return "Optimal"
         case .elevatedStress:
-            return "Elevated Stress"
+            return "Higher Activation"
         }
     }
 
@@ -34,7 +34,7 @@ enum StressZone: String, Codable, CaseIterable {
         case .optimal:
             return .green
         case .elevatedStress:
-            return .orange
+            return .indigo
         }
     }
 
@@ -46,7 +46,7 @@ enum StressZone: String, Codable, CaseIterable {
         case .optimal:
             return Color.green.opacity(0.15)
         case .elevatedStress:
-            return Color.orange.opacity(0.15)
+            return Color.indigo.opacity(0.15)
         }
     }
 
@@ -58,7 +58,7 @@ enum StressZone: String, Codable, CaseIterable {
         case .optimal:
             return Color.green.opacity(0.4)
         case .elevatedStress:
-            return Color.orange.opacity(0.4)
+            return Color.indigo.opacity(0.4)
         }
     }
 

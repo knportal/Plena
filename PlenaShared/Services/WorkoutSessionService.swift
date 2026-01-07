@@ -7,6 +7,7 @@
 
 import Foundation
 import HealthKit
+import OSLog
 
 #if os(watchOS)
 import WatchKit
@@ -162,13 +163,42 @@ final class WorkoutSessionService: NSObject, WorkoutSessionServiceProtocol, @unc
         }
 
         #else
-        // On iOS, we can't directly start a workout session on the watch
-        // The watch app needs to handle this when running on watchOS
-        // For iOS, we just mark as active - the watch app should start its own session
+        // On iOS, attempt to launch the watch app into a workout context so the watch can start
+        // its HKWorkoutSession without the user manually opening the watch app first.
+        // This is best-effort; we still mark active and let WatchConnectivity requests handle the rest.
+        #if os(iOS)
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = .mindAndBody
+        configuration.locationType = .indoor
+
+        print("📱 iPhone: Attempting to start Watch app via HealthKit startWatchApp...")
+        let didStartWatchApp = await startWatchAppForWorkout(configuration: configuration)
+        if didStartWatchApp {
+            print("✅ iPhone: startWatchApp succeeded (watch app should launch and become reachable)")
+        } else {
+            print("⚠️ iPhone: startWatchApp failed (will rely on WatchConnectivity fallback)")
+        }
+        #endif
+
+        // iOS can't run the workout session itself; we track locally while watch runs sensors.
         _isActive = true
         print("✅ Workout session marked as active (watch app should start session)")
         #endif
     }
+
+    #if os(iOS)
+    /// Best-effort: Ask HealthKit to launch the watch app in a workout context.
+    private func startWatchAppForWorkout(configuration: HKWorkoutConfiguration) async -> Bool {
+        await withCheckedContinuation { continuation in
+            healthStore.startWatchApp(with: configuration) { success, error in
+                if let error = error {
+                    print("⚠️ iPhone: startWatchApp error: \(error.localizedDescription)")
+                }
+                continuation.resume(returning: success)
+            }
+        }
+    }
+    #endif
 
     /// Stops the workout session
     func stopSession() async throws {
@@ -291,56 +321,17 @@ extension WorkoutSessionService: HKLiveWorkoutBuilderDelegate {
 #if os(watchOS)
 /// Delegate for HKWorkoutSession to handle state changes
 private class WorkoutSessionDelegate: NSObject, HKWorkoutSessionDelegate {
-    // MARK: - Debug Logging Helper
-    // #region agent log
-    private func debugLog(_ message: String, data: [String: Any] = [:]) {
-        let logPath = "/Users/kennethnygren/Cursor/Plena/.cursor/debug.log"
-        let timestamp = Date().timeIntervalSince1970 * 1000
-        var logEntry: [String: Any] = [
-            "timestamp": Int(timestamp),
-            "message": message,
-            "sessionId": "debug-session",
-            "runId": "run1"
-        ]
-        logEntry.merge(data) { (_, new) in new }
-
-        if let jsonData = try? JSONSerialization.data(withJSONObject: logEntry),
-           let jsonString = String(data: jsonData, encoding: .utf8) {
-            if FileManager.default.fileExists(atPath: logPath),
-               let fileHandle = FileHandle(forWritingAtPath: logPath) {
-                fileHandle.seekToEndOfFile()
-                fileHandle.write((jsonString + "\n").data(using: .utf8)!)
-                fileHandle.closeFile()
-            } else {
-                try? (jsonString + "\n").write(toFile: logPath, atomically: false, encoding: .utf8)
-            }
-        }
-    }
-    // #endregion agent log
+    // MARK: - Logging
+    private let logger = Logger(subsystem: "com.plena.app", category: "WorkoutSession")
 
     func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
         print("🔄 Workout session state changed: \(fromState) -> \(toState)")
-        // #region agent log
-        debugLog("Workout session state changed", data: [
-            "hypothesisId": "B",
-            "location": "WorkoutSessionService.swift:206",
-            "fromState": "\(fromState)",
-            "toState": "\(toState)",
-            "stateRawValue": toState.rawValue,
-            "date": date.timeIntervalSince1970
-        ])
-        // #endregion agent log
+        logger.debug("Workout session state changed - from: \(String(describing: fromState)), to: \(String(describing: toState)), stateRawValue: \(toState.rawValue)")
     }
 
     func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
         print("❌ Workout session error: \(error)")
-        // #region agent log
-        debugLog("Workout session error", data: [
-            "hypothesisId": "B",
-            "location": "WorkoutSessionService.swift:210",
-            "error": error.localizedDescription
-        ])
-        // #endregion agent log
+        logger.error("Workout session error: \(error.localizedDescription)")
     }
 }
 #endif

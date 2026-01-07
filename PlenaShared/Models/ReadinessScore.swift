@@ -29,9 +29,9 @@ struct ReadinessScore: Identifiable {
     var status: ReadinessStatus {
         switch overallScore {
         case 80...100: return .optimal
-        case 60..<80: return .good
-        case 40..<60: return .payAttention
-        default: return .poor
+        case 60..<80: return .higher
+        case 40..<60: return .moderate
+        default: return .lower
         }
     }
 }

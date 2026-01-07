@@ -272,13 +272,13 @@ struct RecoveryIndexDetailView: View {
                 )
 
                 ThresholdRow(
-                    status: .good,
+                    status: .higher,
                     range: "0.5-1 or 2-3 sessions/day",
                     description: "Good recovery pattern"
                 )
 
                 ThresholdRow(
-                    status: .payAttention,
+                    status: .moderate,
                     range: "<0.5 or >3 sessions/day",
                     description: "May indicate imbalanced recovery"
                 )

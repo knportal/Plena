@@ -66,11 +66,11 @@ class HRVBalanceDetailViewModel: ObservableObject {
             if percentChange! >= 5 {
                 status = .optimal
             } else if percentChange! >= -5 {
-                status = .good
+                status = .higher
             } else if percentChange! >= -15 {
-                status = .payAttention
+                status = .moderate
             } else {
-                status = .poor
+                status = .lower
             }
 
             // Build 7-day trend data

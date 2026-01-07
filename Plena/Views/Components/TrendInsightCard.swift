@@ -10,6 +10,8 @@ import SwiftUI
 struct TrendInsightCard: View {
     let trendStats: TrendStats?
 
+    @State private var isShowingMedicalDisclaimer = false
+
     var body: some View {
         if let stats = trendStats {
             VStack(alignment: .leading, spacing: 6) {
@@ -30,12 +32,30 @@ struct TrendInsightCard: View {
                 Text(stats.description)
                     .font(.footnote)
                     .foregroundColor(.secondary)
+
+                HStack {
+                    Spacer()
+                    Button {
+                        isShowingMedicalDisclaimer = true
+                    } label: {
+                        Label("Disclaimer", systemImage: "info.circle")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Disclaimer")
+                }
             }
             .padding(12)
             .background(
                 RoundedRectangle(cornerRadius: 14)
                     .fill(Color(.secondarySystemBackground))
             )
+            .sheet(isPresented: $isShowingMedicalDisclaimer) {
+                NavigationStack {
+                    MedicalDisclaimerDetailView()
+                }
+            }
         } else {
             EmptyView()
         }

@@ -23,9 +23,9 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Plena needs access to your health data to track session metrics including heart rate, HRV, and respiratory rate.</string>
+	<string>Plena reads your Health data to show trends for heart rate, heart rate variability (HRV), respiratory rate, VO2 Max, body temperature, and sleep.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Plena needs permission to save session data to HealthKit.</string>
+	<string>Plena saves session entries you record in the app to HealthKit.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

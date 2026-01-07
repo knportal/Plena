@@ -89,11 +89,11 @@ class BodyTemperatureDetailViewModel: ObservableObject {
             if deviation! <= 0.3 {
                 status = .optimal
             } else if deviation! <= 0.6 {
-                status = .good
+                status = .higher
             } else if deviation! <= 1.0 {
-                status = .payAttention
+                status = .moderate
             } else {
-                status = .poor
+                status = .lower
             }
 
             // Build 7-day trend data
